@@ -1,0 +1,57 @@
+
+/* App-level styles - kept minimal as design system handles most styling */
+
+/* Scroll up animation */
+@keyframes scrollUp {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 60px;
+  }
+}
+
+/* Ensure smooth scrolling is enabled globally */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Prevent layout shifts during page load */
+body {
+  overflow-x: hidden;
+}
+
+/* Selection styling */
+::selection {
+  background-color: hsl(var(--primary) / 0.2);
+  color: hsl(var(--foreground));
+}
+
+/* Focus visible styling for accessibility */
+:focus-visible {
+  outline: 2px solid hsl(var(--primary));
+  outline-offset: 2px;
+}
+
+/* Smooth transitions for interactive elements */
+button,
+a,
+input,
+textarea,
+select {
+  transition-property: color, background-color, border-color, box-shadow, transform;
+  transition-timing-function: var(--ease-apple);
+  transition-duration: 200ms;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
