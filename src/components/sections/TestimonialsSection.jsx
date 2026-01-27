@@ -1,50 +1,55 @@
-
-import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { Quote, ChevronLeft, ChevronRight, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 
 const testimonials = [
   {
     id: 1,
-    quote: "Bill Till transformed our checkout process. We've seen a 40% reduction in transaction times and our customers love the seamless experience.",
-    author: 'Sarah Chen',
-    role: 'Owner, The Modern Boutique',
-    avatar: 'SC',
+    quote: "Bill Till has completely transformed how we handle our daily operations. The interface is intuitive, the features are comprehensive, and the support team is exceptional.",
+    author: 'Corey Philips',
+    role: 'CEO, TechStore Solutions',
+    avatar: '/testimonial-avatar.jpg',
     rating: 5,
-    industry: 'Retail',
   },
   {
     id: 2,
-    quote: "The analytics dashboard alone has paid for itself. We identified peak hours and optimized staffing, saving thousands in labor costs.",
-    author: 'Michael Roberts',
-    role: 'GM, Coastal Restaurant Group',
-    avatar: 'MR',
+    quote: "We've tried multiple POS systems before, but Bill Till stands out. The analytics and reporting features have helped us make better business decisions.",
+    author: 'Jessica Martinez',
+    role: 'Owner, Fashion Forward',
+    avatar: '/testimonial-avatar.jpg',
     rating: 5,
-    industry: 'Restaurant',
   },
   {
     id: 3,
-    quote: "Switching from our legacy system was painless. The support team walked us through everything and we were operational in hours, not weeks.",
-    author: 'Emily Johnson',
-    role: 'Director, Serenity Spa & Wellness',
-    avatar: 'EJ',
+    quote: "The mobile app is a game-changer for our restaurant. Staff can take orders tableside and everything syncs perfectly with the kitchen display.",
+    author: 'Robert Chen',
+    role: 'Manager, The Garden Bistro',
+    avatar: '/testimonial-avatar.jpg',
     rating: 5,
-    industry: 'Services',
-  },
-  {
-    id: 4,
-    quote: "Multi-location management has never been easier. Real-time data from all our stores in one dashboard is a game-changer.",
-    author: 'David Park',
-    role: 'CEO, Urban Coffee Roasters',
-    avatar: 'DP',
-    rating: 5,
-    industry: 'Restaurant',
   },
 ];
 
 export const TestimonialsSection = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  const springConfig = { stiffness: 100, damping: 5 };
+  const x = useMotionValue(0);
+  const rotate = useSpring(
+    useTransform(x, [-100, 100], [-45, 45]),
+    springConfig
+  );
+  const translateX = useSpring(
+    useTransform(x, [-100, 100], [-50, 50]),
+    springConfig
+  );
+
+  const handleMouseMove = (event) => {
+    const halfWidth = event.target.offsetWidth / 2;
+    x.set(event.nativeEvent.offsetX - halfWidth);
+  };
 
   const nextTestimonial = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -54,61 +59,212 @@ export const TestimonialsSection = () => {
     setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
   };
 
+  // Auto-scroll every 4 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      nextTestimonial();
+    }, 4000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="py-24 lg:py-32 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-20 lg:py-32 bg-white">
+      <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center max-w-3xl mx-auto mb-16"
+          className="text-center "
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Loved by{' '}
-            <span className="text-primary">50,000+</span>{' '}
-            businesses
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-poppins text-left text-foreground mb-4">
+            What Our Users<br/> Are <span className="text-primary">Saying</span>
           </h2>
-          <p className="text-base lg:text-lg text-muted-foreground">
-            Don't just take our word for it. Here's what our customers have to say.
-          </p>
         </motion.div>
 
-        {/* Featured Testimonial */}
-        <div className="relative max-w-4xl mx-auto">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={currentIndex}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.4 }}
-              className="bg-card rounded-3xl p-8 lg:p-12 border border-border shadow-card"
-            >
-              {/* Quote Icon */}
-              <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-6">
-                <Quote className="w-6 h-6 text-primary" />
-              </div>
+        {/* Main Content */}
+        <div className="grid lg:grid-cols-2 gap-12 items-center">
+          {/* Left Side - Image and Stats */}
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="relative"
+          >
+            <div className='flex flex-col lg:flex-row items-center justify-center bg-blue-100 rounded-2xl h-[400px] gap-6 mb-12 mt-12 shadow-2xl'>
+              {/* Main Image */}
+            <div className="relative">
+              <img
+                src="/test.png"
+                alt="Happy customer"
+                className="w-[350px] h-auto rounded-2x1 object-cover"
+                onError={(e) => {
+                  e.target.src = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3e%3crect width='600' height='400' fill='%23f8fafc'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='20' fill='%2364748b'%3eCustomer Testimonial Image%3c/text%3e%3c/svg%3e";
+                }}
+              />
+              
+              {/* Satisfaction Card Overlay */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+                className="absolute -bottom-6 md:-right-24 -right-10  bg-white rounded-2xl shadow-2xl p-6 border border-gray-100"
+              >
+                <div className="text-center">
+                  <div className="text-4xl font-bold text-primary mb-2">99%</div>
+                  <div className="text-sm font-medium text-gray-600 mb-1">Customer satisfaction</div>
+                  <div className="text-xs text-green-600 font-medium">- and growing!</div>
+                </div>
+              </motion.div>
+            </div>
 
-              {/* Rating */}
-              <div className="flex gap-1 mb-6">
-                {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                  <Star key={i} className="w-5 h-5 fill-warning text-warning" />
-                ))}
-              </div>
+            </div>
+            
 
-              {/* Quote */}
-              <blockquote className="text-xl lg:text-2xl text-foreground font-medium leading-relaxed mb-8">
-                "{testimonials[currentIndex].quote}"
-              </blockquote>
+            {/* Statistics */}
+            <div className="grid grid-cols-2 gap-6 mt-16">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+                className="text-center"
+              >
+                <div className="text-6xl font-bold text-foreground mb-2">99K</div>
+                <div className="text-sm text-muted-foreground">Customers worldwide</div>
+              </motion.div>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+                className="text-center"
+              >
+                <div className="text-4xl md:text-5xl font-bold text-foreground mt-5 mb-2">#2</div>
+                <div className="text-sm text-muted-foreground">Banking apps in Europe</div>
+              </motion.div>
+            </div>
+          </motion.div>
 
-              {/* Author */}
-              <div className="flex items-center justify-between">
+          {/* Right Side - Testimonial Card */}
+          <motion.div
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            className="relative"
+          >
+            {/* Avatar Navigation */}
+            <div className={cn("flex items-center justify-end", "gap-2")}>
+              {testimonials.map((testimonial, index) => (
+                <div
+                  className="-mr-4 relative group last:mr-0"
+                  key={testimonial.id}
+                  onMouseEnter={() => setHoveredIndex(testimonial.id)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                >
+                  <AnimatePresence mode="popLayout">
+                    {hoveredIndex === testimonial.id && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 20, scale: 0.6 }}
+                        animate={{
+                          opacity: 1,
+                          y: 0,
+                          scale: 1,
+                          transition: {
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 10,
+                          },
+                        }}
+                        exit={{ opacity: 0, y: 20, scale: 0.6 }}
+                        style={{
+                          translateX: translateX,
+                          rotate: rotate,
+                          whiteSpace: "nowrap",
+                        }}
+                        className="absolute -top-16 -left-1/2 translate-x-1/2 flex text-xs flex-col items-center justify-center rounded-md bg-foreground z-50 shadow-xl px-4 py-2"
+                      >
+                        <div className="absolute inset-x-10 z-30 w-[20%] -bottom-px bg-gradient-to-r from-transparent via-emerald-500 to-transparent h-px" />
+                        <div className="absolute left-10 w-[40%] z-30 -bottom-px bg-gradient-to-r from-transparent via-sky-500 to-transparent h-px" />
+                        <div className="font-bold text-background relative z-30 text-base">
+                          {testimonial.author}
+                        </div>
+                        <div className="text-muted-foreground text-xs">
+                          {testimonial.role}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                  <button
+                    onClick={() => setCurrentIndex(index)}
+                    onMouseMove={handleMouseMove}
+                    className={cn(
+                      "relative object-cover !m-0 !p-0 object-top rounded-full h-14 w-14 border-2 group-hover:scale-105 group-hover:z-30 border-background transition duration-500",
+                    )}
+                  >
+                    <img
+                      src={testimonial.avatar}
+                      alt={testimonial.author}
+                      className="w-full h-full rounded-full object-cover"
+                      onError={(e) => {
+                        const initials = testimonial.author.split(' ').map(n => n[0]).join('');
+                        e.target.src = `data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3e%3crect width='56' height='56' fill='%23e2e8f0'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='16' fill='%2364748b'%3e${initials}%3c/text%3e%3c/svg%3e`;
+                      }}
+                    />
+                    {index === currentIndex && (
+                      <motion.div
+                        layoutId="activeAvatar"
+                        className="absolute inset-0 rounded-full bg-primary/20"
+                        initial={false}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                      />
+                    )}
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            {/* Testimonial Card */}
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentIndex}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
+                transition={{ duration: 0.4 }}
+                className="bg-gradient-to-br from-blue-40 to-indigo-50 rounded-3xl p-8 lg:p-10 border border-blue-100 shadow-xl"
+              >
+                {/* Quote Icon */}
+                <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                  <Quote className="w-12 h-12 text-primary" />
+                </div>
+
+                {/* Rating */}
+                <div className="flex gap-1 mb-6">
+                  {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
+                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                  ))}
+                </div>
+
+                {/* Quote */}
+                <blockquote className="text-lg lg:text-xl text-gray-700 leading-relaxed mb-8">
+                  "{testimonials[currentIndex].quote}"
+                </blockquote>
+
+                {/* Author */}
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold">
-                    {testimonials[currentIndex].avatar}
-                  </div>
+                  <img
+                    src={testimonials[currentIndex].avatar}
+                    alt={testimonials[currentIndex].author}
+                    className="w-12 h-12 rounded-full object-cover"
+                    onError={(e) => {
+                      e.target.src = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3e%3crect width='48' height='48' fill='%23e2e8f0'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='14' fill='%2364748b'%3eCP%3c/text%3e%3c/svg%3e";
+                    }}
+                  />
                   <div>
                     <div className="font-semibold text-foreground">
                       {testimonials[currentIndex].author}
@@ -118,24 +274,11 @@ export const TestimonialsSection = () => {
                     </div>
                   </div>
                 </div>
-                <span className="px-3 py-1 text-xs font-medium bg-accent text-accent-foreground rounded-full">
-                  {testimonials[currentIndex].industry}
-                </span>
-              </div>
-            </motion.div>
-          </AnimatePresence>
+              </motion.div>
+            </AnimatePresence>
 
-          {/* Navigation */}
-          <div className="flex items-center justify-center gap-4 mt-8">
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={prevTestimonial}
-              className="rounded-full"
-            >
-              <ChevronLeft className="w-5 h-5" />
-            </Button>
-            <div className="flex gap-2">
+            {/* Dots Indicator */}
+            <div className="flex justify-center gap-2 mt-6">
               {testimonials.map((_, index) => (
                 <button
                   key={index}
@@ -143,56 +286,12 @@ export const TestimonialsSection = () => {
                   className={`w-2 h-2 rounded-full transition-all ${
                     index === currentIndex
                       ? 'w-8 bg-primary'
-                      : 'bg-border hover:bg-muted-foreground'
+                      : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                 />
               ))}
             </div>
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={nextTestimonial}
-              className="rounded-full"
-            >
-              <ChevronRight className="w-5 h-5" />
-            </Button>
-          </div>
-        </div>
-
-        {/* Testimonial Grid - Additional */}
-        <div className="grid md:grid-cols-3 gap-6 mt-16">
-          {testimonials.slice(1).map((testimonial, index) => (
-            <motion.div
-              key={testimonial.id}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: index * 0.1 }}
-              className="bg-card rounded-2xl p-6 border border-border hover:border-primary/20 hover:shadow-card transition-all duration-300"
-            >
-              <div className="flex gap-1 mb-4">
-                {[...Array(testimonial.rating)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-warning text-warning" />
-                ))}
-              </div>
-              <p className="text-sm text-muted-foreground mb-4 line-clamp-3">
-                "{testimonial.quote}"
-              </p>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-xs font-semibold">
-                  {testimonial.avatar}
-                </div>
-                <div>
-                  <div className="text-sm font-medium text-foreground">
-                    {testimonial.author}
-                  </div>
-                  <div className="text-xs text-muted-foreground">
-                    {testimonial.industry}
-                  </div>
-                </div>
-              </div>
-            </motion.div>
-          ))}
+          </motion.div>
         </div>
       </div>
     </section>

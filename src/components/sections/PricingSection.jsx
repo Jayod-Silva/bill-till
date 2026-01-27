@@ -66,63 +66,29 @@ export const PricingSection = () => {
   return (
     <>
       <style>{`
-        @keyframes shine {
-          0% { 
-            background-position: 0% 0%;
-            background-size: 100% 100%;
+        @keyframes borderRotate {
+          0% {
+            background-position: 0% 50%;
           }
-          25% { 
-            background-position: 100% 0%;
-            background-size: 100% 100%;
-          }
-          50% { 
-            background-position: 100% 100%;
-            background-size: 100% 100%;
-          }
-          75% { 
-            background-position: 0% 100%;
-            background-size: 100% 100%;
-          }
-          100% { 
-            background-position: 0% 0%;
-            background-size: 100% 100%;
+          100% {
+            background-position: 200% 50%;
           }
         }
         .pro-plan-border {
           position: relative;
           background: linear-gradient(white, white) padding-box, 
-                      linear-gradient(45deg, 
+                      linear-gradient(90deg, 
                         rgba(59, 130, 246, 0.1) 0%,
-                        rgba(59, 130, 246, 1) 10%,
-                        rgba(96, 165, 250, 1) 20%,
-                        rgba(59, 130, 246, 0.1) 30%,
+                        rgba(59, 130, 246, 0.3) 25%,
+                        rgba(59, 130, 246, 1) 50%,
+                        rgba(96, 165, 250, 1) 75%,
+                        rgba(59, 130, 246, 0.3) 90%,
                         rgba(59, 130, 246, 0.1) 100%
                       ) border-box;
           border: 3px solid transparent;
           background-clip: padding-box, border-box;
-          background-size: 300% 300%;
-          animation: shine 4s linear infinite;
-        }
-        .pro-plan-border::before {
-          content: '';
-          position: absolute;
-          inset: -3px;
-          padding: 3px;
-          background: linear-gradient(90deg,
-            transparent 0%,
-            rgba(59, 130, 246, 0.3) 5%,
-            rgba(96, 165, 250, 0.8) 10%,
-            rgba(59, 130, 246, 1) 15%,
-            rgba(96, 165, 250, 0.8) 20%,
-            rgba(59, 130, 246, 0.3) 25%,
-            transparent 30%,
-            transparent 100%
-          );
-          border-radius: 1rem;
-          mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-          mask-composite: exclude;
-          animation: shine 3s linear infinite;
           background-size: 200% 100%;
+          animation: borderRotate 3s linear infinite;
         }
       `}</style>
       <section id="pricing" className="py-24 lg:py-32">
