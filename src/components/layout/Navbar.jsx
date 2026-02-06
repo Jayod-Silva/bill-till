@@ -2,6 +2,7 @@
 
 import { Globe, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 /* Mock Language Hook */
 const useLanguage = () => {
@@ -16,6 +17,7 @@ export default function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { language, toggleLanguage } = useLanguage();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,6 +57,9 @@ export default function Navigation() {
       window.history.pushState({}, '', '/shop');
       // Trigger a custom event to notify App component
       window.dispatchEvent(new CustomEvent('navigate', { detail: { path: '/shop' } }));
+    } else if (item.id === 'pay') {
+      // Navigate to payment page
+      navigate('/payment');
     } else {
       document.querySelector(item.href)?.scrollIntoView({
         behavior: "smooth",

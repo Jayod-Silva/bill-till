@@ -7,6 +7,9 @@ import { useLenis } from '@/hooks/useLenis';
 import Navbar from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 
+// Pages
+import PaymentPage from '@/pages/PaymentPage';
+
 // Section Components
 import { HeroSection } from '@/components/sections/HeroSection';
 import { SocialProofSection } from '@/components/sections/SocialProofSection';
@@ -18,7 +21,6 @@ import { PricingSection } from '@/components/sections/PricingSection';
 import { FeaturesSection } from '@/components/sections/FeaturesSection';
 import { CTASection } from '@/components/sections/CTASection';
 import { FAQSection } from '@/components/sections/FAQSection';
-import { PaymentSection } from '@/components/sections/PaymentSection';
 
 // Home Page Component
 const HomePage = () => {
@@ -37,7 +39,6 @@ const HomePage = () => {
         <PricingSection />
         <FeaturesSection />
         <FAQSection />
-        <PaymentSection />
         <TestimonialsSection />
         <CTASection />
       </main>
@@ -51,6 +52,7 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/payment" element={<PaymentPage />} />
       </Routes>
       <Toaster position="bottom-right" />
     </BrowserRouter>

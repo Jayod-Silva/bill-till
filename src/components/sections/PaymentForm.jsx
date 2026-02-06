@@ -39,7 +39,7 @@ export default function PaymentForm({ selectedPlan }) {
             setLoading(true);
 
             const response = await axios.post(
-                "http://localhost:3000/api/create-payment",
+                "https://caritasconnect.ddns.net/billtill/api/create-payment",
                 form
             );
 
