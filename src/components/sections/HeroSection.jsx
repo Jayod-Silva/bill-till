@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { ArrowRight, Play, ChevronRight, ChevronDown } from 'lucide-react';
@@ -7,9 +7,22 @@ export const HeroSection = () => {
   const containerRef = useRef(null);
   const { scrollY } = useScroll();
   const [email, setEmail] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
 
-  const y = useTransform(scrollY, [0, 1000], [0, 300]);
-  const opacity = useTransform(scrollY, [0, 500], [1, 0]);
+  // Enhanced parallax effects with mobile detection
+  const y1 = useTransform(scrollY, [0, 800], [0, isMobile ? 100 : 300]);
+  const y2 = useTransform(scrollY, [0, 800], [0, isMobile ? 50 : 150]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -19,36 +32,36 @@ export const HeroSection = () => {
   return (
     <section
       ref={containerRef}
-      className="relative min-h-[50vh] flex items-center justify-center pt-20 pb-16 overflow-hidden bg-white"
+      className="relative h-screen w-full overflow-hidden flex items-center justify-center"
     >
-      {/* Background Image */}
-      <div className="absolute inset-0 pointer-events-none">
-        {/* Blue Curved Bottom Shape */}
-        <div className="absolute top-[-20px] left-0 right-0 h-[500px] bg-gradient-to-b from-blue-400/50 to-transparent rounded-b-[100%] blur-2xl transform scale-x-150" />
+      {/* Background Image with Parallax */}
+      <motion.div
+        style={{ y: y1 }}
+        className="absolute inset-0 w-full h-full z-5"
+      >
+        <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-black/10 to-background z-10" />
         
         {/* Background Image Layer */}
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-40"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-90"
           style={{
             backgroundImage: `url("/background1.png")`,
           }}
         />
-        {/* Pattern Overlay */}
-        <div 
-          className="absolute inset-0 opacity-30 animate-scroll-up"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='60' height='60' fill='none' stroke='rgb(59 130 246 / 0.3)' stroke-width='0.5'%3e%3cpath d='m0 .5h32m-32 32v-32'/%3e%3c/svg%3e")`,
-            animation: 'scrollUp 20s linear infinite',
-          }}
-        />
+        
+        {/* Blue Curved Bottom Shape */}
+        <div className="absolute top-[-20px] left-0 right-0 h-[500px] bg-gradient-to-b from-blue-400/50 to-transparent rounded-b-[100%] blur-2xl transform scale-x-150" />
+        
+        {/* Glow Effect */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[900px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
-      </div>
+      </motion.div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center mt-20">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center mt-[150px] md:mt-[500px]">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
           className="inline-flex items-center gap-2 px-1.5 py-1.5 rounded-full border border-gray-400 backdrop-blur-sm mb-7 group cursor-pointer"
         >
           <span className="flex items-center justify-center w-12 h-6 rounded-full bg-primary text-[10px] font-bold text-white">
@@ -87,9 +100,9 @@ export const HeroSection = () => {
         </motion.p>
 
         
-        {/* Dashboard Mockup */}
+        {/* Dashboard Mockup with Enhanced Parallax */}
         <motion.div
-          style={{ y, opacity }}
+          style={{ y: y2 }}
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.5, ease: "easeOut" }}
@@ -123,6 +136,7 @@ export const HeroSection = () => {
             />
           </div>
         </motion.div>
+        
       </div>
     </section>
   );

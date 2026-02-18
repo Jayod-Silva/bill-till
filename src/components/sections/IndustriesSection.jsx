@@ -66,31 +66,6 @@ const industries = [
   },
 ];
 
-const FloatingIcon = ({ icon: Icon, delay, duration }) => {
-  return (
-    <motion.div
-      className="absolute"
-      style={{
-        left: `${Math.random() * 100}%`,
-        top: `${Math.random() * 100}%`,
-      }}
-      animate={{
-        y: [-20, 20],
-        rotate: [-10, 10],
-        opacity: [0.3, 0.8, 0.3],
-      }}
-      transition={{
-        duration: duration,
-        delay: delay,
-        repeat: Infinity,
-        ease: "easeInOut",
-      }}
-    >
-      <Icon className="w-4 h-4 text-primary/30" />
-    </motion.div>
-  );
-};
-
 const GlowingOrb = ({ position, delay }) => {
   return (
     <motion.div
@@ -147,19 +122,6 @@ export const IndustriesSection = () => {
 
   return (
     <section id="industries" className="py-24 lg:pt-32 lg:pb-20 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 relative overflow-hidden">
-      {/* Background Elements */}
-      <div className="absolute inset-0">
-        {/* Floating Icons */}
-        {Array.from({ length: 8 }, (_, i) => (
-          <FloatingIcon
-            key={i}
-            icon={industries[i % industries.length].icon}
-            delay={i * 0.5}
-            duration={3 + i * 0.5}
-          />
-        ))}
-      </div>
-
       <div ref={containerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Header */}
         <motion.div
