@@ -94,7 +94,7 @@ const StatCard = ({ icon: Icon, value, label, delay }) => {
       whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: delay }}
-      className="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-white/20 shadow-lg"
+      className="bg-white backdrop-blur-sm rounded-xl p-4 border border-white/30 shadow-lg"
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
