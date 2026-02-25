@@ -473,6 +473,28 @@ const MultiStepRegistrationForm = () => {
 
   const totalSteps = 2;
 
+  // ── Persistence: Load from localStorage ──
+  useEffect(() => {
+    const saved = localStorage.getItem("registration_progress");
+    if (saved) {
+      try {
+        const { step, data } = JSON.parse(saved);
+        if (step) setCurrentStep(step);
+        if (data) setFormData((prev) => ({ ...prev, ...data }));
+      } catch (e) {
+        console.error("Failed to parse registration persistence:", e);
+      }
+    }
+  }, []);
+
+  // ── Persistence: Save to localStorage ──
+  useEffect(() => {
+    localStorage.setItem(
+      "registration_progress",
+      JSON.stringify({ step: currentStep, data: formData })
+    );
+  }, [currentStep, formData]);
+
   const validateStep = (step) => {
     const e = {};
     if (step === 1) {
@@ -528,8 +550,10 @@ const MultiStepRegistrationForm = () => {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData),
       });
-      if (response.ok) setIsSubmitted(true);
-      else {
+      if (response.ok) {
+        setIsSubmitted(true);
+        localStorage.removeItem("registration_progress");
+      } else {
         const data = await response.json();
         setErrors({ submit: data.message || "Registration failed. Please try again." });
       }
