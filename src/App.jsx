@@ -18,11 +18,11 @@ import { HowItWorksSection } from "@/components/sections/HowItWorksSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
-import { CTASection } from "@/components/sections/CTASection";
 import { FAQSection } from "@/components/sections/FAQSection";
 
 // Pages
 import PaymentPage from "@/pages/PaymentPage";
+import RegistrationPage from "@/pages/RegistrationPage";
 
 // Home Page Component
 const HomePage = () => {
@@ -42,7 +42,7 @@ const HomePage = () => {
         <FeaturesSection />
         <FAQSection />
         <TestimonialsSection />
-        <CTASection />
+        
       </main>
 
       <Footer />
@@ -56,6 +56,7 @@ function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/payment" element={<PaymentPage />} />
+        <Route path="/register" element={<RegistrationPage />} />
       </Routes>
 
       <Toaster position="bottom-right" />
