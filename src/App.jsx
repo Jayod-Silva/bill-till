@@ -23,6 +23,11 @@ import { FAQSection } from "@/components/sections/FAQSection";
 // Pages
 import PaymentPage from "@/pages/PaymentPage";
 import RegistrationPage from "@/pages/RegistrationPage";
+import LoginPage from "@/pages/LoginPage";
+import DashboardPage from "@/pages/DashboardPage";
+
+import { AuthProvider } from "@/context/AuthContext";
+import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 // Home Page Component
 const HomePage = () => {
@@ -52,15 +57,26 @@ const HomePage = () => {
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<HomePage />} />
-        <Route path="/payment" element={<PaymentPage />} />
-        <Route path="/register" element={<RegistrationPage />} />
-      </Routes>
+    <AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/register" element={<RegistrationPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
 
-      <Toaster position="bottom-right" />
-    </BrowserRouter>
+        <Toaster position="bottom-right" />
+      </BrowserRouter>
+    </AuthProvider>
   );
 }
 

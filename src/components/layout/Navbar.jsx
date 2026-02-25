@@ -2,7 +2,8 @@
 
 import { Globe, Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
 
 /* Mock Language Hook */
 const useLanguage = () => {
@@ -17,7 +18,9 @@ export default function Navigation() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { language, toggleLanguage } = useLanguage();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -69,9 +72,7 @@ export default function Navigation() {
 
   const handleBuyClick = () => {
     setMenuOpen(false);
-    document.querySelector("#pricing")?.scrollIntoView({
-      behavior: "smooth",
-    });
+    navigate("/register");
   };
 
   return (
@@ -138,6 +139,61 @@ export default function Navigation() {
               >
                 {buyText}
               </button>
+
+              {/* USER PROFILE DROPDOWN */}
+              {user && (
+                <div className="relative ml-2">
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="w-9 h-9 rounded-full border border-blue-900/50 overflow-hidden flex items-center justify-center hover:bg-blue-900/10 transition"
+                  >
+                    {user.profilePic ? (
+                      <img
+                        src={`http://localhost:3000${user.profilePic}`}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-blue-900 text-white flex items-center justify-center text-xs font-bold">
+                        {user.firstName?.charAt(0)}
+                      </div>
+                    )}
+                  </button>
+
+                  {dropdownOpen && (
+                    <>
+                      <div 
+                        className="fixed inset-0 z-40" 
+                        onClick={() => setDropdownOpen(false)}
+                      />
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="px-4 py-2 border-b border-gray-50 mb-1">
+                          <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Account</p>
+                          <p className="text-sm font-semibold text-blue-900 truncate">
+                            {user.firstName} {user.lastName}
+                          </p>
+                        </div>
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2 text-[11px] font-medium tracking-wider text-gray-700 hover:bg-blue-50 transition"
+                        >
+                          DASHBOARD
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            logout();
+                          }}
+                          className="w-full text-left block px-4 py-2 text-[11px] font-medium tracking-wider text-red-600 hover:bg-red-50 transition"
+                        >
+                          LOGOUT
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* MOBILE TOGGLE */}
@@ -190,6 +246,36 @@ export default function Navigation() {
                   >
                     {buyText}
                   </button>
+
+                  {user && (
+                    <>
+                      <button
+                        onClick={() => {
+                          setMenuOpen(false);
+                          navigate("/dashboard");
+                        }}
+                        className="bg-blue-900 text-white h-12 px-8 rounded-full text-sm tracking-widest font-semibold hover:bg-blue-800 transition flex items-center gap-3 w-full justify-center"
+                      >
+                        {user.profilePic ? (
+                          <img
+                            src={`http://localhost:3000${user.profilePic}`}
+                            alt="Profile"
+                            className="w-6 h-6 rounded-full object-cover"
+                          />
+                        ) : null}
+                        DASHBOARD
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMenuOpen(false);
+                          logout();
+                        }}
+                        className="text-red-500 text-sm font-bold tracking-widest uppercase mt-4"
+                      >
+                        LOGOUT
+                      </button>
+                    </>
+                  )}
                 </div>
 
                 <button

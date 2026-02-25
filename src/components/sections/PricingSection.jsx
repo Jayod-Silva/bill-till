@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Sparkles } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { FreeSwitchSection } from './FreeSwitchSection';
+
 
 const plans = [
   {
@@ -62,6 +64,15 @@ const plans = [
 
 export const PricingSection = () => {
   const [isYearly, setIsYearly] = useState(true);
+  const navigate = useNavigate();
+
+  const handleCTA = (cta) => {
+    if (cta === 'Contact Sales') {
+      window.location.href = 'mailto:sales@billtill.com';
+    } else {
+      navigate('/register');
+    }
+  };
 
   return (
     <>
@@ -178,6 +189,7 @@ export const PricingSection = () => {
                     variant={plan.popular ? 'default' : 'outline'}
                     className="w-full px-10 py-2"
                     size="lg"
+                    onClick={() => handleCTA(plan.cta)}
                   >
                     {plan.cta}
                   </Button>

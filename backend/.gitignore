@@ -1,0 +1,11 @@
+# Environments
+.env
+
+# Dependencies
+node_modules/
+
+# Uploads folder (profile pictures)
+uploads/
+
+# Prisma generated client
+generated/

@@ -2,6 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext";
+import api from "@/api/axios";
+
 import {
   ChevronLeft,
   ChevronRight,
@@ -472,6 +476,9 @@ const MultiStepRegistrationForm = () => {
   const [direction, setDirection] = useState(1);
 
   const totalSteps = 2;
+  const navigate = useNavigate();
+  const { login } = useAuth();
+
 
   // ── Persistence: Load from localStorage ──
   useEffect(() => {
@@ -545,24 +552,25 @@ const MultiStepRegistrationForm = () => {
     if (!validateStep(currentStep)) return;
     setIsSubmitting(true);
     try {
-      const response = await fetch("/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
-      if (response.ok) {
-        setIsSubmitted(true);
-        localStorage.removeItem("registration_progress");
-      } else {
-        const data = await response.json();
-        setErrors({ submit: data.message || "Registration failed. Please try again." });
+      // formData already uses snake_case keys matching the backend
+      const { data } = await api.post("/auth/register", formData);
+      
+      // Auto-login
+      if (data.token && data.user) {
+        login(data.user, data.token);
       }
-    } catch {
-      setErrors({ submit: "Network error. Please try again." });
+
+      setIsSubmitted(true);
+      localStorage.removeItem("registration_progress");
+      setTimeout(() => navigate("/"), 2500);
+    } catch (err) {
+      const msg = err.response?.data?.message || "Registration failed. Please try again.";
+      setErrors({ submit: msg });
     } finally {
       setIsSubmitting(false);
     }
   };
+
 
   /* Slide variants */
   const slideVariants = {
