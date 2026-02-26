@@ -32,15 +32,7 @@ const faqs = [
   {
     question: 'What kind of support do you offer?',
     answer: 'We offer email support for Starter plans, priority support with live chat for Pro plans, and 24/7 dedicated phone support with a personal account manager for Enterprise customers. All plans include access to our comprehensive knowledge base and video tutorials.',
-  },
-  {
-    question: 'Can I integrate Bill Till with my existing tools?',
-    answer: 'Bill Till integrates with 100+ popular business tools including QuickBooks, Xero, Mailchimp, Shopify, WooCommerce, and more. Our open API also allows for custom integrations to fit your specific needs.',
-  },
-  {
-    question: 'What happens if I want to cancel?',
-    answer: 'You can cancel anytime with no penalties or hidden fees. Your data remains yours - we provide full export capabilities so you can take your customer and transaction data with you. We also offer a 14-day free trial with no credit card required.',
-  },
+  }
 ];
 
 export const FAQSection = () => {

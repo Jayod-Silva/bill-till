@@ -1,33 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { Check, Sparkles } from 'lucide-react';
+import { Check, Sparkles, Star } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
-import { FreeSwitchSection } from './FreeSwitchSection';
-
+import { Label } from '@/components/ui/label';
+import { cn } from '@/lib/utils';
+import confetti from 'canvas-confetti';
 
 const plans = [
   {
     name: 'Dynamic',
-    description: 'Perfect for small businesses just getting started.',
-    monthlyPrice: 29,
-    yearlyPrice: 24,
+    price: '29',
+    yearlyPrice: '24',
+    period: 'per month',
     features: [
       'Up to 1,000 transactions/month',
       '1 Register',
       'Basic reporting',
       'Email support',
       'Standard integrations',
+      'Email support',
+      'Standard integrations',
     ],
-    cta: 'Start Free Trial',
-    popular: false,
+    description: 'Perfect for small businesses just getting started.',
+    buttonText: 'Start Free Trial',
+    href: '/register',
+    isPopular: false,
   },
   {
     name: 'Pro',
-    description: 'For growing businesses that need more power.',
-    monthlyPrice: 79,
-    yearlyPrice: 66,
+    price: '79',
+    yearlyPrice: '66',
+    period: 'per month',
     features: [
       'Unlimited transactions',
       'Up to 5 Registers',
@@ -38,14 +43,16 @@ const plans = [
       'Employee management',
       'Customer loyalty',
     ],
-    cta: 'Start Free Trial',
-    popular: true,
+    description: 'For growing businesses that need more power.',
+    buttonText: 'Start Free Trial',
+    href: '/register',
+    isPopular: true,
   },
   {
     name: 'Enterprise',
-    description: 'Custom solutions for large-scale operations.',
-    monthlyPrice: null,
-    yearlyPrice: null,
+    price: '299',
+    yearlyPrice: '239',
+    period: 'per month',
     features: [
       'Unlimited everything',
       'Unlimited registers',
@@ -54,165 +61,194 @@ const plans = [
       'Custom integrations',
       'Multi-location management',
       'Advanced security',
-      'SLA guarantees',
-      'On-site training',
     ],
-    cta: 'Contact Sales',
-    popular: false,
+    description: 'Custom solutions for large-scale operations.',
+    buttonText: 'Contact Sales',
+    href: 'mailto:sales@billtill.com',
+    isPopular: false,
   },
 ];
 
 export const PricingSection = () => {
-  const [isYearly, setIsYearly] = useState(true);
+  const [isMonthly, setIsMonthly] = useState(true);
   const navigate = useNavigate();
+  const switchRef = useRef(null);
 
-  const handleCTA = (cta) => {
-    if (cta === 'Contact Sales') {
-      window.location.href = 'mailto:sales@billtill.com';
+  const handleToggle = (checked) => {
+    setIsMonthly(!checked);
+    if (checked && switchRef.current) {
+      const rect = switchRef.current.getBoundingClientRect();
+      const x = rect.left + rect.width / 2;
+      const y = rect.top + rect.height / 2;
+
+      confetti({
+        particleCount: 50,
+        spread: 60,
+        origin: {
+          x: x / window.innerWidth,
+          y: y / window.innerHeight,
+        },
+        colors: [
+          "hsl(var(--primary))",
+          "hsl(var(--accent))",
+          "hsl(var(--secondary))",
+          "hsl(var(--muted))",
+        ],
+        ticks: 200,
+        gravity: 1.2,
+        decay: 0.94,
+        startVelocity: 30,
+        shapes: ["circle"],
+      });
+    }
+  };
+
+  const handleCTA = (href) => {
+    if (href.startsWith('mailto:')) {
+      window.location.href = href;
     } else {
-      navigate('/register');
+      navigate(href);
     }
   };
 
   return (
-    <>
-      <style>{`
-        @keyframes borderRotate {
-          0% {
-            background-position: 0% 50%;
-          }
-          100% {
-            background-position: 200% 50%;
-          }
-        }
-        .pro-plan-border {
-          position: relative;
-          background: linear-gradient(white, white) padding-box, 
-                      linear-gradient(90deg, 
-                        rgba(59, 130, 246, 0.1) 0%,
-                        rgba(59, 130, 246, 0.3) 25%,
-                        rgba(59, 130, 246, 1) 50%,
-                        rgba(96, 165, 250, 1) 75%,
-                        rgba(59, 130, 246, 0.3) 90%,
-                        rgba(59, 130, 246, 0.1) 100%
-                      ) border-box;
-          border: 3px solid transparent;
-          background-clip: padding-box, border-box;
-          background-size: 200% 100%;
-          animation: borderRotate 3s linear infinite;
-        }
-      `}</style>
-      <section id="pricing" className="py-24 lg:py-32">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* Header */}
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="text-center max-w-3xl mx-auto mb-12"
-          >
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-              Simple, transparent pricing
-            </h2>
-            <p className="text-base lg:text-md text-muted-foreground mb-8">
-              No hidden fees. No surprises. Choose the plan that fits your business.
-            </p>
+    <section id="pricing" className="py-20 lg:py-32">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center space-y-4 mb-12"
+        >
+          <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
+            Simple, Transparent Pricing
+          </h2>
+          <p className="text-muted-foreground text-lg whitespace-pre-line">
+            Choose the plan that works for you
+All plans include access to our platform, lead generation tools, and dedicated support.
+          </p>
+        </motion.div>
 
-            {/* Billing Toggle */}
-            <div className="flex items-center justify-center gap-4">
-              <span className={`text-sm ${!isYearly ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
-                Monthly
-              </span>
+        {/* Billing Toggle */}
+        <div className="flex justify-center mb-10">
+          <label className="relative inline-flex items-center cursor-pointer">
+            <Label>
               <Switch
-                checked={isYearly}
-                onCheckedChange={setIsYearly}
+                ref={switchRef}
+                checked={!isMonthly}
+                onCheckedChange={handleToggle}
+                className="relative"
               />
-              <span className={`text-sm flex items-center gap-2 ${isYearly ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
-                Yearly
-                <span className="px-2 py-0.5 text-xs font-medium bg-success/10 text-success rounded-full">
-                  Save 20%
-                </span>
-              </span>
-            </div>
-          </motion.div>
-
-          {/* Pricing Cards */}
-          <div className="grid lg:grid-cols-3 gap-8">
-            {plans.map((plan, index) => (
-              <motion.div
-                key={plan.name}
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: index * 0.1 }}
-                whileHover={{ 
-                  y: -8, 
-                  boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.15), 0 10px 15px -3px rgba(59, 130, 246, 0.08)",
-                  transition: { duration: 0.4, ease: "easeOut" }
-                }}
-                className={`relative flex flex-col rounded-2xl border transition-all duration-400 ease-out cursor-pointer ${plan.popular ? 'border-transparent bg-card shadow-lg shadow-primary/5 pro-plan-border' : 'border-border bg-card hover:shadow-xl'}`}
-              >
-                {/* Popular Badge */}
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <div className="flex items-center gap-1 px-4 py-1.5 bg-primary text-primary-foreground text-sm font-medium rounded-full shadow-md">
-                      <Sparkles className="w-4 h-4" />
-                      Most Popular
-                    </div>
-                  </div>
-                )}
-
-                <div className="p-8 flex-1">
-                  {/* Plan Name */}
-                  <h3 className="text-2xl font-semibold text-foreground mb-2">
-                    {plan.name}
-                  </h3>
-                  <p className="text-sm text-muted-foreground mb-6">
-                    {plan.description}
-                  </p>
-
-                  {/* Features */}
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" />
-                        <span className="text-sm text-muted-foreground">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                {/* CTA */}
-                <div className="p-5 pt-0 mt-auto">
-                  <Button
-                    variant={plan.popular ? 'default' : 'outline'}
-                    className="w-full px-10 py-2"
-                    size="lg"
-                    onClick={() => handleCTA(plan.cta)}
-                  >
-                    {plan.cta}
-                  </Button>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Trust Note */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-center text-sm text-muted-foreground mt-12"
-          >
-            Switch to BillTill for free. No system switching fees.
-          </motion.p>
+            </Label>
+          </label>
+          <span className="ml-2 font-semibold">
+            Annual billing <span className="text-primary">(Save 20%)</span>
+          </span>
         </div>
-      </section>
 
-      {/* Free Switch Section */}
-      <FreeSwitchSection />
-    </>
+        {/* Pricing Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {plans.map((plan, index) => (
+            <motion.div
+              key={plan.name}
+              initial={{ y: 50, opacity: 1 }}
+              whileInView={{
+                y: plan.isPopular ? -20 : 0,
+                opacity: 1,
+                x: index === 2 ? -30 : index === 0 ? 30 : 0,
+                scale: index === 0 || index === 2 ? 0.94 : 1.0,
+              }}
+              viewport={{ once: true }}
+              transition={{
+                duration: 1.6,
+                type: "spring",
+                stiffness: 100,
+                damping: 30,
+                delay: 0.4,
+                opacity: { duration: 0.5 },
+              }}
+              className={cn(
+                "rounded-2xl border-[1px] p-6 bg-background text-center lg:flex lg:flex-col lg:justify-center relative",
+                plan.isPopular ? "border-primary border-2" : "border-border",
+                "flex flex-col",
+                !plan.isPopular && "mt-5",
+                index === 0 || index === 2
+                  ? "z-0 transform translate-x-0 translate-y-0 -translate-z-[50px] rotate-y-[10deg]"
+                  : "z-10",
+                index === 0 && "origin-right",
+                index === 2 && "origin-left"
+              )}
+            >
+              {plan.isPopular && (
+                <div className="absolute top-0 right-0 bg-primary py-0.5 px-2 rounded-bl-xl rounded-tr-xl flex items-center">
+                  <Star className="text-primary-foreground h-4 w-4 fill-current" />
+                  <span className="text-primary-foreground ml-1 font-sans font-semibold">
+                    Popular
+                  </span>
+                </div>
+              )}
+              <div className="flex-1 flex flex-col">
+                <p className="text-base font-semibold text-muted-foreground">
+                  {plan.name}
+                </p>
+                <div className="mt-6 flex items-center justify-center gap-x-2">
+                  <span className="text-5xl font-bold tracking-tight text-foreground">
+                    ${isMonthly ? plan.price : plan.yearlyPrice}
+                  </span>
+                  <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
+                    / {plan.period}
+                  </span>
+                </div>
+
+                <p className="text-xs leading-5 text-muted-foreground">
+                  {isMonthly ? "billed monthly" : "billed annually"}
+                </p>
+
+                <ul className="mt-5 gap-2 flex flex-col">
+                  {plan.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                      <span className="text-left">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <hr className="w-full my-4" />
+
+                <Button
+                  variant={plan.isPopular ? 'default' : 'outline'}
+                  className={cn(
+                    "w-full gap-2 overflow-hidden text-lg font-semibold tracking-tighter",
+                    "transform-gpu ring-offset-current transition-all duration-300 ease-out hover:ring-2 hover:ring-primary hover:ring-offset-1 hover:bg-primary hover:text-primary-foreground",
+                    plan.isPopular
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background text-foreground"
+                  )}
+                  onClick={() => handleCTA(plan.href)}
+                >
+                  {plan.buttonText}
+                </Button>
+                <p className="mt-6 text-xs leading-5 text-muted-foreground">
+                  {plan.description}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Trust Note */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.4 }}
+          className="text-center text-sm text-muted-foreground mt-12"
+        >
+          Switch to BillTill for free. No system switching fees.
+        </motion.p>
+      </div>
+    </section>
   );
 };

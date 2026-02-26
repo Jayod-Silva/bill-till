@@ -132,12 +132,13 @@ const BrandPanel = () => (
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="relative z-10 flex items-center gap-2.5"
+      className="relative z-10 flex items-center"
     >
-      <div className="w-9 h-9 rounded-xl bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-        <BarChart3 className="w-5 h-5 text-white" />
-      </div>
-      <span className="text-white font-bold text-lg tracking-tight">Bill Till</span>
+      <img
+        src="/white-logo.png"
+        alt="Bill Till Logo"
+        className="h-10 w-auto"
+      />
     </motion.div>
 
     <div className="relative z-10">

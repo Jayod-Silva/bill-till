@@ -8,8 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 /* Mock Language Hook */
 const useLanguage = () => {
   const [language, setLanguage] = useState("en");
-  const toggleLanguage = () =>
-    setLanguage((l) => (l === "en" ? "si" : "en"));
+  const toggleLanguage = () => setLanguage((l) => (l === "en" ? "si" : "en"));
   return { language, toggleLanguage };
 };
 
@@ -27,8 +26,8 @@ export default function Navigation() {
       setScrolled(window.scrollY > 20);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navItems =
@@ -48,21 +47,23 @@ export default function Navigation() {
           { id: "pay", label: "මාර්ගගත ගෙවීම", href: "#pay" },
         ];
 
-  const buyText = language === "en" ? "BUY" : "මිලදී ගන්න";
+  const buyText = language === "en" ? "Sign In" : "ඇසුම්ම කරන්න";
 
   const handleClick = (item) => {
     setActiveLink(item.id);
     setMenuOpen(false);
-    
+
     // Special handling for shop link
-    if (item.id === 'shop') {
+    if (item.id === "shop") {
       // Navigate to tech store
-      window.history.pushState({}, '', '/shop');
+      window.history.pushState({}, "", "/shop");
       // Trigger a custom event to notify App component
-      window.dispatchEvent(new CustomEvent('navigate', { detail: { path: '/shop' } }));
-    } else if (item.id === 'pay') {
+      window.dispatchEvent(
+        new CustomEvent("navigate", { detail: { path: "/shop" } }),
+      );
+    } else if (item.id === "pay") {
       // Navigate to payment page
-      navigate('/payment');
+      navigate("/payment");
     } else {
       document.querySelector(item.href)?.scrollIntoView({
         behavior: "smooth",
@@ -76,18 +77,19 @@ export default function Navigation() {
   };
 
   return (
-    <nav className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
-      scrolled ? 'bg-white/80 backdrop-blur-md border-b border-gray-200/50' : ''
-    }`}>
+    <nav
+      className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 ${
+        scrolled
+          ? "bg-white/80 backdrop-blur-md border-b border-gray-200/50"
+          : ""
+      }`}
+    >
       <div className="w-full max-w-[1400px] mx-auto mt-4 px-3 sm:px-6">
         <div>
           <div className="flex items-center justify-between h-[68px] px-4 sm:px-6">
-
             {/* LOGO */}
             <button
-              onClick={() =>
-                window.scrollTo({ top: 0, behavior: "smooth" })
-              }
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
               className="cursor-pointer hover:opacity-80 transition-opacity"
               aria-label="Go to home"
             >
@@ -106,9 +108,7 @@ export default function Navigation() {
                   onClick={() => handleClick(item)}
                   className={`relative group text-[10px] font-medium tracking-[1.5px] font-poppins
                   ${
-                    activeLink === item.id
-                      ? "text-blue-900"
-                      : "text-black/90"
+                    activeLink === item.id ? "text-blue-900" : "text-black/90"
                   }`}
                 >
                   {item.label}
@@ -133,12 +133,14 @@ export default function Navigation() {
                 <Globe className="w-4 h-4 text-black" />
               </button>
 
-              <button
-                onClick={handleBuyClick}
-                className="bg-black/90 text-white h-9 px-8 rounded-full text-[11px] tracking-[0.25em] font-semibold hover:bg-black transition"
-              >
-                {buyText}
-              </button>
+              {!user && (
+                <button
+                  onClick={handleBuyClick}
+                  className="bg-black/90 text-white h-9 px-8 rounded-full text-[11px] tracking-[0.25em] font-semibold hover:bg-black transition"
+                >
+                  {buyText}
+                </button>
+              )}
 
               {/* USER PROFILE DROPDOWN */}
               {user && (
@@ -162,13 +164,15 @@ export default function Navigation() {
 
                   {dropdownOpen && (
                     <>
-                      <div 
-                        className="fixed inset-0 z-40" 
+                      <div
+                        className="fixed inset-0 z-40"
                         onClick={() => setDropdownOpen(false)}
                       />
                       <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50 animate-in fade-in slide-in-from-top-2 duration-200">
                         <div className="px-4 py-2 border-b border-gray-50 mb-1">
-                          <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">Account</p>
+                          <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">
+                            Account
+                          </p>
                           <p className="text-sm font-semibold text-blue-900 truncate">
                             {user.firstName} {user.lastName}
                           </p>
@@ -208,10 +212,15 @@ export default function Navigation() {
           {/* MOBILE MENU */}
           <div
             className={`md:hidden fixed inset-0 z-50 transition-all duration-300 ${
-              menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+              menuOpen
+                ? "opacity-100 pointer-events-auto"
+                : "opacity-0 pointer-events-none"
             }`}
           >
-            <div className="absolute inset-0 bg-black/30 backdrop-blur-md" onClick={() => setMenuOpen(false)} />
+            <div
+              className="absolute inset-0 bg-black/30 backdrop-blur-md"
+              onClick={() => setMenuOpen(false)}
+            />
             <div className="absolute inset-0 flex items-center justify-center">
               <div className="flex flex-col items-center gap-8">
                 {navItems.map((item) => (
@@ -240,12 +249,14 @@ export default function Navigation() {
                     <Globe className="w-5 h-5 text-white" />
                   </button>
 
-                  <button
-                    onClick={handleBuyClick}
-                    className="bg-white text-black h-12 px-10 rounded-full text-sm tracking-widest font-semibold hover:bg-white/90 transition"
-                  >
-                    {buyText}
-                  </button>
+                  {!user && (
+                    <button
+                      onClick={handleBuyClick}
+                      className="bg-white text-black h-12 px-10 rounded-full text-sm tracking-widest font-semibold hover:bg-white/90 transition"
+                    >
+                      {buyText}
+                    </button>
+                  )}
 
                   {user && (
                     <>

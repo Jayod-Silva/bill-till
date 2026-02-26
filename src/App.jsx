@@ -18,6 +18,7 @@ import { HowItWorksSection } from "@/components/sections/HowItWorksSection";
 import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
+import { FreeSwitchSection } from "@/components/sections/FreeSwitchSection";
 import { FAQSection } from "@/components/sections/FAQSection";
 
 // Pages
@@ -44,10 +45,10 @@ const HomePage = () => {
         <IndustriesSection />
         <HowItWorksSection />
         <PricingSection />
+        <FreeSwitchSection />
         <FeaturesSection />
         <FAQSection />
         <TestimonialsSection />
-        
       </main>
 
       <Footer />

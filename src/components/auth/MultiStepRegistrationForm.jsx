@@ -56,8 +56,8 @@ const FloatingInput = ({
           focused
             ? "border-blue-500 shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
             : error
-            ? "border-red-400 shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
-            : "border-slate-200 hover:border-slate-300"
+              ? "border-red-400 shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
+              : "border-slate-200 hover:border-slate-300",
         )}
       >
         {/* Left icon */}
@@ -65,7 +65,7 @@ const FloatingInput = ({
           <div
             className={cn(
               "absolute left-3.5 transition-colors duration-200",
-              focused ? "text-blue-500" : "text-slate-400"
+              focused ? "text-blue-500" : "text-slate-400",
             )}
           >
             <Icon className="w-4 h-4" />
@@ -85,7 +85,7 @@ const FloatingInput = ({
           className={cn(
             "peer w-full bg-transparent py-3.5 text-sm text-slate-800 outline-none placeholder:text-slate-400",
             Icon ? "pl-10 pr-4" : "px-4",
-            rightElement ? "pr-12" : ""
+            rightElement ? "pr-12" : "",
           )}
           {...rest}
         />
@@ -101,9 +101,9 @@ const FloatingInput = ({
                 ? "left-10 top-1.5 text-[10px] font-medium"
                 : "left-10 top-1/2 -translate-y-1/2 text-sm"
               : lifted
-              ? "left-4 top-1.5 text-[10px] font-medium"
-              : "left-4 top-1/2 -translate-y-1/2 text-sm",
-            lifted && (focused ? "text-blue-500" : "text-slate-400")
+                ? "left-4 top-1.5 text-[10px] font-medium"
+                : "left-4 top-1/2 -translate-y-1/2 text-sm",
+            lifted && (focused ? "text-blue-500" : "text-slate-400"),
           )}
         >
           {label}
@@ -158,15 +158,15 @@ const FloatingSelect = ({
           focused
             ? "border-blue-500 shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
             : error
-            ? "border-red-400 shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
-            : "border-slate-200 hover:border-slate-300"
+              ? "border-red-400 shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
+              : "border-slate-200 hover:border-slate-300",
         )}
       >
         {Icon && (
           <div
             className={cn(
               "absolute left-3.5 transition-colors duration-200 pointer-events-none",
-              focused ? "text-blue-500" : "text-slate-400"
+              focused ? "text-blue-500" : "text-slate-400",
             )}
           >
             <Icon className="w-4 h-4" />
@@ -183,7 +183,7 @@ const FloatingSelect = ({
           className={cn(
             "w-full bg-transparent py-3.5 text-sm text-slate-800 outline-none appearance-none",
             Icon ? "pl-10 pr-8" : "px-4 pr-8",
-            !value && "text-transparent"
+            !value && "text-transparent",
           )}
         >
           {children}
@@ -198,9 +198,9 @@ const FloatingSelect = ({
                 ? "left-10 top-1.5 text-[10px] font-medium"
                 : "left-10 top-1/2 -translate-y-1/2 text-sm"
               : lifted
-              ? "left-4 top-1.5 text-[10px] font-medium"
-              : "left-4 top-1/2 -translate-y-1/2 text-sm",
-            lifted && (focused ? "text-blue-500" : "text-slate-400")
+                ? "left-4 top-1.5 text-[10px] font-medium"
+                : "left-4 top-1/2 -translate-y-1/2 text-sm",
+            lifted && (focused ? "text-blue-500" : "text-slate-400"),
           )}
         >
           {label}
@@ -234,10 +234,26 @@ const FloatingSelect = ({
    Brand Left Panel
 ───────────────────────────────────────────── */
 const features = [
-  { icon: BarChart3, label: "Real-time Analytics", color: "bg-blue-500/20 text-blue-300" },
-  { icon: ShoppingCart, label: "Smart POS System", color: "bg-purple-500/20 text-purple-300" },
-  { icon: Shield, label: "Secure & Compliant", color: "bg-emerald-500/20 text-emerald-300" },
-  { icon: Sparkles, label: "AI-powered Insights", color: "bg-amber-500/20 text-amber-300" },
+  {
+    icon: BarChart3,
+    label: "Real-time Analytics",
+    color: "bg-blue-500/20 text-blue-300",
+  },
+  {
+    icon: ShoppingCart,
+    label: "Smart POS System",
+    color: "bg-purple-500/20 text-purple-300",
+  },
+  {
+    icon: Shield,
+    label: "Secure & Compliant",
+    color: "bg-emerald-500/20 text-emerald-300",
+  },
+  {
+    icon: Sparkles,
+    label: "AI-powered Insights",
+    color: "bg-amber-500/20 text-amber-300",
+  },
 ];
 
 const BrandPanel = () => (
@@ -264,12 +280,13 @@ const BrandPanel = () => (
       initial={{ opacity: 0, y: -16 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6 }}
-      className="relative z-10 flex items-center gap-2.5"
+      className="relative z-10 flex items-center"
     >
-      <div className="w-9 h-9 rounded-xl bg-blue-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-        <BarChart3 className="w-5 h-5 text-white" />
-      </div>
-      <span className="text-white font-bold text-lg tracking-tight">Bill Till</span>
+      <img
+        src="/white-logo.png"
+        alt="Bill Till Logo"
+        className="h-10 w-auto"
+      />
     </motion.div>
 
     {/* Main copy */}
@@ -293,7 +310,8 @@ const BrandPanel = () => (
       </h2>
 
       <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
-        Manage your entire business from a single, beautiful platform. Payments, inventory, and analytics — all in one place.
+        Manage your entire business from a single, beautiful platform. Payments,
+        inventory, and analytics — all in one place.
       </p>
 
       {/* Feature pills */}
@@ -306,7 +324,12 @@ const BrandPanel = () => (
             transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
             className="flex items-center gap-3"
           >
-            <div className={cn("w-8 h-8 rounded-lg flex items-center justify-center shrink-0", color)}>
+            <div
+              className={cn(
+                "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                color,
+              )}
+            >
               <Icon className="w-4 h-4" />
             </div>
             <span className="text-slate-300 text-sm font-medium">{label}</span>
@@ -323,7 +346,8 @@ const BrandPanel = () => (
       className="relative z-10 p-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm"
     >
       <p className="text-slate-300 text-sm leading-relaxed italic">
-        "Bill Till transformed how we run our retail chain. The analytics alone have paid for themselves tenfold."
+        "Bill Till transformed how we run our retail chain. The analytics alone
+        have paid for themselves tenfold."
       </p>
       <div className="mt-3 flex items-center gap-2.5">
         <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
@@ -355,8 +379,8 @@ const StepIndicator = ({ current, total }) => (
                 done
                   ? "bg-blue-500 text-white"
                   : active
-                  ? "bg-blue-500 text-white ring-4 ring-blue-500/20"
-                  : "bg-slate-100 text-slate-400"
+                    ? "bg-blue-500 text-white ring-4 ring-blue-500/20"
+                    : "bg-slate-100 text-slate-400",
               )}
             >
               {done ? (
@@ -368,7 +392,11 @@ const StepIndicator = ({ current, total }) => (
             <span
               className={cn(
                 "text-[10px] font-medium whitespace-nowrap transition-colors duration-300",
-                active ? "text-blue-600" : done ? "text-slate-500" : "text-slate-400"
+                active
+                  ? "text-blue-600"
+                  : done
+                    ? "text-slate-500"
+                    : "text-slate-400",
               )}
             >
               {i === 0 ? "Personal Info" : "Business Info"}
@@ -403,8 +431,14 @@ const SuccessScreen = () => {
           key={i}
           className="absolute w-2 h-2 rounded-sm"
           style={{
-            backgroundColor: ["#3b82f6", "#6366f1", "#10b981", "#f59e0b", "#ec4899"][i % 5],
-            left: `${10 + (i * 5) % 85}%`,
+            backgroundColor: [
+              "#3b82f6",
+              "#6366f1",
+              "#10b981",
+              "#f59e0b",
+              "#ec4899",
+            ][i % 5],
+            left: `${10 + ((i * 5) % 85)}%`,
             top: "30%",
           }}
           initial={{ y: 0, opacity: 1, rotate: 0 }}
@@ -436,9 +470,12 @@ const SuccessScreen = () => {
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
       >
-        <h2 className="text-2xl font-bold text-slate-800 mb-2">You're all set! 🎉</h2>
+        <h2 className="text-2xl font-bold text-slate-800 mb-2">
+          You're all set! 🎉
+        </h2>
         <p className="text-slate-500 text-sm mb-8 max-w-xs mx-auto">
-          Your account has been created. We'll be in touch shortly with your activation details.
+          Your account has been created. We'll be in touch shortly with your
+          activation details.
         </p>
         <button
           onClick={() => (window.location.href = "/")}
@@ -479,7 +516,6 @@ const MultiStepRegistrationForm = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
 
-
   // ── Persistence: Load from localStorage ──
   useEffect(() => {
     const saved = localStorage.getItem("registration_progress");
@@ -498,7 +534,7 @@ const MultiStepRegistrationForm = () => {
   useEffect(() => {
     localStorage.setItem(
       "registration_progress",
-      JSON.stringify({ step: currentStep, data: formData })
+      JSON.stringify({ step: currentStep, data: formData }),
     );
   }, [currentStep, formData]);
 
@@ -517,9 +553,12 @@ const MultiStepRegistrationForm = () => {
       else if (formData.password.length < 8)
         e.password = "Password must be at least 8 characters";
     } else if (step === 2) {
-      if (!formData.business_name.trim()) e.business_name = "Business name is required";
-      if (!formData.business_type.trim()) e.business_type = "Business type is required";
-      if (!formData.business_address.trim()) e.business_address = "Business address is required";
+      if (!formData.business_name.trim())
+        e.business_name = "Business name is required";
+      if (!formData.business_type.trim())
+        e.business_type = "Business type is required";
+      if (!formData.business_address.trim())
+        e.business_address = "Business address is required";
       if (!formData.city.trim()) e.city = "City is required";
       if (!formData.province.trim()) e.province = "Province is required";
       if (!formData.zip_code.trim()) e.zip_code = "Zip code is required";
@@ -554,7 +593,7 @@ const MultiStepRegistrationForm = () => {
     try {
       // formData already uses snake_case keys matching the backend
       const { data } = await api.post("/auth/register", formData);
-      
+
       // Auto-login
       if (data.token && data.user) {
         login(data.user, data.token);
@@ -564,13 +603,13 @@ const MultiStepRegistrationForm = () => {
       localStorage.removeItem("registration_progress");
       setTimeout(() => navigate("/"), 2500);
     } catch (err) {
-      const msg = err.response?.data?.message || "Registration failed. Please try again.";
+      const msg =
+        err.response?.data?.message || "Registration failed. Please try again.";
       setErrors({ submit: msg });
     } finally {
       setIsSubmitting(false);
     }
   };
-
 
   /* Slide variants */
   const slideVariants = {
@@ -597,8 +636,12 @@ const MultiStepRegistrationForm = () => {
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-blue-50 mb-3">
                 <User className="w-5 h-5 text-blue-500" />
               </div>
-              <h2 className="text-xl font-bold text-slate-800">Personal Details</h2>
-              <p className="text-slate-500 text-sm mt-0.5">Tell us a little about yourself</p>
+              <h2 className="text-xl font-bold text-slate-800">
+                Personal Details
+              </h2>
+              <p className="text-slate-500 text-sm mt-0.5">
+                Tell us a little about yourself
+              </p>
             </div>
 
             <div className="grid grid-cols-2 gap-3">
@@ -665,7 +708,11 @@ const MultiStepRegistrationForm = () => {
                   className="text-slate-400 hover:text-slate-600 transition-colors"
                   aria-label={showPassword ? "Hide password" : "Show password"}
                 >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
                 </button>
               }
             />
@@ -688,8 +735,12 @@ const MultiStepRegistrationForm = () => {
               <div className="inline-flex items-center justify-center w-10 h-10 rounded-xl bg-indigo-50 mb-3">
                 <Building2 className="w-5 h-5 text-indigo-500" />
               </div>
-              <h2 className="text-xl font-bold text-slate-800">Business Details</h2>
-              <p className="text-slate-500 text-sm mt-0.5">Help us set up your business profile</p>
+              <h2 className="text-xl font-bold text-slate-800">
+                Business Details
+              </h2>
+              <p className="text-slate-500 text-sm mt-0.5">
+                Help us set up your business profile
+              </p>
             </div>
 
             <FloatingInput
@@ -804,14 +855,15 @@ const MultiStepRegistrationForm = () => {
       {/* Right form panel */}
       <div className="flex-1 overflow-y-auto bg-slate-50 flex items-center justify-center p-6 sm:p-10">
         <div className="w-full max-w-[480px]">
-
           {/* Mobile brand bar */}
           <div className="lg:hidden flex items-center justify-between mb-8">
             <div className="flex items-center gap-2">
               <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
                 <BarChart3 className="w-4 h-4 text-white" />
               </div>
-              <span className="font-bold text-slate-800 text-base">Bill Till</span>
+              <span className="font-bold text-slate-800 text-base">
+                Bill Till
+              </span>
             </div>
             <button
               onClick={() => (window.location.href = "/")}
@@ -840,8 +892,11 @@ const MultiStepRegistrationForm = () => {
             </h1>
             <p className="mt-1.5 text-sm text-slate-500">
               Already have an account?{" "}
-              <a href="/login" className="text-blue-500 hover:text-blue-600 font-medium transition-colors">
-                Sign in
+              <a
+                href="/login"
+                className="text-blue-500 hover:text-blue-600 font-medium transition-colors"
+              >
+                Login
               </a>
             </p>
           </div>
@@ -900,7 +955,11 @@ const MultiStepRegistrationForm = () => {
                     <>
                       <motion.div
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
                         className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
                       />
                       Creating account…
@@ -918,11 +977,17 @@ const MultiStepRegistrationForm = () => {
           {/* Footer note */}
           <p className="mt-5 text-center text-xs text-slate-400">
             By registering you agree to our{" "}
-            <a href="/terms" className="text-slate-500 hover:text-slate-700 underline underline-offset-2">
+            <a
+              href="/terms"
+              className="text-slate-500 hover:text-slate-700 underline underline-offset-2"
+            >
               Terms of Service
             </a>{" "}
             and{" "}
-            <a href="/privacy" className="text-slate-500 hover:text-slate-700 underline underline-offset-2">
+            <a
+              href="/privacy"
+              className="text-slate-500 hover:text-slate-700 underline underline-offset-2"
+            >
               Privacy Policy
             </a>
           </p>

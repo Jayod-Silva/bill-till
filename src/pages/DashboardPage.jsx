@@ -40,11 +40,15 @@ const ProfileTab = ({ user }) => (
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-slate-400">Email Address</span>
-            <span className="text-sm font-medium text-slate-700">{user?.email}</span>
+            <span className="text-sm font-medium text-slate-700">
+              {user?.email}
+            </span>
           </div>
           <div className="flex flex-col">
             <span className="text-xs text-slate-400">Phone Number</span>
-            <span className="text-sm font-medium text-slate-700">{user?.phone || "—"}</span>
+            <span className="text-sm font-medium text-slate-700">
+              {user?.phone || "—"}
+            </span>
           </div>
         </div>
       </div>
@@ -69,7 +73,9 @@ const ProfileTab = ({ user }) => (
           <div className="flex flex-col">
             <span className="text-xs text-slate-400">Location</span>
             <span className="text-sm font-medium text-slate-700">
-              {user?.business ? `${user.business.city}, ${user.business.province}` : "—"}
+              {user?.business
+                ? `${user.business.city}, ${user.business.province}`
+                : "—"}
             </span>
           </div>
         </div>
@@ -88,7 +94,9 @@ const SubscriptionTab = ({ subscriptions }) => {
       <div className="p-6 border-b border-slate-50 flex items-center justify-between">
         <div>
           <h3 className="text-sm font-semibold text-slate-800">Current Plan</h3>
-          <p className="text-xs text-slate-500 mt-1">Manage your billing and subscription</p>
+          <p className="text-xs text-slate-500 mt-1">
+            Manage your billing and subscription
+          </p>
         </div>
         {active && (
           <span className="px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider">
@@ -104,7 +112,9 @@ const SubscriptionTab = ({ subscriptions }) => {
                 <CheckCircle2 className="w-6 h-6 text-white" />
               </div>
               <div>
-                <h4 className="text-lg font-bold text-slate-800">{active.planName}</h4>
+                <h4 className="text-lg font-bold text-slate-800">
+                  {active.planName}
+                </h4>
                 <p className="text-sm text-slate-500">
                   ${active.amount} / month • Renews on{" "}
                   {new Date(active.endDate).toLocaleDateString("en-US", {
@@ -127,7 +137,9 @@ const SubscriptionTab = ({ subscriptions }) => {
         ) : (
           <div className="text-center py-8">
             <CreditCard className="w-10 h-10 text-slate-300 mx-auto mb-3" />
-            <p className="text-slate-500 text-sm">No active subscription found</p>
+            <p className="text-slate-500 text-sm">
+              No active subscription found
+            </p>
             <a
               href="/payment"
               className="mt-4 inline-block px-4 py-2 rounded-lg bg-blue-500 text-white text-xs font-semibold hover:bg-blue-600 transition-colors"
@@ -151,7 +163,10 @@ const PaymentsTab = ({ payments }) => (
         <thead>
           <tr className="bg-slate-50/50">
             {["Transaction ID", "Date", "Amount", "Status"].map((h) => (
-              <th key={h} className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+              <th
+                key={h}
+                className="px-6 py-4 text-[10px] font-bold text-slate-400 uppercase tracking-wider"
+              >
                 {h}
               </th>
             ))}
@@ -162,20 +177,37 @@ const PaymentsTab = ({ payments }) => (
             <tr key={txn.id} className="hover:bg-slate-50/30 transition-colors">
               <td className="px-6 py-4">
                 <div className="flex flex-col">
-                  <span className="text-sm font-medium text-slate-700">{txn.transactionId}</span>
-                  <span className="text-[10px] text-slate-400">{txn.method || "Card"}</span>
+                  <span className="text-sm font-medium text-slate-700">
+                    {txn.transactionId}
+                  </span>
+                  <span className="text-[10px] text-slate-400">
+                    {txn.method || "Card"}
+                  </span>
                 </div>
               </td>
               <td className="px-6 py-4 text-sm text-slate-500">
                 {new Date(txn.createdAt).toLocaleDateString()}
               </td>
-              <td className="px-6 py-4 text-sm font-semibold text-slate-700">${txn.amount}</td>
+              <td className="px-6 py-4 text-sm font-semibold text-slate-700">
+                ${txn.amount}
+              </td>
               <td className="px-6 py-4">
-                <span className={cn(
-                  "inline-flex items-center gap-1 text-[10px] font-bold uppercase",
-                  txn.status === "SUCCESS" ? "text-green-600" : "text-amber-600"
-                )}>
-                  <span className={cn("w-1.5 h-1.5 rounded-full", txn.status === "SUCCESS" ? "bg-green-500" : "bg-amber-500")} />
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1 text-[10px] font-bold uppercase",
+                    txn.status === "SUCCESS"
+                      ? "text-green-600"
+                      : "text-amber-600",
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "w-1.5 h-1.5 rounded-full",
+                      txn.status === "SUCCESS"
+                        ? "bg-green-500"
+                        : "bg-amber-500",
+                    )}
+                  />
                   {txn.status}
                 </span>
               </td>
@@ -199,12 +231,17 @@ const NotificationsTab = ({ notifications }) =>
   notifications?.length > 0 ? (
     <div className="space-y-3">
       {notifications.map((notif) => (
-        <div key={notif.id} className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex gap-4">
+        <div
+          key={notif.id}
+          className="bg-white p-4 rounded-xl border border-slate-100 shadow-sm flex gap-4"
+        >
           <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center flex-shrink-0">
             <Bell className="w-5 h-5 text-blue-500" />
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-slate-800">{notif.title}</h4>
+            <h4 className="text-sm font-semibold text-slate-800">
+              {notif.title}
+            </h4>
             <p className="text-xs text-slate-500 mt-0.5">{notif.message}</p>
             <span className="text-[10px] text-slate-400 mt-2 block">
               {new Date(notif.createdAt).toLocaleDateString()}
@@ -224,15 +261,29 @@ const NotificationsTab = ({ notifications }) =>
    DashboardPage
 ───────────────────────────────────────────── */
 const DashboardPage = () => {
-  const { user, logout } = useAuth();
+  const { user, logout, updateUser } = useAuth();
   const navigate = useNavigate();
   const fileRef = useRef(null);
 
+  const getProfilePicUrl = (path) => {
+    if (!path)
+      return `https://ui-avatars.com/api/?name=${encodeURIComponent((user?.firstName || "U") + " " + (user?.lastName || ""))}&background=3b82f6&color=fff`;
+    if (path.startsWith("blob:") || path.startsWith("http")) return path;
+    return `http://localhost:3000${path}`;
+  };
+
   const [activeTab, setActiveTab] = useState("profile");
   const [profilePic, setProfilePic] = useState(
-    user?.profilePic || `https://ui-avatars.com/api/?name=${encodeURIComponent((user?.firstName || "U") + " " + (user?.lastName || ""))}&background=3b82f6&color=fff`
+    getProfilePicUrl(user?.profilePic),
   );
   const [uploading, setUploading] = useState(false);
+
+  // Sync profilePic state when user object changes
+  React.useEffect(() => {
+    if (user?.profilePic) {
+      setProfilePic(getProfilePicUrl(user.profilePic));
+    }
+  }, [user?.profilePic]);
 
   // These would come from sp_GetDashboardData in production
   const subscriptions = user?.subscriptions || [];
@@ -267,7 +318,10 @@ const DashboardPage = () => {
       const { data } = await api.post("/dashboard/profile-pic", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      setProfilePic(`http://localhost:3000${data.profilePic}`);
+      const newPicPath = data.profilePic;
+      const fullUrl = `http://localhost:3000${newPicPath}`;
+      setProfilePic(fullUrl);
+      updateUser({ profilePic: newPicPath });
     } catch (err) {
       console.error("Failed to upload profile pic:", err);
     } finally {
@@ -280,10 +334,18 @@ const DashboardPage = () => {
       {/* Sidebar Desktop */}
       <aside className="hidden lg:flex w-64 bg-white border-r border-slate-200 flex-col p-6 fixed inset-y-0">
         <div className="flex items-center gap-2 mb-10 px-2">
-          <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors" onClick={() => navigate("/")}>
+          <div
+            className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center cursor-pointer hover:bg-blue-600 transition-colors"
+            onClick={() => navigate("/")}
+          >
             <LayoutDashboard className="w-4 h-4 text-white" />
           </div>
-          <span className="font-bold text-slate-800 cursor-pointer hover:text-blue-900 transition-colors" onClick={() => navigate("/")}>Bill Till</span>
+          <span
+            className="font-bold text-slate-800 cursor-pointer hover:text-blue-900 transition-colors"
+            onClick={() => navigate("/")}
+          >
+            Bill Till
+          </span>
         </div>
 
         <nav className="flex-1 space-y-1.5">
@@ -295,10 +357,15 @@ const DashboardPage = () => {
                 "w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
                 activeTab === tab.id
                   ? "bg-blue-50 text-blue-600 shadow-sm"
-                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-700"
+                  : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
               )}
             >
-              <tab.icon className={cn("w-4 h-4", activeTab === tab.id ? "text-blue-600" : "text-slate-400")} />
+              <tab.icon
+                className={cn(
+                  "w-4 h-4",
+                  activeTab === tab.id ? "text-blue-600" : "text-slate-400",
+                )}
+              />
               {tab.label}
             </button>
           ))}
@@ -306,8 +373,12 @@ const DashboardPage = () => {
 
         <div className="mt-auto space-y-4">
           <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100">
-            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">Need Help?</p>
-            <p className="text-xs text-slate-600 mb-3">Check our documentation or contact support.</p>
+            <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2">
+              Need Help?
+            </p>
+            <p className="text-xs text-slate-600 mb-3">
+              Check our documentation or contact support.
+            </p>
             <button className="flex items-center gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700">
               Help Center <ExternalLink className="w-3 h-3" />
             </button>
@@ -334,7 +405,9 @@ const DashboardPage = () => {
         {/* Header */}
         <header className="h-20 bg-white border-b border-slate-200 flex items-center justify-between px-6 sm:px-10 sticky top-0 z-10">
           <div className="flex flex-col">
-            <h1 className="text-xl font-bold text-slate-800 capitalize">{activeTab}</h1>
+            <h1 className="text-xl font-bold text-slate-800 capitalize">
+              {activeTab}
+            </h1>
             <p className="text-xs text-slate-400">Dashboard / {activeTab}</p>
           </div>
 
@@ -359,7 +432,11 @@ const DashboardPage = () => {
                 </p>
               </div>
               <div className="w-10 h-10 rounded-full border-2 border-slate-100 overflow-hidden shadow-sm">
-                <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                <img
+                  src={profilePic}
+                  alt="Profile"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
           </div>
@@ -374,7 +451,11 @@ const DashboardPage = () => {
               <div className="relative z-10 flex flex-col sm:flex-row items-center gap-6">
                 <div className="relative group">
                   <div className="w-24 h-24 rounded-2xl border-4 border-white/20 overflow-hidden shadow-2xl">
-                    <img src={profilePic} alt="Profile" className="w-full h-full object-cover" />
+                    <img
+                      src={profilePic}
+                      alt="Profile"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <button
                     onClick={() => fileRef.current?.click()}
@@ -405,7 +486,9 @@ const DashboardPage = () => {
                 </div>
                 <div className="sm:ml-auto flex items-center gap-2 px-4 py-2 rounded-xl bg-white/10 backdrop-blur-md border border-white/20 text-white">
                   <ShieldCheck className="w-4 h-4 text-blue-300" />
-                  <span className="text-xs font-semibold">Verified Merchant</span>
+                  <span className="text-xs font-semibold">
+                    Verified Merchant
+                  </span>
                 </div>
               </div>
             </div>
@@ -420,9 +503,13 @@ const DashboardPage = () => {
               transition={{ duration: 0.2 }}
             >
               {activeTab === "profile" && <ProfileTab user={user} />}
-              {activeTab === "subscription" && <SubscriptionTab subscriptions={subscriptions} />}
+              {activeTab === "subscription" && (
+                <SubscriptionTab subscriptions={subscriptions} />
+              )}
               {activeTab === "payments" && <PaymentsTab payments={payments} />}
-              {activeTab === "notifications" && <NotificationsTab notifications={notifications} />}
+              {activeTab === "notifications" && (
+                <NotificationsTab notifications={notifications} />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>
@@ -436,7 +523,9 @@ const DashboardPage = () => {
             onClick={() => setActiveTab(tab.id)}
             className={cn(
               "flex flex-col items-center gap-1 px-3 py-1.5 rounded-xl transition-all",
-              activeTab === tab.id ? "text-blue-600 bg-blue-50" : "text-slate-400"
+              activeTab === tab.id
+                ? "text-blue-600 bg-blue-50"
+                : "text-slate-400",
             )}
           >
             <tab.icon className="w-5 h-5" />
