@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowLeft, Shield, CreditCard, Lock } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -6,6 +6,21 @@ import PaymentForm from '@/components/sections/PaymentForm';
 
 const PaymentPage = () => {
     const navigate = useNavigate();
+
+    // Hide the main navbar when on payment page
+    useEffect(() => {
+        const navbar = document.querySelector('nav');
+        if (navbar) {
+            navbar.style.display = 'none';
+        }
+        
+        // Cleanup: restore navbar when leaving the page
+        return () => {
+            if (navbar) {
+                navbar.style.display = '';
+            }
+        };
+    }, []);
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">

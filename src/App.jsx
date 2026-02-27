@@ -1,15 +1,13 @@
-import React, { useEffect } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import { Toaster } from "@/components/ui/sonner";
 import { useLenis } from "@/hooks/useLenis";
 
 // Layout Components
-
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 
 // Section Components
-
 import { HeroSection } from "@/components/sections/HeroSection";
 import { SocialProofSection } from "@/components/sections/SocialProofSection";
 import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
@@ -39,8 +37,6 @@ const HomePage = () => {
   useLenis();
   return (
     <div className="min-h-screen bg-background">
-      <Navbar />
-
       <main>
         <HeroSection />
         <SocialProofSection />
@@ -59,17 +55,39 @@ const HomePage = () => {
   );
 };
 
+const NavigationWrapper = () => {
+  const location = useLocation();
+  const hideNavbarPaths = [
+    "/register",
+    "/login",
+    "/confirm-code",
+    "/terms-and-conditions",
+    "/return-policy",
+    "/dashboard",
+  ];
+
+  if (hideNavbarPaths.includes(location.pathname)) {
+    return null;
+  }
+
+  return <Navbar />;
+};
+
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <NavigationWrapper />
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/confirm-code" element={<ConfirmationCodePage />} />
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/login" element={<LoginPage />} />
-          <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditionsPage />}
+          />
           <Route path="/return-policy" element={<ReturnPolicyPage />} />
           <Route
             path="/dashboard"

@@ -5,6 +5,7 @@ import {
   KeyRound,
   AlertCircle,
   ArrowRight,
+  ArrowLeft,
   CheckCircle2,
   Sparkles,
   BarChart3,
@@ -286,6 +287,7 @@ const ConfirmationCodePage = () => {
   const [agreeError, setAgreeError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     let hasError = false;
@@ -340,6 +342,15 @@ const ConfirmationCodePage = () => {
             >
               {/* Header */}
               <div className="mb-8">
+                {/* Back Button */}
+                <button
+                  onClick={() => navigate("/")}
+                  className="flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors mb-4 group"
+                >
+                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
+                  <span className="text-sm font-medium">Back to Home</span>
+                </button>
+                
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-50 mb-5">
                   <KeyRound className="w-6 h-6 text-blue-500" />
                 </div>
