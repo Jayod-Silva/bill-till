@@ -311,7 +311,7 @@ const ConfirmationCodePage = () => {
       await new Promise((r) => setTimeout(r, 1200)); // simulate network
 
       if (code !== MOCK_CODE) {
-        throw new Error("Invalid confirmation code. For testing, use 123456.");
+        throw new Error("Invalid confirmation code. For testing, use #BT123456.");
       }
 
       setIsVerified(true);
@@ -355,10 +355,6 @@ const ConfirmationCodePage = () => {
               {/* Code input */}
               <div className="mb-6">
                 <CodeInput value={code} onChange={setCode} error={error} />
-                <p className="mt-2 text-[10px] text-slate-400 text-center">
-                  Tip: Use <span className="font-semibold">123456</span> for
-                  testing
-                </p>
               </div>
 
               {/* Submit button */}
