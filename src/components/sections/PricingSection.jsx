@@ -11,8 +11,8 @@ import confetti from 'canvas-confetti';
 const plans = [
   {
     name: 'Dynamic',
-    price: '29',
-    yearlyPrice: '24',
+    price: '4,999',
+    yearlyPrice: '3,999',
     period: 'per month',
     features: [
       'Up to 1,000 transactions/month',
@@ -30,8 +30,8 @@ const plans = [
   },
   {
     name: 'Pro',
-    price: '79',
-    yearlyPrice: '66',
+    price: '7,999',
+    yearlyPrice: '6,399',
     period: 'per month',
     features: [
       'Unlimited transactions',
@@ -49,23 +49,25 @@ const plans = [
     isPopular: true,
   },
   {
-    name: 'Enterprise',
-    price: '299',
-    yearlyPrice: '239',
-    period: 'per month',
+    name: 'Contact Our Team',
+    price: 'Custom',
+    yearlyPrice: 'Custom',
+    period: 'tailored',
     features: [
-      'Unlimited everything',
-      'Unlimited registers',
-      'Custom analytics',
-      '24/7 dedicated support',
+      'Custom solutions for enterprise needs',
+      'Dedicated account manager',
       'Custom integrations',
+      'Priority 24/7 support',
       'Multi-location management',
-      'Advanced security',
+      'Advanced security features',
+      'Custom reporting',
+      'White-label options',
     ],
-    description: 'Custom solutions for large-scale operations.',
-    buttonText: 'Contact Sales',
+    description: 'Get a personalized solution for your business.',
+    buttonText: 'Get in Touch',
     href: 'mailto:sales@billtill.com',
     isPopular: false,
+    isContact: true,
   },
 ];
 
@@ -194,17 +196,32 @@ All plans include access to our platform, lead generation tools, and dedicated s
                   {plan.name}
                 </p>
                 <div className="mt-6 flex items-center justify-center gap-x-2">
-                  <span className="text-5xl font-bold tracking-tight text-foreground">
-                    ${isMonthly ? plan.price : plan.yearlyPrice}
-                  </span>
-                  <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
-                    / {plan.period}
-                  </span>
+                  {plan.isContact ? (
+                    <div className="text-center">
+                      <span className="text-3xl font-bold tracking-tight text-foreground">
+                        Custom
+                      </span>
+                      <p className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground mt-2">
+                        tailored solution
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-5xl font-bold tracking-tight text-foreground">
+                        LKR {isMonthly ? plan.price : plan.yearlyPrice}
+                      </span>
+                      <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
+                        / {plan.period}
+                      </span>
+                    </>
+                  )}
                 </div>
 
-                <p className="text-xs leading-5 text-muted-foreground">
-                  {isMonthly ? "billed monthly" : "billed annually"}
-                </p>
+                {!plan.isContact && (
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    {isMonthly ? "billed monthly" : "billed annually"}
+                  </p>
+                )}
 
                 <ul className="mt-5 gap-2 flex flex-col">
                   {plan.features.map((feature, idx) => (

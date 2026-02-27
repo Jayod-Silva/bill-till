@@ -282,11 +282,7 @@ const BrandPanel = () => (
       transition={{ duration: 0.6 }}
       className="relative z-10 flex items-center"
     >
-      <img
-        src="/white-logo.png"
-        alt="Bill Till Logo"
-        className="h-10 w-auto"
-      />
+      <img src="/white-logo.png" alt="Bill Till Logo" className="h-10 w-auto" />
     </motion.div>
 
     {/* Main copy */}
@@ -349,15 +345,6 @@ const BrandPanel = () => (
         "Bill Till transformed how we run our retail chain. The analytics alone
         have paid for themselves tenfold."
       </p>
-      <div className="mt-3 flex items-center gap-2.5">
-        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center text-white text-xs font-bold">
-          R
-        </div>
-        <div>
-          <p className="text-white text-xs font-semibold">Ramesh Perera</p>
-          <p className="text-slate-500 text-xs">CEO, StyleMart LK</p>
-        </div>
-      </div>
     </motion.div>
   </div>
 );
@@ -474,14 +461,14 @@ const SuccessScreen = () => {
           You're all set! 🎉
         </h2>
         <p className="text-slate-500 text-sm mb-8 max-w-xs mx-auto">
-          Your account has been created. We'll be in touch shortly with your
-          activation details.
+          Your account has been created. Enter your confirmation code to
+          activate your POS system.
         </p>
         <button
-          onClick={() => (window.location.href = "/")}
+          onClick={() => (window.location.href = "/confirm-code")}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-200"
         >
-          Back to Home <ArrowRight className="w-4 h-4" />
+          Enter Confirmation Code <ArrowRight className="w-4 h-4" />
         </button>
       </motion.div>
     </div>
@@ -601,7 +588,7 @@ const MultiStepRegistrationForm = () => {
 
       setIsSubmitted(true);
       localStorage.removeItem("registration_progress");
-      setTimeout(() => navigate("/"), 2500);
+      setTimeout(() => navigate("/confirm-code"), 2500);
     } catch (err) {
       const msg =
         err.response?.data?.message || "Registration failed. Please try again.";

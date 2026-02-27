@@ -62,8 +62,8 @@ export default function Navigation() {
         new CustomEvent("navigate", { detail: { path: "/shop" } }),
       );
     } else if (item.id === "pay") {
-      // Navigate to payment page
-      navigate("/payment");
+      // Navigate to confirmation code page
+      navigate("/confirm-code");
     } else {
       document.querySelector(item.href)?.scrollIntoView({
         behavior: "smooth",

@@ -26,6 +26,9 @@ import PaymentPage from "@/pages/PaymentPage";
 import RegistrationPage from "@/pages/RegistrationPage";
 import LoginPage from "@/pages/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
+import ConfirmationCodePage from "@/pages/ConfirmationCodePage";
+import TermsAndConditionsPage from "@/pages/TermsAndConditionsPage";
+import ReturnPolicyPage from "@/pages/ReturnPolicyPage";
 
 import { AuthProvider } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -63,8 +66,11 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/payment" element={<PaymentPage />} />
+          <Route path="/confirm-code" element={<ConfirmationCodePage />} />
           <Route path="/register" element={<RegistrationPage />} />
           <Route path="/login" element={<LoginPage />} />
+          <Route path="/terms-and-conditions" element={<TermsAndConditionsPage />} />
+          <Route path="/return-policy" element={<ReturnPolicyPage />} />
           <Route
             path="/dashboard"
             element={
