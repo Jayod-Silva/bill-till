@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 
 const logos = [
-  { name: 'Master', width: 80 },
-  { name: 'Visa', width: 90 },
-  { name: 'KOKO', width: 100 },,
+   { name: 'Visa', src: '/visa.png', width: 90 },
+  { name: 'Master', src: '/master.svg', width: 60 },
+  { name: 'KOKO', src: '/koko.png', width: 100 },
 ];
 
 const stats = [
@@ -72,7 +72,7 @@ export const SocialProofSection = () => {
           <p className="text-sm text-muted-foreground mb-8">
             Trusted by leading businesses and integrated with top payment providers
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-14">
+          <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-20">
             {logos.map((logo, index) => (
               <motion.div
                 key={logo.name}
@@ -80,14 +80,14 @@ export const SocialProofSection = () => {
                 whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
+                className=" opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
               >
-                <div 
-                  className="h-8 flex items-center justify-center text-foreground font-semibold text-[16px]"
-                  style={{ width: logo.width }}
-                >
-                  {logo.name}
-                </div>
+                <img
+                  src={logo.src}
+                  alt={logo.name}
+                  className="h-15 w-auto object-contain"
+                  style={{ maxWidth: logo.width }}
+                />
               </motion.div>
             ))}
           </div>

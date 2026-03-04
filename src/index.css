@@ -1,6 +1,15 @@
 /* Import Inter font for Apple-inspired typography */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 
+/* GGX88 Font */
+@font-face {
+  font-family: 'GGX88';
+  src: url('/fonts/ggx88.woff2') format('woff2'),
+       url('/fonts/ggx88.woff') format('woff');
+  font-weight: normal;
+  font-style: normal;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;

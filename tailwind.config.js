@@ -9,6 +9,7 @@ module.exports = {
         extend: {
             fontFamily: {
                 sans: ['Inter', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+                ggx88: ['GGX88', 'sans-serif'],
             },
             borderRadius: {
                 lg: 'var(--radius)',

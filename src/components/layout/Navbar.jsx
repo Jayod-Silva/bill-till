@@ -4,6 +4,7 @@ import {
   Globe,
   Menu,
   X,
+  ChevronDown,
   Facebook,
   Instagram,
   Linkedin,
@@ -40,7 +41,6 @@ export default function Navbar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Scroll Lock for Mobile Menu
   useEffect(() => {
     if (menuOpen) {
       document.body.style.overflow = "hidden";
@@ -58,11 +58,11 @@ export default function Navbar() {
   const navItems =
     language === "en"
       ? [
-          { id: "shop", label: "SHOP", href: "#shop" },
-          { id: "pricing", label: "PRICING", href: "#pricing" },
-          { id: "stories", label: "OUR SOLUTIONS", href: "#section-4" },
-          { id: "contact", label: "CONTACT", href: "#contact" },
-          { id: "pay", label: "PAY ONLINE", href: "#pay" },
+          { id: "shop", label: "Shop", href: "#shop" },
+          { id: "pricing", label: "Pricng", href: "#pricing" },
+          { id: "stories", label: "Our Solutions", href: "#section-4" },
+          { id: "contact", label: "Contact", href: "#contact" },
+          { id: "pay", label: "Pay Online", href: "#pay" },
         ]
       : [
           { id: "shop", label: "වෙළඳසැල", href: "#shop" },
@@ -104,262 +104,216 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 w-full z-[100] transition-all duration-300 ${
-          scrolled
-            ? "bg-white/95 backdrop-blur-md border-b border-gray-200/50 shadow-sm"
-            : ""
+        className={`fixed top-6 left-1/2 -translate-x-1/2 w-full mx-auto transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] z-[100] ${
+          scrolled ? "max-w-[1500px] md:max-w-[1500px]" : "max-w-[340px] -mt-6 md:max-w-[1500px]"
         }`}
       >
-        <div className="w-full max-w-[1400px] mx-auto mt-4 px-3 sm:px-6">
-          <div>
-            <div className="flex items-center justify-between h-[68px] px-4 sm:px-6">
-              {/* LOGO */}
+        <div className={`px-8 py-2 md:py-4 transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] ${
+          scrolled ? "bg-white  shadow-lg -mt-6 md:-mt-7 rounded-b-3xl md:scale-[1.02]" : "-mt-2 md:mt-2 scale-[1]"
+        }`}>
+          <div className="flex items-center justify-between">
+            {/* LOGO */}
+            <button
+              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              className="cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]"
+              aria-label="Go to home"
+            >
+              <img
+                src="/colored-logo.png"
+                alt="Bill Till Logo"
+                className="h-7 md:h-10 w-auto"
+              />
+            </button>
+
+            {/* DESKTOP MENU */}
+            <div className="hidden lg:flex items-center gap-8">
+              {navItems.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleClick(item)}
+                  className={`relative group text-[14px] font-medium font-poppins transition-all duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]
+                  ${
+                    activeLink === item.id
+                      ? "text-blue-600 scale-105"
+                      : "text-gray-600 hover:text-gray-900 hover:scale-105"
+                  }`}
+                >
+                  {item.label}
+
+                  <span
+                    className={`absolute left-0 -bottom-2 h-[2px] w-full scale-x-0 origin-left
+                    bg-gradient-to-r from-blue-600 via-blue-500 to-blue-600
+                    transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)]
+                    group-hover:scale-x-110
+                    ${activeLink === item.id ? "scale-x-100" : ""}`}
+                  />
+                </button>
+              ))}
+            </div>
+
+            {/* DESKTOP ACTIONS */}
+            <div className="hidden lg:flex items-center gap-2">
               <button
-                onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
-                className="cursor-pointer hover:opacity-80 transition-opacity"
-                aria-label="Go to home"
+                onClick={toggleLanguage}
+                className="w-9 h-9 rounded-full border border-blue-900/50 flex items-center justify-center hover:scale-110 hover:bg-blue-900/20 transition-all duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]"
               >
-                <img
-                  src="/colored-logo.png"
-                  alt="Logo"
-                  className="h-7 md:h-10 w-auto"
-                />
+                <Globe className="w-4 h-4 text-black" />
               </button>
 
-              {/* DESKTOP MENU */}
-              <div className="hidden md:flex items-center gap-10">
+              {!user && (
+                <button
+                  onClick={handleBuyClick}
+                  className="bg-[#0957D6] text-white h-9 px-6 rounded-full text-[14px] font-semibold hover:bg-black hover:scale-105 transition-all font-poppins duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]"
+                >
+                  {buyText}
+                </button>
+              )}
+
+              {/* USER PROFILE DROPDOWN */}
+              {user && (
+                <div className="relative ml-2">
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="w-9 h-9 rounded-full border border-blue-900/50 overflow-hidden flex items-center justify-center hover:bg-blue-900/10 transition"
+                  >
+                    {user.profilePic ? (
+                      <img
+                        src={`http://localhost:3000${user.profilePic}`}
+                        alt="Profile"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-blue-900 text-white flex items-center justify-center text-xs font-bold">
+                        {user.firstName?.charAt(0)}
+                      </div>
+                    )}
+                  </button>
+
+                  {dropdownOpen && (
+                    <>
+                      <div
+                        className="fixed inset-0 z-40"
+                        onClick={() => setDropdownOpen(false)}
+                      />
+                      <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-[110] animate-in fade-in slide-in-from-top-2 duration-200">
+                        <div className="px-4 py-2 border-b border-gray-50 mb-1">
+                          <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">
+                            Account
+                          </p>
+                          <p className="text-sm font-semibold text-blue-900 truncate">
+                            {user.firstName} {user.lastName}
+                          </p>
+                        </div>
+                        <Link
+                          to="/dashboard"
+                          onClick={() => setDropdownOpen(false)}
+                          className="block px-4 py-2 text-[11px] font-medium tracking-wider text-gray-700 hover:bg-blue-50 transition"
+                        >
+                          DASHBOARD
+                        </Link>
+                        <button
+                          onClick={() => {
+                            setDropdownOpen(false);
+                            logout();
+                          }}
+                          className="w-full text-left block px-4 py-2 text-[11px] font-medium tracking-wider text-red-600 hover:bg-red-50 transition"
+                        >
+                          LOGOUT
+                        </button>
+                      </div>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* MOBILE TOGGLE */}
+            <button
+              className="lg:hidden flex items-center justify-center"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              {menuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
+        </div>
+      </nav>
+
+      {/* MOBILE MENU */}
+      {menuOpen && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] lg:hidden">
+          <div className="absolute inset-x-0 top-0 bg-white rounded-b-2xl shadow-xl">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <span className="text-2xl font-bold text-gray-900">FLOWLY</span>
+                <button
+                  onClick={() => setMenuOpen(false)}
+                  className="flex items-center justify-center"
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              <div className="space-y-4">
                 {navItems.map((item) => (
                   <button
                     key={item.id}
                     onClick={() => handleClick(item)}
-                    className={`relative group text-[10px] font-medium tracking-[1.5px] font-poppins
-                  ${
-                    activeLink === item.id ? "text-blue-900" : "text-black/90"
-                  }`}
+                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                      activeLink === item.id
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700 hover:bg-gray-50"
+                    }`}
                   >
                     {item.label}
-
-                    <span
-                      className={`absolute left-0 -bottom-2 h-[2px] w-full scale-x-0 origin-left
-                    bg-gradient-to-r from-blue-900 via-blue-700 to-blue-900
-                    transition-transform duration-300
-                    group-hover:scale-x-100
-                    ${activeLink === item.id ? "scale-x-100" : ""}`}
-                    />
                   </button>
                 ))}
               </div>
 
-              {/* DESKTOP ACTIONS */}
-              <div className="hidden md:flex items-center gap-3">
+              <div className="mt-6 space-y-3">
                 <button
                   onClick={toggleLanguage}
-                  className="w-9 h-9 rounded-full border border-blue-900/50 flex items-center justify-center hover:bg-blue-900/10 transition"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                 >
-                  <Globe className="w-4 h-4 text-black" />
+                  <Globe className="w-4 h-4" />
+                  {language === "en" ? "EN" : "සිං"}
                 </button>
 
                 {!user && (
                   <button
                     onClick={handleBuyClick}
-                    className="bg-black/90 text-white h-9 px-8 rounded-full text-[11px] tracking-[0.25em] font-semibold hover:bg-black transition"
+                    className="w-full bg-black/90 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-black transition-colors"
                   >
                     {buyText}
                   </button>
                 )}
 
-                {/* USER PROFILE DROPDOWN */}
                 {user && (
-                  <div className="relative ml-2">
+                  <div className="space-y-3">
                     <button
-                      onClick={() => setDropdownOpen(!dropdownOpen)}
-                      className="w-9 h-9 rounded-full border border-blue-900/50 overflow-hidden flex items-center justify-center hover:bg-blue-900/10 transition"
+                      onClick={() => {
+                        setMenuOpen(false);
+                        navigate("/dashboard");
+                      }}
+                      className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
                     >
-                      {user.profilePic ? (
-                        <img
-                          src={`http://localhost:3000${user.profilePic}`}
-                          alt="Profile"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <div className="w-full h-full bg-blue-900 text-white flex items-center justify-center text-xs font-bold">
-                          {user.firstName?.charAt(0)}
-                        </div>
-                      )}
+                      DASHBOARD
                     </button>
-
-                    {dropdownOpen && (
-                      <>
-                        <div
-                          className="fixed inset-0 z-40"
-                          onClick={() => setDropdownOpen(false)}
-                        />
-                        <div className="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-[110] animate-in fade-in slide-in-from-top-2 duration-200">
-                          <div className="px-4 py-2 border-b border-gray-50 mb-1">
-                            <p className="text-[10px] font-bold text-gray-400 tracking-widest uppercase">
-                              Account
-                            </p>
-                            <p className="text-sm font-semibold text-blue-900 truncate">
-                              {user.firstName} {user.lastName}
-                            </p>
-                          </div>
-                          <Link
-                            to="/dashboard"
-                            onClick={() => setDropdownOpen(false)}
-                            className="block px-4 py-2 text-[11px] font-medium tracking-wider text-gray-700 hover:bg-blue-50 transition"
-                          >
-                            DASHBOARD
-                          </Link>
-                          <button
-                            onClick={() => {
-                              setDropdownOpen(false);
-                              logout();
-                            }}
-                            className="w-full text-left block px-4 py-2 text-[11px] font-medium tracking-wider text-red-600 hover:bg-red-50 transition"
-                          >
-                            LOGOUT
-                          </button>
-                        </div>
-                      </>
-                    )}
+                    <button
+                      onClick={() => {
+                        setMenuOpen(false);
+                        logout();
+                      }}
+                      className="w-full px-4 py-3 rounded-lg border border-red-300 text-red-600 text-sm font-medium hover:bg-red-50 transition-colors"
+                    >
+                      LOGOUT
+                    </button>
                   </div>
                 )}
               </div>
-              {/* MOBILE TOGGLE */}
-              <button
-                className="md:hidden w-9 h-9 rounded-full border border-blue-900/50 flex items-center justify-center"
-                onClick={() => setMenuOpen(!menuOpen)}
-              >
-                {menuOpen ? <X size={18} /> : <Menu size={18} />}
-              </button>
             </div>
           </div>
         </div>
-      </nav>
-
-      {/* MOBILE MENU (Portal to prevent stacking issues) */}
-      {typeof document !== "undefined" &&
-        createPortal(
-          <AnimatePresence>
-            {menuOpen && (
-              <div className="md:hidden fixed inset-0 z-[9999] h-full w-full overflow-hidden touch-none">
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="absolute inset-0 bg-slate-950/98 backdrop-blur-3xl"
-                  onClick={() => setMenuOpen(false)}
-                />
-
-                {/* Close Button Top Right */}
-                <button
-                  onClick={() => setMenuOpen(false)}
-                  className="absolute top-8 right-8 w-12 h-12 flex items-center justify-center text-white/50 hover:text-white transition-colors z-[10000]"
-                >
-                  <X size={36} strokeWidth={1} />
-                </button>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.95 }}
-                  transition={{ duration: 0.3, ease: "circOut" }}
-                  className="relative flex flex-col h-full w-full py-20 px-10 z-[10000] pointer-events-none bg-gradient-to-br from-slate-900 via-black to-slate-900"
-                >
-                  {/* Logo Section */}
-                  <div className="flex justify-center mb-16 opacity-80">
-                    <img
-                      src="/white-logo.png"
-                      alt="Bill Till Logo"
-                      className="h-10 w-auto"
-                    />
-                  </div>
-
-                  {/* Navigation Links - Centered vertically */}
-                  <div className="flex-1 flex flex-col items-center justify-center gap-12 pointer-events-auto">
-                    {navItems.map((item, index) => (
-                      <motion.button
-                        key={item.id}
-                        initial={{ opacity: 0, y: 15 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 + 0.1 }}
-                        onClick={() => handleClick(item)}
-                        className="group relative text-3xl font-light tracking-[0.2em] text-white/70 hover:text-white transition-all font-serif"
-                      >
-                        {item.label}
-                        <span className="absolute -bottom-3 left-1/2 -translate-x-1/2 w-0 h-[1px] bg-white/40 transition-all duration-300 group-hover:w-full" />
-                      </motion.button>
-                    ))}
-
-                    {!user ? (
-                      <motion.button
-                        initial={{ opacity: 0, y: 10 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.4 }}
-                        onClick={handleBuyClick}
-                        className="mt-8 px-12 py-4 rounded-full border border-white/20 bg-white/5 text-white text-xs font-black tracking-[0.4em] uppercase hover:bg-white hover:text-black transition-all duration-300"
-                      >
-                        {buyText}
-                      </motion.button>
-                    ) : (
-                      <div className="flex flex-col items-center gap-8 mt-8">
-                        <button
-                          onClick={() => {
-                            setMenuOpen(false);
-                            navigate("/dashboard");
-                          }}
-                          className="px-12 py-4 rounded-full bg-blue-600 text-white text-xs font-black tracking-[0.4em] uppercase hover:bg-blue-500 transition-all"
-                        >
-                          DASHBOARD
-                        </button>
-                        <button
-                          onClick={() => {
-                            setMenuOpen(false);
-                            logout();
-                          }}
-                          className="text-red-400 text-[10px] font-black tracking-[0.5em] uppercase opacity-60 hover:opacity-100 transition-opacity"
-                        >
-                          LOGOUT
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Footer Section */}
-                  <div className="flex flex-col items-center gap-10 pointer-events-auto mt-12">
-                    <div className="flex items-center gap-12">
-                      <button
-                        onClick={toggleLanguage}
-                        className="w-14 h-14 rounded-full border border-white/10 bg-white/5 flex items-center justify-center text-white/50 hover:bg-white/10 hover:text-white transition-all"
-                      >
-                        <span className="text-xs font-black tracking-tighter">
-                          {language === "en" ? "EN" : "සිං"}
-                        </span>
-                      </button>
-
-                      <div className="flex items-center gap-6">
-                        <button className="text-white/40 hover:text-white transition-colors">
-                          <Facebook size={20} />
-                        </button>
-                        <button className="text-white/40 hover:text-white transition-colors">
-                          <Instagram size={20} />
-                        </button>
-                        <button className="text-white/40 hover:text-white transition-colors">
-                          <Linkedin size={20} />
-                        </button>
-                      </div>
-                    </div>
-
-                    <p className="text-[9px] text-white/20 tracking-[0.6em] uppercase font-bold">
-                      Bill Till POS
-                    </p>
-                  </div>
-                </motion.div>
-              </div>
-            )}
-          </AnimatePresence>,
-          document.body,
-        )}
+      )}
     </>
   );
 }

@@ -31,10 +31,10 @@ app.use("/api/dashboard", dashboardRoutes);
 // --------------------------------------------------------
 // EXISTING PAYMENT LOGIC (RETAINED)
 // --------------------------------------------------------
-const MERCHANT_ID = process.env.MERCHANT_ID || "TESTSEYLAN136";
-const API_PASSWORD = process.env.API_PASSWORD || "76ee326282cab9f69c9145d2aec85801";
+const MERCHANT_ID = process.env.MERCHANT_ID || "MPGS00000348";
+const API_PASSWORD = process.env.API_PASSWORD || "078809c1ac7c0359ef5e1a13ff9728a5";
 const API_USERNAME = `merchant.${MERCHANT_ID}`;
-const API_BASE_URL = process.env.API_BASE_URL || "https://test-seylan.mtf.gateway.mastercard.com/api/rest/version/69";
+const API_BASE_URL = process.env.API_BASE_URL || "https://seylan.gateway.mastercard.com/api/rest/version/69";
 
 app.get('/api/test', (req, res) => {
   res.json({
@@ -57,7 +57,7 @@ app.post("/api/create-payment", async (req, res) => {
         apiOperation: "INITIATE_CHECKOUT",
         interaction: {
           operation: "PURCHASE",
-          returnUrl: "http://localhost:5173",
+          returnUrl: `http://localhost:5173/payment?payment=success&orderId=${orderId}`,
           merchant: {
             name: "BillTill",
             address: { line1: "Sri Lanka" }
