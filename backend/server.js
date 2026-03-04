@@ -8,6 +8,9 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
+const { sendInvoiceEmail } = require("./services/emailService");
+const multer = require("multer");
+const upload = multer({ storage: multer.memoryStorage() });
 
 const app = express();
 
@@ -102,6 +105,38 @@ app.get("/api/verify-payment/:orderId", async (req, res) => {
       success: false,
       error: error.response?.data || error.message
     });
+  }
+});
+
+app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
+  try {
+    const { email, businessName, invoiceId, orderId, confirmationCode, amount, plan } = req.body;
+    const pdfBuffer = req.file?.buffer;
+    const filename = req.file?.originalname || `BillTill_Invoice_${orderId}.pdf`;
+
+    if (!pdfBuffer) {
+      return res.status(400).json({ success: false, error: "No PDF attached" });
+    }
+    if (!email) {
+      return res.status(400).json({ success: false, error: "Email is required" });
+    }
+
+    await sendInvoiceEmail({
+      to: email,
+      businessName,
+      pdfBuffer,
+      filename,
+      invoiceId,
+      orderId,
+      confirmationCode,
+      amount,
+      plan,
+    });
+
+    res.json({ success: true, message: "Invoice sent successfully" });
+  } catch (error) {
+    console.error("Email send error:", error);
+    res.status(500).json({ success: false, error: error.message });
   }
 });
 

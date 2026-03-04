@@ -516,10 +516,10 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     doc.text("Bill-Till Lanka (Pvt) Ltd", 14, 72);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
-    doc.text("123 Business Avenue,", 14, 77);
-    doc.text("Colombo 00300, Sri Lanka", 14, 82);
+    doc.text("Bill-Till,", 14, 77);
+    doc.text("680A Colombo Road,Kattuwa,Negombo, Sri Lanka ", 14, 82);
     doc.text("Email: support@billtill.com", 14, 87);
-    doc.text("Web: www.billtill.com", 14, 92);
+    doc.text("Web: www.billtill.co", 14, 92);
 
     // To (Beneficiary)
     doc.setFontSize(10);
@@ -649,6 +649,36 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       window.open(doc.output("bloburl"), "_blank");
     } else {
       doc.save(`BillTill_Invoice_${details.orderId}.pdf`);
+    }
+
+    // ── SEND EMAIL IN BACKGROUND ──
+    // Only send email on the first action (not on every button click)
+    // Use a flag on details to avoid sending twice
+    if (!details._emailSent) {
+      details._emailSent = true;
+      const pdfBlob = doc.output("blob");
+      const filename = `BillTill_Invoice_${details.orderId}.pdf`;
+      const formData = new FormData();
+      formData.append("invoice", pdfBlob, filename);
+      formData.append("email", details.email || "");
+      formData.append("businessName", details.businessName || "");
+      formData.append("invoiceId", invoiceId);
+      formData.append("orderId", details.orderId || "");
+      formData.append("confirmationCode", confirmationCode);
+      formData.append("amount", details.amount || "0");
+      formData.append("plan", details.selectedPlan || "Dynamic");
+
+      axios
+        .post("http://localhost:3000/api/send-invoice", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+        .then(() => console.log("Invoice email sent successfully"))
+        .catch((err) =>
+          console.error(
+            "Invoice email failed:",
+            err?.response?.data || err.message,
+          ),
+        );
     }
   };
 
