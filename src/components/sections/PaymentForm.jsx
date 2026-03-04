@@ -23,8 +23,32 @@ import {
   X,
 } from "lucide-react";
 import jsPDF from "jspdf";
-import "jspdf-autotable";
+import autoTable from "jspdf-autotable";
 import confetti from "canvas-confetti";
+
+/* ── Pricing Plans ───────────────────────────────────── */
+const pricingPlans = [
+  {
+    name: "Dynamic",
+    price: 4999,
+    features: [
+      "POS System",
+      "Advanced Analytics",
+      "Priority Support",
+      "Inventory Management",
+    ],
+  },
+  {
+    name: "Pro",
+    price: 7999,
+    features: [
+      "All Dynamic Features",
+      "Custom Reports",
+      "API Access",
+      "Dedicated Support",
+    ],
+  },
+];
 
 /* ── Business types ───────────────────────────────────── */
 const businessTypes = [
@@ -322,9 +346,11 @@ const SectionLabel = ({ children }) => (
 );
 
 /* ── Main Form ────────────────────────────────────────── */
-export default function PaymentForm({ selectedPlan }) {
+export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [selectedPlan, setSelectedPlan] = useState(initialPlan);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [form, setForm] = useState({
     businessName: "",
     businessType: "",
@@ -332,10 +358,23 @@ export default function PaymentForm({ selectedPlan }) {
     phone: "",
     email: "",
     address: "",
-    amount: "",
+    amount:
+      pricingPlans.find((plan) => plan.name === initialPlan)?.price || 4999,
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
+
+  // Handle plan selection change
+  const handlePlanChange = (planName) => {
+    setSelectedPlan(planName);
+    const selectedPlanData = pricingPlans.find(
+      (plan) => plan.name === planName,
+    );
+    if (selectedPlanData) {
+      setForm((prev) => ({ ...prev, amount: selectedPlanData.price }));
+    }
+    setIsDropdownOpen(false);
+  };
 
   // Detect return from payment gateway redirect
   useEffect(() => {
@@ -413,87 +452,204 @@ export default function PaymentForm({ selectedPlan }) {
     })();
   };
 
-  const generateInvoice = (details) => {
+  const generateInvoice = (details, action = "download") => {
     const doc = new jsPDF();
+    const invoiceId = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
+    const confirmationCode = Math.random()
+      .toString(36)
+      .substring(2, 10)
+      .toUpperCase();
 
+    // ── COLORS & STYLING ──
+    const primaryColor = [59, 130, 246]; // Blue-600
+    const secondaryColor = [30, 41, 59]; // Slate-800
+    const accentColor = [16, 185, 129]; // Emerald-500
+    const grayText = [100, 116, 139]; // Slate-500
+
+    // ── HEADER SECTION ──
     // Bill-Till Branding
-    doc.setFontSize(22);
-    doc.setTextColor(59, 130, 246); // Blue
-    doc.text("Bill-Till", 14, 20);
-    doc.setFontSize(10);
-    doc.setTextColor(100);
-    doc.text("Smart Billing Solutions", 14, 26);
-
-    // Invoice Header
-    doc.setFontSize(18);
-    doc.setTextColor(30, 41, 59);
-    doc.text("Payment Receipt", 140, 20);
+    doc.setFontSize(24);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...primaryColor);
+    doc.text("Bill-Till", 14, 25);
 
     doc.setFontSize(10);
-    doc.text(`Receipt ID: ${details.orderId}`, 140, 28);
-    doc.text(`Date: ${new Date().toLocaleDateString()}`, 140, 33);
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...grayText);
+    doc.text("Smart Billing & POS Solutions", 14, 32);
 
-    // Business Details
+    // Invoice Meta (Top Right)
+    doc.setFontSize(20);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...secondaryColor);
+    doc.text("INVOICE", 140, 25);
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.text(`Invoice ID:`, 140, 35);
+    doc.setFont("helvetica", "normal");
+    doc.text(invoiceId, 170, 35);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Date:`, 140, 40);
+    doc.setFont("helvetica", "normal");
+    doc.text(new Date().toLocaleDateString(), 170, 40);
+
+    doc.setFont("helvetica", "bold");
+    doc.text(`Status:`, 140, 45);
+    doc.setTextColor(...accentColor);
+    doc.text("PAID", 170, 45);
+    doc.setTextColor(...secondaryColor);
+
+    // ── SENDER & BENEFICIARY ──
     doc.setDrawColor(226, 232, 240);
-    doc.line(14, 45, 196, 45);
+    doc.line(14, 55, 196, 55);
 
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.text("Business Details", 14, 55);
-
-    doc.setFont("helvetica", "normal");
+    // From (Sender)
     doc.setFontSize(10);
-    doc.text(`Name: ${details.businessName}`, 14, 62);
-    doc.text(`Owner: ${details.ownerName}`, 14, 67);
-    doc.text(`Type: ${details.businessType}`, 14, 72);
-    doc.text(`Address: ${details.address}`, 14, 77, { maxWidth: 80 });
-
-    // Payment Info
     doc.setFont("helvetica", "bold");
-    doc.text("Payment Details", 110, 55);
+    doc.setTextColor(...primaryColor);
+    doc.text("FROM (SENDER)", 14, 65);
 
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...secondaryColor);
+    doc.text("Bill-Till Lanka (Pvt) Ltd", 14, 72);
     doc.setFont("helvetica", "normal");
-    doc.text(`Email: ${details.email}`, 110, 62);
-    doc.text(`Phone: ${details.phone}`, 110, 67);
-    doc.text(`Status: Paid`, 110, 72);
+    doc.setFontSize(9);
+    doc.text("123 Business Avenue,", 14, 77);
+    doc.text("Colombo 00300, Sri Lanka", 14, 82);
+    doc.text("Email: support@billtill.com", 14, 87);
+    doc.text("Web: www.billtill.com", 14, 92);
 
-    // Table
+    // To (Beneficiary)
+    doc.setFontSize(10);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...primaryColor);
+    doc.text("BILL TO (BENEFICIARY)", 110, 65);
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...secondaryColor);
+    doc.text(details.businessName || "Valued Customer", 110, 72);
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(9);
+    doc.text(`Attn: ${details.ownerName}`, 110, 77);
+    doc.text(details.address || "N/A", 110, 82, { maxWidth: 80 });
+    doc.text(`Phone: ${details.phone}`, 110, 92);
+    doc.text(`Email: ${details.email}`, 110, 97);
+
+    // ── TRANSACTION DETAILS ──
+    doc.setDrawColor(241, 245, 249);
+    doc.setFillColor(248, 250, 252);
+    doc.roundedRect(14, 105, 182, 25, 3, 3, "FD");
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...grayText);
+    doc.text("Payment ID", 25, 115);
+    doc.text("Confirmation Code", 85, 115);
+    doc.text("Payment Method", 145, 115);
+
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...secondaryColor);
+    doc.text(details.orderId || "N/A", 25, 122);
+    doc.text(confirmationCode, 85, 122);
+    doc.text("Card Payment", 145, 122);
+
+    // ── ITEMS TABLE ──
     const tableData = [
       [
-        "Plan Registration",
-        `${details.selectedPlan || "Standard"} Plan`,
+        "01",
+        "Software Subscription",
+        `${details.selectedPlan || "Dynamic"} Plan - Annual License`,
+        "1",
+        `LKR ${parseFloat(details.amount).toLocaleString()}`,
         `LKR ${parseFloat(details.amount).toLocaleString()}`,
       ],
     ];
 
-    doc.autoTable({
-      startY: 90,
-      head: [["Description", "Details", "Amount"]],
+    autoTable(doc, {
+      startY: 140,
+      head: [["#", "Service", "Description", "Qty", "Unit Price", "Total"]],
       body: tableData,
       theme: "grid",
-      headStyles: { fillColor: [59, 130, 246] },
-      styles: { fontSize: 10, cellPadding: 5 },
+      headStyles: {
+        fillColor: primaryColor,
+        fontSize: 9,
+        fontStyle: "bold",
+        halign: "center",
+      },
+      styles: { fontSize: 9, cellPadding: 4 },
+      columnStyles: {
+        0: { halign: "center", cellWidth: 10 },
+        3: { halign: "center", cellWidth: 15 },
+        4: { halign: "right", cellWidth: 35 },
+        5: { halign: "right", cellWidth: 35 },
+      },
     });
 
-    const finalY = doc.lastAutoTable.finalY + 10;
+    const finalY = doc.lastAutoTable.finalY + 15;
 
-    // Total
-    doc.setFontSize(14);
-    doc.setFont("helvetica", "bold");
-    doc.text(
-      `Total Paid: LKR ${parseFloat(details.amount).toLocaleString()}`,
-      130,
-      finalY,
-    );
-
-    // Beneficiary Info
+    // ── TOTALS ──
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
-    doc.setTextColor(150);
-    doc.text("Beneficiary: Bill-Till Lanka (Pvt) Ltd", 14, finalY + 30);
-    doc.text("This is a computer-generated receipt.", 14, finalY + 35);
+    doc.setTextColor(...grayText);
+    doc.text("Subtotal:", 140, finalY);
+    doc.text(
+      `LKR ${parseFloat(details.amount).toLocaleString()}`,
+      175,
+      finalY,
+      {
+        align: "right",
+      },
+    );
 
-    doc.save(`BillTill_Invoice_${details.orderId}.pdf`);
+    doc.text("Tax (0%):", 140, finalY + 7);
+    doc.text("LKR 0.00", 175, finalY + 7, { align: "right" });
+
+    doc.setDrawColor(226, 232, 240);
+    doc.line(135, finalY + 10, 196, finalY + 10);
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...primaryColor);
+    doc.text("Total Paid:", 140, finalY + 18);
+    doc.text(
+      `LKR ${parseFloat(details.amount).toLocaleString()}`,
+      175,
+      finalY + 18,
+      { align: "right" },
+    );
+
+    // ── FOOTER ──
+    const pageHeight = doc.internal.pageSize.height;
+
+    doc.setDrawColor(226, 232, 240);
+    doc.line(14, pageHeight - 40, 196, pageHeight - 40);
+
+    doc.setFontSize(9);
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(...secondaryColor);
+    doc.text("Thank you for your business!", 14, pageHeight - 33);
+
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(...grayText);
+    doc.text(
+      "This is a computer-generated document and does not require a physical signature.",
+      14,
+      pageHeight - 28,
+    );
+    doc.text(
+      "For any queries, please contact support@billtill.com or call +94 11 234 5678",
+      14,
+      pageHeight - 23,
+    );
+
+    // ── ACTION ──
+    if (action === "view") {
+      window.open(doc.output("bloburl"), "_blank");
+    } else {
+      doc.save(`BillTill_Invoice_${details.orderId}.pdf`);
+    }
   };
 
   const SuccessModal = ({ details, onClose }) => {
@@ -525,7 +681,7 @@ export default function PaymentForm({ selectedPlan }) {
               Payment Successful!
             </h2>
             <p className="text-slate-500 mb-8">
-              Thank you for choosing Bill-Till. Your registration is complete.
+              Thank you for choosing Bill-Till. Your subscription is complete.
             </p>
 
             <div className="bg-slate-50 rounded-2xl p-6 mb-8 text-left space-y-3">
@@ -551,14 +707,14 @@ export default function PaymentForm({ selectedPlan }) {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <button
-                onClick={() => generateInvoice(details)}
+                onClick={() => generateInvoice(details, "view")}
                 className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-blue-600 text-white font-bold hover:bg-blue-700 transition-all shadow-lg shadow-blue-500/20"
               >
                 <FileText className="w-4 h-4" />
                 View Invoice
               </button>
               <button
-                onClick={() => generateInvoice(details)}
+                onClick={() => generateInvoice(details, "download")}
                 className="flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl border-2 border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition-all"
               >
                 <Download className="w-4 h-4" />
@@ -669,19 +825,48 @@ export default function PaymentForm({ selectedPlan }) {
   };
 
   return (
-    <div className="space-y-7">
-      {/* Selected plan badge */}
-      {selectedPlan && (
-        <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-blue-50 border border-blue-100">
-          <div className="flex items-center gap-2">
-            <CreditCard className="w-4 h-4 text-blue-500" />
-            <span className="text-sm text-slate-600">Selected Plan</span>
-          </div>
-          <span className="text-sm font-bold text-blue-600 bg-white px-3 py-1 rounded-lg border border-blue-200 shadow-sm">
-            {selectedPlan}
-          </span>
+    <div className="space-y-7 mt-10 md:mt-0">
+      {/* Plan Selection Dropdown */}
+      <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-blue-50 border border-blue-100">
+        <div className="flex items-center gap-2">
+          <CreditCard className="w-4 h-4 text-blue-500" />
+          <span className="text-sm text-slate-600">Select Plan</span>
         </div>
-      )}
+        <div className="relative">
+          <button
+            type="button"
+            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+            className="text-sm font-bold text-blue-600 bg-white px-3 py-1 rounded-lg border border-blue-200 shadow-sm flex items-center gap-2 hover:bg-blue-50 transition-colors"
+          >
+            {selectedPlan}
+            <ChevronDown
+              className={`w-4 h-4 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
+            />
+          </button>
+
+          {isDropdownOpen && (
+            <div className="absolute right-0 top-full mt-1 bg-white border border-blue-200 rounded-lg shadow-lg z-50 min-w-[200px]">
+              {pricingPlans.map((plan) => (
+                <button
+                  key={plan.name}
+                  type="button"
+                  onClick={() => handlePlanChange(plan.name)}
+                  className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center justify-between ${
+                    selectedPlan === plan.name
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : "text-gray-700"
+                  }`}
+                >
+                  <span>{plan.name}</span>
+                  <span className="text-sm font-bold text-blue-600">
+                    LKR {plan.price.toLocaleString()}
+                  </span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
 
       {/* ── Business Info ── */}
       <div className="space-y-4">
@@ -761,13 +946,15 @@ export default function PaymentForm({ selectedPlan }) {
           <FloatingField
             id="amount"
             name="amount"
-            label="Amount (LKR) *"
+            label=""
             icon={DollarSign}
             type="number"
             inputMode="numeric"
             value={form.amount}
             onChange={handleChange}
             error={errors.amount}
+            readOnly
+            className="bg-gray-50"
           />
         </div>
 

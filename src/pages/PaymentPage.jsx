@@ -1,179 +1,211 @@
-import React, { useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { ArrowLeft, Shield, CreditCard, Lock } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import PaymentForm from '@/components/sections/PaymentForm';
+import React, { useEffect, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  ChevronLeft,
+  Shield,
+  CreditCard,
+  BarChart3,
+  ShoppingCart,
+  Sparkles,
+  ArrowRight,
+} from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import PaymentForm from "@/components/sections/PaymentForm";
+import { cn } from "@/lib/utils";
+
+/* ─────────────────────────────────────────────
+   Brand Left Panel (Replicated from Registration)
+───────────────────────────────────────────── */
+const features = [
+  {
+    icon: BarChart3,
+    label: "Real-time Analytics",
+    color: "bg-blue-500/20 text-blue-300",
+  },
+  {
+    icon: ShoppingCart,
+    label: "Smart POS System",
+    color: "bg-purple-500/20 text-purple-300",
+  },
+  {
+    icon: Shield,
+    label: "Secure & Compliant",
+    color: "bg-emerald-500/20 text-emerald-300",
+  },
+  {
+    icon: Sparkles,
+    label: "AI-powered Insights",
+    color: "bg-amber-500/20 text-amber-300",
+  },
+];
+
+const BrandPanel = () => (
+  <div className="relative hidden lg:flex flex-col justify-between w-[45%] min-h-screen overflow-hidden bg-[#0a0f1e] px-12 py-14">
+    {/* Background glow blobs */}
+    <div className="pointer-events-none absolute inset-0">
+      <div className="absolute -top-32 -left-32 w-[500px] h-[500px] rounded-full bg-blue-600/20 blur-[120px]" />
+      <div className="absolute bottom-0 right-0 w-[400px] h-[400px] rounded-full bg-indigo-600/15 blur-[100px]" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[300px] rounded-full bg-blue-400/10 blur-[80px]" />
+    </div>
+
+    {/* Grid texture overlay */}
+    <div
+      className="pointer-events-none absolute inset-0 opacity-[0.04]"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(255,255,255,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.5) 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
+      }}
+    />
+
+    {/* Logo */}
+    <motion.div
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="relative z-10 flex items-center"
+    >
+      <img src="/white-logo.png" alt="Bill Till Logo" className="h-10 w-auto" />
+    </motion.div>
+
+    {/* Main copy */}
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.7, delay: 0.15 }}
+      className="relative z-10"
+    >
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
+        <Sparkles className="w-3 h-3" />
+        Trusted by 2,000+ businesses
+      </div>
+
+      <h2 className="text-4xl font-bold text-white leading-tight mb-4">
+        The future of
+        <br />
+        <span className="bg-gradient-to-r from-blue-400 to-indigo-400 bg-clip-text text-transparent">
+          commerce is here.
+        </span>
+      </h2>
+
+      <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
+        Manage your entire business from a single, beautiful platform. Payments,
+        inventory, and analytics — all in one place.
+      </p>
+
+      {/* Feature pills */}
+      <div className="mt-8 flex flex-col gap-3">
+        {features.map(({ icon: Icon, label, color }, i) => (
+          <motion.div
+            key={label}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.4 + i * 0.1 }}
+            className="flex items-center gap-3"
+          >
+            <div
+              className={cn(
+                "w-8 h-8 rounded-lg flex items-center justify-center shrink-0",
+                color,
+              )}
+            >
+              <Icon className="w-4 h-4" />
+            </div>
+            <span className="text-slate-300 text-sm font-medium">{label}</span>
+          </motion.div>
+        ))}
+      </div>
+    </motion.div>
+
+    {/* Testimonial */}
+    <motion.div
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, delay: 0.8 }}
+      className="relative z-10 p-5 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm"
+    >
+      <p className="text-slate-300 text-sm leading-relaxed italic">
+        "Bill Till transformed how we run our retail chain. The analytics alone
+        have paid for themselves tenfold."
+      </p>
+    </motion.div>
+  </div>
+);
 
 const PaymentPage = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
-    // Hide the main navbar when on payment page
-    useEffect(() => {
-        const navbar = document.querySelector('nav');
-        if (navbar) {
-            navbar.style.display = 'none';
-        }
-        
-        // Cleanup: restore navbar when leaving the page
-        return () => {
-            if (navbar) {
-                navbar.style.display = '';
-            }
-        };
-    }, []);
+  // Hide the main navbar when on payment page
+  useEffect(() => {
+    const navbar = document.querySelector("nav");
+    if (navbar) {
+      navbar.style.display = "none";
+    }
 
-    return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-indigo-50">
-            {/* Navigation Header */}
-            <motion.nav 
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="sticky top-0 z-50 bg-white/80 backdrop-blur-md border-b border-gray-200/50"
+    // Cleanup: restore navbar when leaving the page
+    return () => {
+      if (navbar) {
+        navbar.style.display = "";
+      }
+    };
+  }, []);
+
+  return (
+    <div className="flex flex-col lg:flex-row min-h-screen bg-[#fcfcfd]">
+      {/* Left Panel - Brand (Visible on LG up) */}
+      <BrandPanel />
+
+      {/* Right Panel - Form (Always visible) */}
+      <div className="flex-1 relative flex flex-col items-center justify-center px-6 py-12 lg:px-20 lg:py-24 overflow-y-auto">
+        {/* Floating "Back to Home" button */}
+        <button
+          onClick={() => navigate("/")}
+          className="group absolute top-8 left-8 lg:left-20 flex items-center gap-2 text-sm text-slate-500 hover:text-blue-600 font-medium transition-all duration-200"
+        >
+          <ChevronLeft className="w-4 h-4 transition-transform group-hover:-translate-x-0.5" />
+          Back to Home
+        </button>
+
+        <div className="w-full max-w-2xl mt-10 md:mt-0">
+          {/* Header Section */}
+          <div className="mb-8">
+            <p className="text-xs font-semibold text-blue-500 uppercase tracking-widest mb-1">
+              Secure payment
+            </p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 leading-tight">
+              Complete Your Registration
+            </h1>
+            <p className="mt-1.5 text-sm text-slate-500">
+              Provide your payment information to activate your account.
+            </p>
+          </div>
+
+          {/* Form container matching registration page style */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white rounded-2xl shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] border border-slate-100 p-6 sm:p-8"
+          >
+
+            {/* The original PaymentForm component */}
+            <PaymentForm selectedPlan="Pro" />
+
+          </motion.div>
+
+          {/* Footer note */}
+          <p className="mt-8 text-center text-xs text-slate-400">
+            Need help? Contact our support at{" "}
+            <a
+              href="mailto:support@billtill.com"
+              className="text-slate-500 hover:text-slate-700 underline underline-offset-2"
             >
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex items-center justify-between h-16">
-                        <button
-                            onClick={() => navigate('/')}
-                            className="flex items-center gap-3 text-gray-700 hover:text-blue-900 transition-colors"
-                        >
-                            <ArrowLeft className="w-5 h-5" />
-                            <span className="font-medium">Back to Home</span>
-                        </button>
-                        
-                        <div className="flex items-center gap-2">
-                            <Shield className="w-5 h-5 text-green-600" />
-                            <span className="text-sm font-medium text-gray-700">Secure Payment</span>
-                        </div>
-                    </div>
-                </div>
-            </motion.nav>
-
-            {/* Hero Section */}
-            <section className="relative overflow-hidden py-20 lg:py-32">
-                {/* Background Decor */}
-                <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full -z-10 pointer-events-none">
-                    <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-400/10 blur-[100px] rounded-full" />
-                    <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-400/10 blur-[100px] rounded-full" />
-                </div>
-
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6 }}
-                        className="text-center max-w-4xl mx-auto mb-16"
-                    >
-                        <div className="flex justify-center mb-6">
-                            <div className="p-3 bg-blue-100 rounded-full">
-                                <CreditCard className="w-8 h-8 text-blue-700" />
-                            </div>
-                        </div>
-                        
-                        <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
-                            Complete Your
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-700 to-indigo-700"> Registration</span>
-                        </h1>
-                        
-                        <p className="text-lg lg:text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
-                            Securely complete your bill-till registration with our trusted payment gateway. 
-                            Your transaction is protected with industry-standard encryption.
-                        </p>
-
-                        {/* Trust Badges */}
-                        <div className="flex flex-wrap justify-center gap-6 mb-12">
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                                <Lock className="w-4 h-4 text-green-600" />
-                                <span>256-bit SSL Encryption</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                                <Shield className="w-4 h-4 text-green-600" />
-                                <span>PCI DSS Compliant</span>
-                            </div>
-                            <div className="flex items-center gap-2 text-sm text-gray-600">
-                                <CreditCard className="w-4 h-4 text-green-600" />
-                                <span>Multiple Payment Options</span>
-                            </div>
-                        </div>
-                    </motion.div>
-
-                    {/* Payment Form Container */}
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.6, delay: 0.2 }}
-                        className="max-w-2xl mx-auto"
-                    >
-                        <div className="bg-white/60 backdrop-blur-2xl rounded-3xl border border-white/50 p-8 md:p-12 shadow-2xl">
-                            <div className="text-center mb-8">
-                                <h2 className="text-2xl font-bold text-gray-900 mb-2">Payment Information</h2>
-                                <p className="text-gray-600">Fill in your details to proceed with payment</p>
-                            </div>
-                            
-                            <PaymentForm selectedPlan="Pro" />
-                        </div>
-                    </motion.div>
-
-                    {/* Additional Information */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.6, delay: 0.4 }}
-                        className="mt-16 text-center"
-                    >
-                        <div className="max-w-3xl mx-auto">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Why Choose bill-till?</h3>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                                <div className="text-center">
-                                    <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <CreditCard className="w-6 h-6 text-blue-700" />
-                                    </div>
-                                    <h4 className="font-medium text-gray-900 mb-1">Easy Payments</h4>
-                                    <p className="text-sm text-gray-600">Simple and secure payment processing</p>
-                                </div>
-                                <div className="text-center">
-                                    <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <Shield className="w-6 h-6 text-green-700" />
-                                    </div>
-                                    <h4 className="font-medium text-gray-900 mb-1">Secure Platform</h4>
-                                    <p className="text-sm text-gray-600">Bank-level security for your data</p>
-                                </div>
-                                <div className="text-center">
-                                    <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                                        <Lock className="w-6 h-6 text-purple-700" />
-                                    </div>
-                                    <h4 className="font-medium text-gray-900 mb-1">Privacy First</h4>
-                                    <p className="text-sm text-gray-600">Your information is always protected</p>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div>
-                </div>
-            </section>
-
-            {/* Footer */}
-            <footer className="bg-gray-900 text-white py-12">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="text-center">
-                        <div className="flex justify-center mb-4">
-                            <img
-                                src="/colored-logo.png"
-                                alt="bill-till Logo"
-                                className="h-8 w-auto"
-                            />
-                        </div>
-                        <p className="text-gray-400 text-sm mb-4">
-                            © 2024 bill-till. All rights reserved.
-                        </p>
-                        <div className="flex justify-center gap-6 text-sm">
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors">Privacy Policy</a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors">Terms of Service</a>
-                            <a href="#" className="text-gray-400 hover:text-white transition-colors">Support</a>
-                        </div>
-                    </div>
-                </div>
-            </footer>
+              support@billtill.com
+            </a>
+          </p>
         </div>
-    );
+      </div>
+    </div>
+  );
 };
 
 export default PaymentPage;

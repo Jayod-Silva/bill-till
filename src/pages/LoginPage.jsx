@@ -344,10 +344,6 @@ const LoginPage = () => {
                 )}
               </button>
             </form>
-
-          <p className="mt-8 text-center text-xs text-slate-400">
-            Secure login with 256-bit AES encryption
-          </p>
         </div>
       </div>
     </div>

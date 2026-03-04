@@ -75,7 +75,7 @@ export const HeroSection = () => {
           transition={{ duration: 0.65, delay: 0.08, ease: [0.4, 0, 0.2, 1] }}
           className="text-[38px] md:text-7xl lg:text-[4rem] font-medium tracking-tight mb-6 "
         >
-          Track, Analyze, and Grow Your <br /><span className="bg-gradient-to-b from-[#2474F5] to-[#083395] bg-clip-text text-transparent">Business Ease</span>
+          Track, Analyze, and Grow Your <br /><span className="bg-gradient-to-b from-[#2474F5] to-[#083395] bg-clip-text text-transparent">Business Easy</span>
         </motion.h1>
 
         {/* Sub-headline */}
