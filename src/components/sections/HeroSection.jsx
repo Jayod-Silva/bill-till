@@ -52,7 +52,7 @@ export const HeroSection = () => {
       </div>
 
       {/* ── Hero content ── */}
-      <div className="relative z-20 flex flex-col items-center text-center px-6 max-w-7xl mx-auto mt-[80px] md:mt-[150px]">
+      <div className="relative z-20 flex flex-col items-center text-center px-6 max-w-7xl mx-auto mt-[80px] md:mt-[180px]">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}

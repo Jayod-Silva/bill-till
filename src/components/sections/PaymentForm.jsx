@@ -25,6 +25,7 @@ import {
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import confetti from "canvas-confetti";
+import { useAuth } from "@/context/AuthContext";
 
 /* ── Pricing Plans ───────────────────────────────────── */
 const pricingPlans = [
@@ -364,6 +365,8 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
 
+  const { user } = useAuth();
+
   // Handle plan selection change
   const handlePlanChange = (planName) => {
     setSelectedPlan(planName);
@@ -375,6 +378,34 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     }
     setIsDropdownOpen(false);
   };
+
+  // Autofill form if user is logged in
+  useEffect(() => {
+    if (user) {
+      setForm((prev) => ({
+        ...prev,
+        businessName: prev.businessName || user.business?.name || "",
+        businessType: prev.businessType || user.business?.type || "",
+        ownerName:
+          prev.ownerName ||
+          `${user.first_name || ""} ${user.last_name || ""}`.trim() ||
+          "",
+        phone: prev.phone || user.phone || "",
+        email: prev.email || user.email || "",
+        address:
+          prev.address ||
+          [
+            user.business?.address,
+            user.business?.city,
+            user.business?.province,
+            user.business?.zip_code,
+          ]
+            .filter(Boolean)
+            .join(", ") ||
+          "",
+      }));
+    }
+  }, [user]);
 
   // Detect return from payment gateway redirect
   useEffect(() => {
@@ -394,22 +425,30 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
         // Verify payment with backend
         axios
-          .get(`http://localhost:3000/api/verify-payment/${orderId}`)
+          .get(`https://caritasconnect.ddns.net/billtill/api/verify-payment/${orderId}`)
           .then((res) => {
-            // Show success regardless (gateway already confirmed redirect)
-            setPaymentResult({ ...formData, orderId, selectedPlan });
+            // Restore plan state and set results
+            if (formData.selectedPlan) setSelectedPlan(formData.selectedPlan);
+            const resultDetails = { ...formData, orderId };
+            setPaymentResult(resultDetails);
             setShowSuccess(true);
             triggerConfetti();
+            // Automatically trigger email sending
+            generateInvoice(resultDetails, "silent");
           })
           .catch(() => {
             // Still show success since gateway redirected with success
-            setPaymentResult({ ...formData, orderId, selectedPlan });
+            if (formData.selectedPlan) setSelectedPlan(formData.selectedPlan);
+            const resultDetails = { ...formData, orderId };
+            setPaymentResult(resultDetails);
             setShowSuccess(true);
             triggerConfetti();
+            // Automatically trigger email sending
+            generateInvoice(resultDetails, "silent");
           });
       } else {
         // No saved data but still returned from gateway
-        setPaymentResult({
+        const resultDetails = {
           businessName: "N/A",
           ownerName: "N/A",
           businessType: "N/A",
@@ -419,9 +458,12 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
           amount: "0",
           orderId,
           selectedPlan,
-        });
+        };
+        setPaymentResult(resultDetails);
         setShowSuccess(true);
         triggerConfetti();
+        // Automatically trigger email sending
+        generateInvoice(resultDetails, "silent");
       }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -461,22 +503,22 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       .toUpperCase();
 
     // ── COLORS & STYLING ──
-    const primaryColor = [59, 130, 246]; // Blue-600
+    const primaryColor = [7, 60, 148]; // #073C94
     const secondaryColor = [30, 41, 59]; // Slate-800
     const accentColor = [16, 185, 129]; // Emerald-500
     const grayText = [100, 116, 139]; // Slate-500
 
     // ── HEADER SECTION ──
-    // Bill-Till Branding
-    doc.setFontSize(24);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...primaryColor);
-    doc.text("Bill-Till", 14, 25);
-
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...grayText);
-    doc.text("Smart Billing & POS Solutions", 14, 32);
+    // Bill-Till Logo
+    try {
+      doc.addImage("/colored-logo.png", "PNG", 14, 15, 40, 20);
+    } catch (error) {
+      // Fallback to text if image fails to load
+      doc.setFontSize(24);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(...primaryColor);
+      doc.text("Bill-Till", 14, 25);
+    }
 
     // Invoice Meta (Top Right)
     doc.setFontSize(20);
@@ -505,7 +547,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     doc.setDrawColor(226, 232, 240);
     doc.line(14, 55, 196, 55);
 
-    // From (Sender)
+    // From (Sender) - User
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...primaryColor);
@@ -513,15 +555,15 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...secondaryColor);
-    doc.text("Bill-Till Lanka (Pvt) Ltd", 14, 72);
+    doc.text(details.businessName || "Valued Customer", 14, 72);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
-    doc.text("Bill-Till,", 14, 77);
-    doc.text("680A Colombo Road,Kattuwa,Negombo, Sri Lanka ", 14, 82);
-    doc.text("Email: support@billtill.com", 14, 87);
-    doc.text("Web: www.billtill.co", 14, 92);
+    doc.text(`Name: ${details.ownerName}`, 14, 77);
+    doc.text(`Address: ${details.address || "N/A"}`, 14, 82, { maxWidth: 80 });
+    doc.text(`Phone: ${details.phone}`, 14, 87);
+    doc.text(`Email: ${details.email}`, 14, 92);
 
-    // To (Beneficiary)
+    // To (Beneficiary) - Bill-Till
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...primaryColor);
@@ -529,13 +571,16 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
     doc.setFont("helvetica", "bold");
     doc.setTextColor(...secondaryColor);
-    doc.text(details.businessName || "Valued Customer", 110, 72);
+    doc.text("Bill-Till", 110, 72);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
-    doc.text(`Attn: ${details.ownerName}`, 110, 77);
-    doc.text(details.address || "N/A", 110, 82, { maxWidth: 80 });
-    doc.text(`Phone: ${details.phone}`, 110, 92);
-    doc.text(`Email: ${details.email}`, 110, 97);
+    doc.text("Bill-Till,", 110, 77);
+    doc.text("680A Colombo Road,Kattuwa,Negombo, Sri Lanka ", 110, 82, {
+      maxWidth: 80,
+    });
+    doc.text("Email: support@billtill.com", 110, 87);
+    doc.text("Web: www.billtill.co", 110, 92);
+    doc.text("Phone: 0114 758900", 110, 97);
 
     // ── TRANSACTION DETAILS ──
     doc.setDrawColor(241, 245, 249);
@@ -560,7 +605,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       [
         "01",
         "Software Subscription",
-        `${details.selectedPlan || "Dynamic"} Plan - Annual License`,
+        `${details.selectedPlan || "Dynamic"} Plan`,
         "1",
         `LKR ${parseFloat(details.amount).toLocaleString()}`,
         `LKR ${parseFloat(details.amount).toLocaleString()}`,
@@ -580,7 +625,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       },
       styles: { fontSize: 9, cellPadding: 4 },
       columnStyles: {
-        0: { halign: "center", cellWidth: 10 },
+        0: { halign: "center", cellWidth: 13 },
         3: { halign: "center", cellWidth: 15 },
         4: { halign: "right", cellWidth: 35 },
         5: { halign: "right", cellWidth: 35 },
@@ -615,7 +660,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     doc.text("Total Paid:", 140, finalY + 18);
     doc.text(
       `LKR ${parseFloat(details.amount).toLocaleString()}`,
-      175,
+      185,
       finalY + 18,
       { align: "right" },
     );
@@ -639,7 +684,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       pageHeight - 28,
     );
     doc.text(
-      "For any queries, please contact support@billtill.com or call +94 11 234 5678",
+      "For any queries, please contact support@billtill.com or call +94 0114 758900",
       14,
       pageHeight - 23,
     );
@@ -647,7 +692,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     // ── ACTION ──
     if (action === "view") {
       window.open(doc.output("bloburl"), "_blank");
-    } else {
+    } else if (action === "download") {
       doc.save(`BillTill_Invoice_${details.orderId}.pdf`);
     }
 
@@ -688,7 +733,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60  backdrop-blur-sm"
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -702,7 +747,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
             <X className="w-5 h-5 text-slate-400" />
           </button>
 
-          <div className="p-8 pt-12 text-center">
+          <div className="p-8 text-center">
             <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-emerald-50 text-emerald-500">
               <CheckCircle2 className="w-10 h-10" />
             </div>
@@ -731,6 +776,12 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
                 <span className="text-slate-400">Amount</span>
                 <span className="font-bold text-emerald-600">
                   LKR {parseFloat(details.amount).toLocaleString()}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Subscription Plan</span>
+                <span className="font-bold text-slate-900">
+                  {details.selectedPlan || "Dynamic"} Plan
                 </span>
               </div>
             </div>
@@ -783,7 +834,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     if (!form.email.trim()) e.email = "Email is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       e.email = "Enter a valid email";
-    if (!form.amount.trim()) e.amount = "Amount is required";
+    if (!String(form.amount).trim()) e.amount = "Amount is required";
     else if (isNaN(Number(form.amount)) || Number(form.amount) <= 0)
       e.amount = "Enter a valid amount";
     if (!form.address.trim()) e.address = "Business address is required";
@@ -805,6 +856,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       const sessionId = response.data.sessionId || response.data.session?.id;
       const orderId = response.data.orderId;
+      const merchantId = response.data.merchantId;
       if (!sessionId) throw new Error("Session ID not found in response");
 
       // Save form data to sessionStorage before gateway redirects away
@@ -817,25 +869,11 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
         sessionStorage.removeItem("billtill_payment_form");
         setLoading(false);
       };
-      window.errorCallback = () => {
-        sessionStorage.removeItem("billtill_payment_form");
-        setLoading(false);
-      };
-      window.completeCallback = () => {
-        sessionStorage.removeItem("billtill_payment_form");
-        setLoading(false);
-        setPaymentResult({ ...form, orderId, selectedPlan });
-        setShowSuccess(true);
-        triggerConfetti();
-      };
 
       const script = document.createElement("script");
       script.src =
         "https://seylan.gateway.mastercard.com/static/checkout/checkout.min.js";
       script.async = true;
-      script.setAttribute("data-error", "errorCallback");
-      script.setAttribute("data-cancel", "cancelCallback");
-      script.setAttribute("data-complete", "completeCallback");
 
       script.onload = () => {
         // @ts-ignore
@@ -1079,7 +1117,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       <AnimatePresence>
         {showSuccess && (
           <SuccessModal
-            details={{ ...paymentResult, selectedPlan }}
+            details={paymentResult}
             onClose={() => setShowSuccess(false)}
           />
         )}

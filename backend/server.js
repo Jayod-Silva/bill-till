@@ -82,6 +82,7 @@ app.post("/api/create-payment", async (req, res) => {
     res.json({
       success: true,
       orderId: orderId,
+      merchantId: MERCHANT_ID,
       session: { id: sessionResponse.data.session.id }
     });
   } catch (error) {

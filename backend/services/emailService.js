@@ -38,55 +38,105 @@ async function sendInvoiceEmail({
     to,
     subject: `Your Bill-Till Invoice – ${invoiceId}`,
     html: `
-      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; color: #1e293b;">
-        <div style="background: linear-gradient(135deg, #3b82f6, #4f46e5); padding: 32px 24px; border-radius: 12px 12px 0 0; text-align: center;">
-          <h1 style="color: white; margin: 0; font-size: 28px; font-weight: 800;">Bill-Till</h1>
-          <p style="color: rgba(255,255,255,0.85); margin: 4px 0 0; font-size: 14px;">Smart Billing &amp; POS Solutions</p>
-        </div>
+      <div style="font-family: Arial, Helvetica, sans-serif; background:#f1f5f9; padding:40px 0;">
+  <div style="max-width:600px; margin:0 auto; background:#ffffff; border-radius:12px; overflow:hidden; border:1px solid #e2e8f0;">
 
-        <div style="background: #ffffff; padding: 32px 24px; border: 1px solid #e2e8f0;">
-          <h2 style="color: #1e293b; font-size: 20px; margin-bottom: 8px;">Payment Confirmed ✅</h2>
-          <p style="color: #64748b; font-size: 14px; margin-bottom: 24px;">
-            Dear <strong>${businessName}</strong>, thank you for subscribing to Bill-Till. Your payment has been received and your subscription is now active.
-          </p>
+    <!-- Header -->
+    <div style="padding:28px 24px; border-bottom:1px solid #e2e8f0;">
+      <img src="https://billtill.co/colored-logo.png" alt="Bill-Till" style="height:50px;">
+    </div>
 
-          <div style="background: #f8fafc; border-radius: 8px; padding: 20px; margin-bottom: 24px;">
-            <table style="width: 100%; font-size: 13px; border-collapse: collapse;">
-              <tr>
-                <td style="padding: 6px 0; color: #64748b;">Invoice ID</td>
-                <td style="padding: 6px 0; font-weight: 700; text-align: right;">${invoiceId}</td>
-              </tr>
-              <tr>
-                <td style="padding: 6px 0; color: #64748b;">Payment ID</td>
-                <td style="padding: 6px 0; font-weight: 700; text-align: right; font-family: monospace;">${orderId}</td>
-              </tr>
-              <tr>
-                <td style="padding: 6px 0; color: #64748b;">Confirmation Code</td>
-                <td style="padding: 6px 0; font-weight: 700; text-align: right; letter-spacing: 1px;">${confirmationCode}</td>
-              </tr>
-              <tr>
-                <td style="padding: 6px 0; color: #64748b;">Plan</td>
-                <td style="padding: 6px 0; font-weight: 700; text-align: right;">${plan} Plan</td>
-              </tr>
-              <tr style="border-top: 1px solid #e2e8f0;">
-                <td style="padding: 10px 0 6px; color: #3b82f6; font-weight: 700;">Total Paid</td>
-                <td style="padding: 10px 0 6px; font-weight: 800; text-align: right; color: #3b82f6; font-size: 16px;">LKR ${parseFloat(amount).toLocaleString()}</td>
-              </tr>
-            </table>
-          </div>
+    <!-- Title Section -->
+    <div style="padding:32px 24px 10px 24px;">
+      <h1 style="margin:0; font-size:40px; line-height:40px; color:#0f172a; font-weight:700;">
+        Payment <br /> Confirmation <span style="font-size:26px;">✅</span>
+      </h1>
+    </div>
 
-          <p style="color: #64748b; font-size: 13px;">
-            📎 We have attached a copy of your invoice to this email. You can also view or download it from the payment page.
-          </p>
-        </div>
+    <!-- Intro -->
+    <div style="padding:0 24px 24px 24px;">
+      <p style="font-size:15px; color:#475569; margin:12px 0;">
+        Hi <strong>${businessName}</strong>,
+      </p>
 
-        <div style="background: #f1f5f9; padding: 20px 24px; border-radius: 0 0 12px 12px; text-align: center;">
-          <p style="color: #94a3b8; font-size: 12px; margin: 0;">
-            © ${new Date().getFullYear()} Bill-Till Lanka (Pvt) Ltd · support@billtill.com<br/>
-            This is an automated email. Please do not reply directly.
-          </p>
-        </div>
+      <p style="font-size:15px; color:#475569; margin:0;">
+        Thank you for subscribing to <strong>Bill-Till</strong>. Your payment has been successfully received and your subscription is now active.
+      </p>
+    </div>
+
+    <!-- Summary Card -->
+    <div style="padding:0 24px 28px 24px;">
+      <div style="background:#f8fafc; border-radius:10px; padding:22px; border:1px solid #e2e8f0;">
+
+        <h3 style="margin:0 0 16px 0; font-size:18px; color:#0f172a;">
+          Payment Summary
+        </h3>
+
+        <table style="width:100%; border-collapse:collapse; font-size:14px;">
+
+          <tr>
+            <td style="padding:8px 0; color:#64748b;">Invoice ID</td>
+            <td style="padding:8px 0; text-align:right; font-weight:600; color:#0f172a;">
+              ${invoiceId}
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:8px 0; color:#64748b;">Payment ID</td>
+            <td style="padding:8px 0; text-align:right; font-family:monospace; font-weight:600; color:#0f172a;">
+              ${orderId}
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:8px 0; color:#64748b;">Confirmation Code</td>
+            <td style="padding:8px 0; text-align:right; font-weight:600; letter-spacing:1px;">
+              ${confirmationCode}
+            </td>
+          </tr>
+
+          <tr>
+            <td style="padding:8px 0; color:#64748b;">Subscription Plan</td>
+            <td style="padding:8px 0; text-align:right; font-weight:600;">
+              ${plan} Plan
+            </td>
+          </tr>
+
+          <tr style="border-top:1px solid #e2e8f0;">
+            <td style="padding:14px 0 6px 0; font-weight:700; color:#0f172a;">
+              Total Paid
+            </td>
+            <td style="padding:14px 0 6px 0; text-align:right; font-size:18px; font-weight:700; color:#073C94;">
+              LKR ${parseFloat(amount).toLocaleString()}
+            </td>
+          </tr>
+
+        </table>
+
       </div>
+    </div>
+
+    <!-- Info -->
+    <div style="padding:0 24px 28px 24px;">
+      <p style="font-size:13px; color:#64748b; margin:0;">
+        📎 A copy of your invoice has been attached to this email.  
+        You can also download it anytime from your Bill-Till dashboard.
+      </p>
+    </div>
+
+    <!-- Footer -->
+    <div style="background:#f8fafc; padding:20px 24px; text-align:center; border-top:1px solid #e2e8f0;">
+      <p style="font-size:12px; color:#94a3b8; margin:0;">
+        © ${new Date().getFullYear()} Bill-Till<br>
+        support@billtill.com
+      </p>
+      <p style="font-size:11px; color:#cbd5f5; margin-top:6px;">
+        This is an automated email. Please do not reply.
+      </p>
+    </div>
+
+  </div>
+</div>
     `,
     attachments: [
       {
