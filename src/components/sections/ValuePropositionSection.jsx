@@ -43,7 +43,7 @@ export const ValuePropositionSection = () => {
   const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
   return (
-    <section ref={sectionRef} className="py-24 lg:pt-32 lg:pb-10 overflow-hidden">
+    <section ref={sectionRef} className="py-16 md:py-24 lg:pt-32 lg:pb-10 overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
@@ -53,18 +53,18 @@ export const ValuePropositionSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-3 md:mb-6">
             Why businesses choose{' '}
             <span className="text-primary">Bill Till</span>
           </h2>
-          <p className="text-base lg:text-md text-muted-foreground">
+          <p className="text-sm lg:text-md px-5 text-muted-foreground">
             Built for the modern era, our platform combines cutting-edge technology 
             with intuitive design to deliver the ultimate POS experience.
           </p>
         </motion.div>
 
         {/* Main Propositions */}
-        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-16">
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-10">
           {propositions.map((prop, index) => (
             <motion.div
               key={prop.title}
@@ -78,10 +78,10 @@ export const ValuePropositionSection = () => {
                 <div className={`w-14 h-14 rounded-xl ${prop.bgColor} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
                   <prop.icon className={`w-7 h-7 ${prop.color}`} />
                 </div>
-                <h3 className="text-xl font-semibold text-foreground mb-3">
+                <h3 className="text-lg md:text-xl font-semibold text-foreground mb-3">
                   {prop.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed text-md">
                   {prop.description}
                 </p>
               </div>
@@ -107,7 +107,7 @@ export const ValuePropositionSection = () => {
               className="flex items-center gap-2 text-muted-foreground"
             >
               <feature.icon className="w-5 h-5 text-primary" />
-              <span className="text-sm font-medium">{feature.label}</span>
+              <span className="text-xs font-medium">{feature.label}</span>
             </motion.div>
           ))}
         </motion.div>

@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
-const { sendInvoiceEmail } = require("./services/emailService");
+const { sendInvoiceEmail, sendAdminNotificationEmail } = require("./services/emailService");
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -16,7 +16,26 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-app.use(cors());
+
+// CORS Configuration
+const allowedOrigins = [
+  process.env.FRONTEND_URL || "http://localhost:5173",
+  "https://caritasconnect.ddns.net",
+  "https://billtill.co"
+];
+
+app.use(cors({
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true
+}));
 
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, "uploads");
@@ -32,12 +51,31 @@ app.use("/api/auth", authRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 
 // --------------------------------------------------------
-// EXISTING PAYMENT LOGIC (RETAINED)
+// PAYMENT CREDENTIALS (LKR & USD)
 // --------------------------------------------------------
-const MERCHANT_ID = process.env.MERCHANT_ID || "MPGS00000348";
-const API_PASSWORD = process.env.API_PASSWORD || "078809c1ac7c0359ef5e1a13ff9728a5";
-const API_USERNAME = `merchant.${MERCHANT_ID}`;
-const API_BASE_URL = process.env.API_BASE_URL || "https://seylan.gateway.mastercard.com/api/rest/version/69";
+const paymentCredentials = {
+  LKR: {
+    merchantId: process.env.MERCHANT_ID_LKR || process.env.MERCHANT_ID || "MPGS00000348",
+    apiPassword: process.env.API_PASSWORD_LKR || process.env.API_PASSWORD || "078809c1ac7c0359ef5e1a13ff9728a5",
+    apiBaseUrl: process.env.API_BASE_URL_LKR || process.env.API_BASE_URL || "https://seylan.gateway.mastercard.com/api/rest/version/69",
+  },
+  USD: {
+    merchantId: process.env.MERCHANT_ID_USD || "MPGS00000349",
+    apiPassword: process.env.API_PASSWORD_USD || "2102663c909bc3b8b15f792cba596fbd",
+    apiBaseUrl: process.env.API_BASE_URL_USD || "https://seylan.gateway.mastercard.com/api/rest/version/69",
+  },
+};
+
+const getCredentials = (currency) => {
+  const creds = paymentCredentials[currency] || paymentCredentials.LKR;
+  return {
+    ...creds,
+    apiUsername: `merchant.${creds.merchantId}`,
+  };
+};
+
+// In-memory map to remember which credentials were used per order
+const orderCurrencyMap = {};
 
 app.get('/api/test', (req, res) => {
   res.json({
@@ -52,15 +90,19 @@ app.post("/api/create-payment", async (req, res) => {
   try {
     const orderId = "ORDER_" + Date.now();
     const amount = req?.body?.amount;
-    const currency = "LKR";
+    const currency = req?.body?.currency === "USD" ? "USD" : "LKR";
+    const creds = getCredentials(currency);
+
+    // Remember currency for this order (used during verification)
+    orderCurrencyMap[orderId] = currency;
 
     const sessionResponse = await axios.post(
-      `${API_BASE_URL}/merchant/${MERCHANT_ID}/session`,
+      `${creds.apiBaseUrl}/merchant/${creds.merchantId}/session`,
       {
         apiOperation: "INITIATE_CHECKOUT",
         interaction: {
           operation: "PURCHASE",
-          returnUrl: `http://localhost:5173/payment?payment=success&orderId=${orderId}`,
+          returnUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment?payment=success&orderId=${orderId}`,
           merchant: {
             name: "BillTill",
             address: { line1: "Sri Lanka" }
@@ -74,7 +116,7 @@ app.post("/api/create-payment", async (req, res) => {
         }
       },
       {
-        auth: { username: API_USERNAME, password: API_PASSWORD },
+        auth: { username: creds.apiUsername, password: creds.apiPassword },
         headers: { "Content-Type": "application/json" }
       }
     );
@@ -82,7 +124,8 @@ app.post("/api/create-payment", async (req, res) => {
     res.json({
       success: true,
       orderId: orderId,
-      merchantId: MERCHANT_ID,
+      merchantId: creds.merchantId,
+      currency: currency,
       session: { id: sessionResponse.data.session.id }
     });
   } catch (error) {
@@ -96,9 +139,13 @@ app.post("/api/create-payment", async (req, res) => {
 app.get("/api/verify-payment/:orderId", async (req, res) => {
   try {
     const { orderId } = req.params;
+    // Look up which currency was used for this order, default to LKR
+    const currency = orderCurrencyMap[orderId] || "LKR";
+    const creds = getCredentials(currency);
+
     const response = await axios.get(
-      `${API_BASE_URL}/merchant/${MERCHANT_ID}/order/${orderId}`,
-      { auth: { username: API_USERNAME, password: API_PASSWORD } }
+      `${creds.apiBaseUrl}/merchant/${creds.merchantId}/order/${orderId}`,
+      { auth: { username: creds.apiUsername, password: creds.apiPassword } }
     );
     res.json(response.data);
   } catch (error) {
@@ -111,7 +158,21 @@ app.get("/api/verify-payment/:orderId", async (req, res) => {
 
 app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
   try {
-    const { email, businessName, invoiceId, orderId, confirmationCode, amount, plan } = req.body;
+    const {
+      email,
+      businessName,
+      businessType,
+      ownerName,
+      phone,
+      address,
+      invoiceId,
+      orderId,
+      confirmationCode,
+      amount,
+      plan,
+      billingCycle,
+      currency,
+    } = req.body;
     const pdfBuffer = req.file?.buffer;
     const filename = req.file?.originalname || `BillTill_Invoice_${orderId}.pdf`;
 
@@ -122,6 +183,7 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
       return res.status(400).json({ success: false, error: "Email is required" });
     }
 
+    // 1. Send Invoice to Customer
     await sendInvoiceEmail({
       to: email,
       businessName,
@@ -132,7 +194,31 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
       confirmationCode,
       amount,
       plan,
+      currency,
     });
+
+    // 2. Notify Admin if it's a Premium Plan (Dynamic or Pro)
+    const premiumPlans = ["Dynamic", "Pro"];
+    if (premiumPlans.includes(plan)) {
+      try {
+        await sendAdminNotificationEmail({
+          businessName,
+          businessType,
+          ownerName,
+          phone,
+          email,
+          address,
+          plan,
+          billingCycle,
+          currency,
+          amount,
+          orderId,
+        });
+      } catch (adminEmailError) {
+        console.error("Admin notification failed:", adminEmailError);
+        // Non-blocking for the customer: we don't return an error to the client
+      }
+    }
 
     res.json({ success: true, message: "Invoice sent successfully" });
   } catch (error) {
@@ -144,6 +230,6 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
 // START SERVER
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🚀 Backend running at http://localhost:${PORT}`);
-  console.log(`📍 Test endpoint: http://localhost:${PORT}/api/test`);
+  console.log(`🚀 Backend running on port ${PORT}`);
+  console.log(`📍 Test endpoint: https://caritasconnect.ddns.net/api/test`);
 });

@@ -10,7 +10,7 @@ app.post("/api/create-payment", async (req, res) => {
       apiOperation: "INITIATE_CHECKOUT",
       interaction: {
         operation: "PURCHASE",
-        returnUrl: "http://localhost:5173",
+        returnUrl: "https://billtill.co",
         merchant: {
           name: "BillTill"
         }

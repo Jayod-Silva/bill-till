@@ -105,12 +105,18 @@ export default function Navbar() {
     <>
       <nav
         className={`fixed top-6 left-1/2 -translate-x-1/2 w-full mx-auto transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] z-[100] ${
-          scrolled ? "max-w-[1500px] md:max-w-[1500px]" : "max-w-[340px] -mt-6 md:max-w-[1500px]"
+          scrolled
+            ? "max-w-[1500px] md:max-w-[1500px]"
+            : "max-w-md -mt-2 md:-mt-8 md:max-w-[1500px]"
         }`}
       >
-        <div className={`px-8 py-2 md:py-4 transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] ${
-          scrolled ? "bg-white  shadow-lg -mt-6 md:-mt-7 rounded-b-3xl md:scale-[1.02]" : "-mt-2 md:mt-2 scale-[1]"
-        }`}>
+        <div
+          className={`px-8 py-3 md:py-4 transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] ${
+            scrolled
+              ? "bg-white  shadow-lg -mt-6 md:-mt-7 rounded-b-3xl md:scale-[1.02]"
+              : "-mt-2 md:mt-2 scale-[1]"
+          }`}
+        >
           <div className="flex items-center justify-between">
             {/* LOGO */}
             <button
@@ -121,7 +127,7 @@ export default function Navbar() {
               <img
                 src="/colored-logo.png"
                 alt="Bill Till Logo"
-                className="h-7 md:h-10 w-auto"
+                className="h-9 md:h-10 w-auto"
               />
             </button>
 
@@ -178,7 +184,7 @@ export default function Navbar() {
                   >
                     {user.profilePic ? (
                       <img
-                        src={`http://localhost:3000${user.profilePic}`}
+                        src={`${import.meta.env.VITE_BACKEND_URL}${user.profilePic}`}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />
@@ -239,81 +245,142 @@ export default function Navbar() {
       </nav>
 
       {/* MOBILE MENU */}
-      {menuOpen && (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] lg:hidden">
-          <div className="absolute inset-x-0 top-0 bg-white rounded-b-2xl shadow-xl">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <span className="text-2xl font-bold text-gray-900">FLOWLY</span>
-                <button
-                  onClick={() => setMenuOpen(false)}
-                  className="flex items-center justify-center"
-                >
-                  <X size={20} />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {navItems.map((item) => (
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[9999] lg:hidden"
+          >
+            <motion.div
+              initial={{ y: "-100%", opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: "-100%", opacity: 0 }}
+              transition={{
+                type: "spring",
+                stiffness: 300,
+                damping: 30,
+                duration: 0.3,
+              }}
+              className="absolute inset-x-0 top-0 bg-white rounded-b-2xl shadow-xl"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <img
+                    src="/colored-logo.png"
+                    alt="Bill-Till"
+                    className="h-8 w-auto"
+                  />
                   <button
-                    key={item.id}
-                    onClick={() => handleClick(item)}
-                    className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                      activeLink === item.id
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-700 hover:bg-gray-50"
-                    }`}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center justify-center"
                   >
-                    {item.label}
+                    <X size={20} />
                   </button>
-                ))}
-              </div>
+                </div>
 
-              <div className="mt-6 space-y-3">
-                <button
-                  onClick={toggleLanguage}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-                >
-                  <Globe className="w-4 h-4" />
-                  {language === "en" ? "EN" : "සිං"}
-                </button>
+                <div className="space-y-4">
+                  {navItems.map((item, index) => (
+                    <motion.button
+                      key={item.id}
+                      initial={{ x: -50, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      exit={{ x: -50, opacity: 0 }}
+                      transition={{
+                        delay: index * 0.1,
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
+                      }}
+                      onClick={() => handleClick(item)}
+                      className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                        activeLink === item.id
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
+                    >
+                      {item.label}
+                    </motion.button>
+                  ))}
+                </div>
 
-                {!user && (
-                  <button
-                    onClick={handleBuyClick}
-                    className="w-full bg-black/90 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-black transition-colors"
+                <div className="mt-6 space-y-3">
+                  <motion.button
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    exit={{ y: 20, opacity: 0 }}
+                    transition={{
+                      delay: 0.4,
+                      type: "spring",
+                      stiffness: 300,
+                      damping: 30,
+                    }}
+                    onClick={toggleLanguage}
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
                   >
-                    {buyText}
-                  </button>
-                )}
+                    <Globe className="w-4 h-4" />
+                    {language === "en" ? "EN" : "සිං"}
+                  </motion.button>
 
-                {user && (
-                  <div className="space-y-3">
-                    <button
-                      onClick={() => {
-                        setMenuOpen(false);
-                        navigate("/dashboard");
+                  {!user && (
+                    <motion.button
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: 20, opacity: 0 }}
+                      transition={{
+                        delay: 0.5,
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
                       }}
-                      className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                      onClick={handleBuyClick}
+                      className="w-full bg-black/90 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-black transition-colors"
                     >
-                      DASHBOARD
-                    </button>
-                    <button
-                      onClick={() => {
-                        setMenuOpen(false);
-                        logout();
+                      {buyText}
+                    </motion.button>
+                  )}
+
+                  {user && (
+                    <motion.div
+                      initial={{ y: 20, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                      exit={{ y: 20, opacity: 0 }}
+                      transition={{
+                        delay: 0.4,
+                        type: "spring",
+                        stiffness: 300,
+                        damping: 30,
                       }}
-                      className="w-full px-4 py-3 rounded-lg border border-red-300 text-red-600 text-sm font-medium hover:bg-red-50 transition-colors"
+                      className="space-y-3"
                     >
-                      LOGOUT
-                    </button>
-                  </div>
-                )}
+                      <button
+                        onClick={() => {
+                          setMenuOpen(false);
+                          navigate("/dashboard");
+                        }}
+                        className="w-full bg-blue-600 text-white px-4 py-3 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors"
+                      >
+                        DASHBOARD
+                      </button>
+                      <button
+                        onClick={() => {
+                          setMenuOpen(false);
+                          logout();
+                        }}
+                        className="w-full px-4 py-3 rounded-lg border border-red-300 text-red-600 text-sm font-medium hover:bg-red-50 transition-colors"
+                      >
+                        LOGOUT
+                      </button>
+                    </motion.div>
+                  )}
+                </div>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </>
   );
 }

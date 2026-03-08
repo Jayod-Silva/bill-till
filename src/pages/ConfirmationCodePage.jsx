@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   KeyRound,
   AlertCircle,
@@ -210,7 +210,7 @@ const CodeInput = ({ value, onChange, error }) => {
 /* ─────────────────────────────────────────────
    Success Screen
 ───────────────────────────────────────────── */
-const SuccessScreen = () => {
+const SuccessScreen = ({ code: passedCode, planInfo: passedPlanInfo }) => {
   const navigate = useNavigate();
   const particles = Array.from({ length: 18 });
   return (
@@ -267,7 +267,25 @@ const SuccessScreen = () => {
           now active.
         </p>
         <button
-          onClick={() => navigate("/payment")}
+          onClick={() => {
+            let state = { confirmationCode: passedCode };
+
+            // Priority 1: State passed directly (from logged-in pricing redirect)
+            if (passedPlanInfo && passedPlanInfo.selectedPlan) {
+              state = { ...state, ...passedPlanInfo };
+            }
+            // Priority 2: Local storage (from registration flow)
+            else {
+              const saved = localStorage.getItem("registration_progress");
+              if (saved) {
+                try {
+                  const { planInfo } = JSON.parse(saved);
+                  if (planInfo) state = { ...state, ...planInfo };
+                } catch (e) {}
+              }
+            }
+            navigate("/payment", { state });
+          }}
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-200"
         >
           Proceed to Payment <ArrowRight className="w-4 h-4" />
@@ -288,6 +306,11 @@ const ConfirmationCodePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const planInfo = {
+    selectedPlan: location.state?.selectedPlan,
+    isMonthly: location.state?.isMonthly,
+  };
 
   const handleSubmit = async () => {
     let hasError = false;
@@ -313,7 +336,9 @@ const ConfirmationCodePage = () => {
       await new Promise((r) => setTimeout(r, 1200)); // simulate network
 
       if (code !== MOCK_CODE) {
-        throw new Error("Invalid confirmation code. For testing, use #BT123456.");
+        throw new Error(
+          "Invalid confirmation code. For testing, use #BT123456.",
+        );
       }
 
       setIsVerified(true);
@@ -333,7 +358,7 @@ const ConfirmationCodePage = () => {
       <div className="flex flex-1 items-center justify-center bg-slate-50 px-6 py-14">
         <div className="w-full max-w-md">
           {isVerified ? (
-            <SuccessScreen />
+            <SuccessScreen code={code} planInfo={planInfo} />
           ) : (
             <motion.div
               initial={{ opacity: 0, y: 24 }}
@@ -350,7 +375,7 @@ const ConfirmationCodePage = () => {
                   <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
                   <span className="text-sm font-medium">Back to Home</span>
                 </button>
-                
+
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-50 mb-5">
                   <KeyRound className="w-6 h-6 text-blue-500" />
                 </div>

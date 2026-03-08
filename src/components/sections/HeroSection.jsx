@@ -52,7 +52,7 @@ export const HeroSection = () => {
       </div>
 
       {/* ── Hero content ── */}
-      <div className="relative z-20 flex flex-col items-center text-center px-6 max-w-7xl mx-auto mt-[80px] md:mt-[180px]">
+      <div className="relative z-20 flex flex-col items-center text-center px-6 max-w-7xl mx-auto mt-32 md:mt-[180px]">
         {/* Badge */}
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -64,7 +64,7 @@ export const HeroSection = () => {
             NEW
           </span>
           <span className="text-xs text-slate-600 font-medium pr-1">
-            Bill Till 1.0 is available
+            Simplify Your Billing Today
           </span>
         </motion.div>
 
@@ -73,7 +73,7 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, delay: 0.08, ease: [0.4, 0, 0.2, 1] }}
-          className="text-[38px] md:text-7xl lg:text-[4rem] font-medium tracking-tight mb-6 "
+          className="text-[42px] md:text-7xl lg:text-[4rem] font-semibold tracking-tight mb-6  "
         >
           Track, Analyze, and Grow Your <br /><span className="bg-gradient-to-b from-[#2474F5] to-[#083395] bg-clip-text text-transparent">Business Easy</span>
         </motion.h1>
@@ -83,13 +83,13 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 24 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.18, ease: [0.4, 0, 0.2, 1] }}
-          className="text-base md:text-md text-slate-500 max-w-md mx-auto mb-3 leading-relaxed"
+          className="text-sm md:text-md text-slate-500 max-w-md mx-auto mb-3 leading-relaxed"
         >
           The modern retail POS system beautifully simple, powerfully connected.
         </motion.p>
 
         {/* CTA Buttons */}
-        <div className="mt-10 flex items-center justify-center gap-3 mb-20">
+        <div className="mt-2 md:mt-10 flex items-center justify-center gap-3 text-sm mb-20">
           <button className="px-6 py-3 rounded-full bg-[#0957D6] text-white font-medium shadow-md hover:bg-black transition">
             Get Started
           </button>
@@ -98,40 +98,18 @@ export const HeroSection = () => {
             View Pricing
           </button>
         </div>
-
-        {/* Dashboard mockup - static */}
-        <motion.div
-          initial={{ opacity: 0, y: 60 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1.4, delay: 0.3, ease: "easeOut" }}
-          className="relative w-full max-w-5xl mx-auto pb-20"
-        >
-          {/* Glow behind image */}
-          <div
-            className="absolute left-1/2 w-[90%] opacity-50 pointer-events-none z-0"
-            style={{ top: "23%", transform: "translateX(-50%)" }}
-            aria-hidden="true"
-          >
-            <img
-              src="https://i.postimg.cc/Ss6yShGy/glows.png"
-              alt=""
-              className="w-full h-auto"
-              loading="eager"
-            />
-          </div>
-        </motion.div>
         
         {/* Dashboard screenshot */}
           <motion.div 
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1.2, delay: 0.4, ease: [0.4, 0, 0.2, 1] }}
-            className="relative z-5 overflow-hidden w-[150%] max-w-7xl mx-auto -mt-28"
+            className="relative z-5 overflow-hidden max-w-7xl mx-auto -mt-[45px] md:-mt-6 lg:w-[150%] md:w-[120%]  w-[100%]"
           >
             <img
               src="/device1.png"
               alt="Bill Till Dashboard"
-              className="w-full h-full block"
+              className="w-full h-full block object-contain"
               loading="eager"
               onError={(e) => {
                 e.target.src =

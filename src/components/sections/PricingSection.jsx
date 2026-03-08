@@ -1,71 +1,72 @@
-import React, { useState, useRef } from 'react';
-import { motion } from 'framer-motion';
-import { Check, Sparkles, Star } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Label } from '@/components/ui/label';
-import { cn } from '@/lib/utils';
-import confetti from 'canvas-confetti';
+import React, { useState, useRef } from "react";
+import { motion } from "framer-motion";
+import { Check, Sparkles, Star } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Button } from "@/components/ui/button";
+import { Switch } from "@/components/ui/switch";
+import { Label } from "@/components/ui/label";
+import { cn } from "@/lib/utils";
+import { useAuth } from "@/context/AuthContext";
+import confetti from "canvas-confetti";
 
 const plans = [
   {
-    name: 'Dynamic',
-    price: '4,999',
-    yearlyPrice: '3,999',
-    period: 'per month',
+    name: "Dynamic",
+    price: "4,999",
+    yearlyPrice: "3,999",
+    period: "per month",
     features: [
-      'Up to 1,000 transactions/month',
-      '1 Register',
-      'Basic reporting',
-      'Email support',
-      'Standard integrations',
-      'Email support',
-      'Standard integrations',
+      "Up to 1,000 transactions/month",
+      "1 Register",
+      "Basic reporting",
+      "Email support",
+      "Standard integrations",
+      "Email support",
+      "Standard integrations",
     ],
-    description: 'Perfect for small businesses just getting started.',
-    buttonText: 'Start Free Trial',
-    href: '/register',
+    description: "Perfect for small businesses just getting started.",
+    buttonText: "Start Free Trial",
+    href: "/register",
     isPopular: false,
   },
   {
-    name: 'Pro',
-    price: '7,999',
-    yearlyPrice: '6,399',
-    period: 'per month',
+    name: "Pro",
+    price: "7,999",
+    yearlyPrice: "6,399",
+    period: "per month",
     features: [
-      'Unlimited transactions',
-      'Up to 5 Registers',
-      'Advanced analytics',
-      'Priority support',
-      'All integrations',
-      'Inventory management',
-      'Employee management',
-      'Customer loyalty',
+      "Unlimited transactions",
+      "Up to 5 Registers",
+      "Advanced analytics",
+      "Priority support",
+      "All integrations",
+      "Inventory management",
+      "Employee management",
+      "Customer loyalty",
     ],
-    description: 'For growing businesses that need more power.',
-    buttonText: 'Start Free Trial',
-    href: '/register',
+    description: "For growing businesses that need more power.",
+    buttonText: "Start Free Trial",
+    href: "/register",
     isPopular: true,
   },
   {
-    name: 'Contact Our Team',
-    price: 'Custom',
-    yearlyPrice: 'Custom',
-    period: 'tailored',
+    name: "Contact Our Team",
+    price: "Custom",
+    yearlyPrice: "Custom",
+    period: "tailored",
     features: [
-      'Custom solutions for enterprise needs',
-      'Dedicated account manager',
-      'Custom integrations',
-      'Priority 24/7 support',
-      'Multi-location management',
-      'Advanced security features',
-      'Custom reporting',
-      'White-label options',
+      "Custom solutions for enterprise needs",
+      "Dedicated account manager",
+      "Custom integrations",
+      "Priority 24/7 support",
+      "Multi-location management",
+      "Advanced security features",
+      "Custom reporting",
+      "White-label options",
     ],
-    description: 'Get a personalized solution for your business.',
-    buttonText: 'Get in Touch',
-    href: 'mailto:sales@billtill.com',
+    description: "Get a personalized solution for your business.",
+    buttonText: "Get in Touch",
+    href: "mailto:sales@billtill.com",
     isPopular: false,
     isContact: true,
   },
@@ -75,6 +76,7 @@ export const PricingSection = () => {
   const [isMonthly, setIsMonthly] = useState(true);
   const navigate = useNavigate();
   const switchRef = useRef(null);
+  const { user } = useAuth();
 
   const handleToggle = (checked) => {
     setIsMonthly(!checked);
@@ -105,11 +107,17 @@ export const PricingSection = () => {
     }
   };
 
-  const handleCTA = (href) => {
-    if (href.startsWith('mailto:')) {
+  const handleCTA = (plan, href) => {
+    if (href.startsWith("mailto:")) {
       window.location.href = href;
     } else {
-      navigate(href);
+      const targetPath = user ? "/confirm-code" : href;
+      navigate(targetPath, {
+        state: {
+          selectedPlan: plan.name,
+          isMonthly: isMonthly,
+        },
+      });
     }
   };
 
@@ -128,8 +136,8 @@ export const PricingSection = () => {
             Simple, Transparent Pricing
           </h2>
           <p className="text-muted-foreground text-lg whitespace-pre-line">
-            Choose the plan that works for you
-All plans include access to our platform, lead generation tools, and dedicated support.
+            Choose the plan that works for you All plans include access to our
+            platform, lead generation tools, and dedicated support.
           </p>
         </motion.div>
 
@@ -180,7 +188,7 @@ All plans include access to our platform, lead generation tools, and dedicated s
                   ? "z-0 transform translate-x-0 translate-y-0 -translate-z-[50px] rotate-y-[10deg]"
                   : "z-10",
                 index === 0 && "origin-right",
-                index === 2 && "origin-left"
+                index === 2 && "origin-left",
               )}
             >
               {plan.isPopular && (
@@ -235,15 +243,15 @@ All plans include access to our platform, lead generation tools, and dedicated s
                 <hr className="w-full my-4" />
 
                 <Button
-                  variant={plan.isPopular ? 'default' : 'outline'}
+                  variant={plan.isPopular ? "default" : "outline"}
                   className={cn(
                     "w-full gap-2 overflow-hidden text-lg font-semibold tracking-tighter",
                     "transform-gpu ring-offset-current transition-all duration-300 ease-out hover:ring-2 hover:ring-primary hover:ring-offset-1 hover:bg-primary hover:text-primary-foreground",
                     plan.isPopular
                       ? "bg-primary text-primary-foreground"
-                      : "bg-background text-foreground"
+                      : "bg-background text-foreground",
                   )}
-                  onClick={() => handleCTA(plan.href)}
+                  onClick={() => handleCTA(plan, plan.href)}
                 >
                   {plan.buttonText}
                 </Button>

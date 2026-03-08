@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import api from "@/api/axios";
 
@@ -498,6 +498,13 @@ const MultiStepRegistrationForm = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [direction, setDirection] = useState(1);
+  const location = useLocation();
+
+  const [planInfo, setPlanInfo] = useState({
+    selectedPlan: location.state?.selectedPlan || "Pro",
+    isMonthly:
+      location.state?.isMonthly !== undefined ? location.state.isMonthly : true,
+  });
 
   const totalSteps = 2;
   const navigate = useNavigate();
@@ -508,9 +515,10 @@ const MultiStepRegistrationForm = () => {
     const saved = localStorage.getItem("registration_progress");
     if (saved) {
       try {
-        const { step, data } = JSON.parse(saved);
+        const { step, data, planInfo: savedPlanInfo } = JSON.parse(saved);
         if (step) setCurrentStep(step);
         if (data) setFormData((prev) => ({ ...prev, ...data }));
+        if (savedPlanInfo) setPlanInfo(savedPlanInfo);
       } catch (e) {
         console.error("Failed to parse registration persistence:", e);
       }
@@ -521,9 +529,9 @@ const MultiStepRegistrationForm = () => {
   useEffect(() => {
     localStorage.setItem(
       "registration_progress",
-      JSON.stringify({ step: currentStep, data: formData }),
+      JSON.stringify({ step: currentStep, data: formData, planInfo }),
     );
-  }, [currentStep, formData]);
+  }, [currentStep, formData, planInfo]);
 
   const validateStep = (step) => {
     const e = {};

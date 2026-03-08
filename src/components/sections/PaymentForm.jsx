@@ -21,17 +21,21 @@ import {
   Download,
   FileText,
   X,
+  Globe,
 } from "lucide-react";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import confetti from "canvas-confetti";
+import { generateInvoice } from "@/templates/InvoicePdf";
 import { useAuth } from "@/context/AuthContext";
+import { useLocation } from "react-router-dom";
 
 /* ── Pricing Plans ───────────────────────────────────── */
 const pricingPlans = [
   {
     name: "Dynamic",
     price: 4999,
+    yearlyPrice: 3999,
     features: [
       "POS System",
       "Advanced Analytics",
@@ -42,6 +46,7 @@ const pricingPlans = [
   {
     name: "Pro",
     price: 7999,
+    yearlyPrice: 6399,
     features: [
       "All Dynamic Features",
       "Custom Reports",
@@ -199,7 +204,7 @@ const FloatingSelect = ({
     ...(focused ? focusedStyle : {}),
     ...(error && !focused ? errorStyle : {}),
     ...(value && !focused ? filledStyle : {}),
-    color: value ? "#1e293b" : "transparent",
+    color: "#1e293b", // Always show text color for visibility
   };
 
   return (
@@ -347,11 +352,24 @@ const SectionLabel = ({ children }) => (
 );
 
 /* ── Main Form ────────────────────────────────────────── */
-export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
+export default function PaymentForm({
+  selectedPlan: initialPlan = "Dynamic",
+  isMonthly = true,
+}) {
+  const location = useLocation();
+  const passedConfirmationCode = location.state?.confirmationCode || "";
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [selectedPlan, setSelectedPlan] = useState(initialPlan);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [currency, setCurrency] = useState("LKR");
+
+  const getInitialAmount = () => {
+    const plan = pricingPlans.find((p) => p.name === initialPlan);
+    if (!plan) return 4999;
+    return isMonthly ? plan.price : plan.yearlyPrice * 12;
+  };
+
   const [form, setForm] = useState({
     businessName: "",
     businessType: "",
@@ -359,8 +377,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     phone: "",
     email: "",
     address: "",
-    amount:
-      pricingPlans.find((plan) => plan.name === initialPlan)?.price || 4999,
+    amount: getInitialAmount(),
   });
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
@@ -374,7 +391,10 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       (plan) => plan.name === planName,
     );
     if (selectedPlanData) {
-      setForm((prev) => ({ ...prev, amount: selectedPlanData.price }));
+      const amount = isMonthly
+        ? selectedPlanData.price
+        : selectedPlanData.yearlyPrice * 12;
+      setForm((prev) => ({ ...prev, amount }));
     }
     setIsDropdownOpen(false);
   };
@@ -417,53 +437,103 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
 
+      // Helper: show success UI then send invoice email in background
+      const showSuccessAndSendInvoice = (resultDetails) => {
+        // Generate invoice ID and confirmation code once
+        const invoiceId = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
+        const confirmationCode =
+          resultDetails.confirmationCode ||
+          Math.random().toString(36).substring(2, 10).toUpperCase();
+
+        // Add to result details for consistency
+        const enrichedDetails = {
+          ...resultDetails,
+          invoiceId,
+          confirmationCode,
+        };
+
+        setPaymentResult(enrichedDetails);
+        setShowSuccess(true);
+        triggerConfetti();
+        // Delay invoice generation slightly to ensure UI renders first
+        setTimeout(() => {
+          try {
+            generateInvoice(enrichedDetails, "silent");
+          } catch (err) {
+            console.error("Invoice generation failed (non-blocking):", err);
+          }
+        }, 500);
+      };
+
       // Retrieve saved form data
       const savedData = sessionStorage.getItem("billtill_payment_form");
       if (savedData) {
-        const formData = JSON.parse(savedData);
+        let formData;
+        try {
+          formData = JSON.parse(savedData);
+        } catch (parseErr) {
+          console.error("Failed to parse saved form data:", parseErr);
+          formData = null;
+        }
         sessionStorage.removeItem("billtill_payment_form");
 
-        // Verify payment with backend
-        axios
-          .get(`https://caritasconnect.ddns.net/billtill/api/verify-payment/${orderId}`)
-          .then((res) => {
-            // Restore plan state and set results
-            if (formData.selectedPlan) setSelectedPlan(formData.selectedPlan);
-            const resultDetails = { ...formData, orderId };
-            setPaymentResult(resultDetails);
-            setShowSuccess(true);
-            triggerConfetti();
-            // Automatically trigger email sending
-            generateInvoice(resultDetails, "silent");
-          })
-          .catch(() => {
-            // Still show success since gateway redirected with success
-            if (formData.selectedPlan) setSelectedPlan(formData.selectedPlan);
-            const resultDetails = { ...formData, orderId };
-            setPaymentResult(resultDetails);
-            setShowSuccess(true);
-            triggerConfetti();
-            // Automatically trigger email sending
-            generateInvoice(resultDetails, "silent");
+        if (formData) {
+          if (formData.selectedPlan) setSelectedPlan(formData.selectedPlan);
+          const resultDetails = { ...formData, orderId };
+
+          // Verify payment with backend (non-blocking — show success either way)
+          axios
+            .get(
+              `${import.meta.env.VITE_API_BASE_URL}/verify-payment/${orderId}`,
+            )
+            .then(() => showSuccessAndSendInvoice(resultDetails))
+            .catch(() => {
+              // Still show success since gateway redirected with success
+              showSuccessAndSendInvoice(resultDetails);
+            });
+        } else {
+          // Parsing failed — use fallback data
+          showSuccessAndSendInvoice({
+            businessName: "N/A",
+            ownerName: "N/A",
+            businessType: "N/A",
+            phone: "N/A",
+            email: "N/A",
+            address: "N/A",
+            amount: "0",
+            orderId,
+            selectedPlan,
           });
+        }
       } else {
-        // No saved data but still returned from gateway
-        const resultDetails = {
-          businessName: "N/A",
-          ownerName: "N/A",
-          businessType: "N/A",
-          phone: "N/A",
-          email: "N/A",
-          address: "N/A",
-          amount: "0",
-          orderId,
-          selectedPlan,
-        };
-        setPaymentResult(resultDetails);
-        setShowSuccess(true);
-        triggerConfetti();
-        // Automatically trigger email sending
-        generateInvoice(resultDetails, "silent");
+        // No saved data but still returned from gateway — try localStorage as backup
+        let backupData = null;
+        try {
+          const lsData = localStorage.getItem("billtill_payment_form_backup");
+          if (lsData) {
+            backupData = JSON.parse(lsData);
+            localStorage.removeItem("billtill_payment_form_backup");
+          }
+        } catch (e) {
+          console.error("Failed to read localStorage backup:", e);
+        }
+
+        if (backupData) {
+          if (backupData.selectedPlan) setSelectedPlan(backupData.selectedPlan);
+          showSuccessAndSendInvoice({ ...backupData, orderId });
+        } else {
+          showSuccessAndSendInvoice({
+            businessName: "N/A",
+            ownerName: "N/A",
+            businessType: "N/A",
+            phone: "N/A",
+            email: "N/A",
+            address: "N/A",
+            amount: "0",
+            orderId,
+            selectedPlan,
+          });
+        }
       }
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -492,239 +562,6 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
         requestAnimationFrame(frame);
       }
     })();
-  };
-
-  const generateInvoice = (details, action = "download") => {
-    const doc = new jsPDF();
-    const invoiceId = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
-    const confirmationCode = Math.random()
-      .toString(36)
-      .substring(2, 10)
-      .toUpperCase();
-
-    // ── COLORS & STYLING ──
-    const primaryColor = [7, 60, 148]; // #073C94
-    const secondaryColor = [30, 41, 59]; // Slate-800
-    const accentColor = [16, 185, 129]; // Emerald-500
-    const grayText = [100, 116, 139]; // Slate-500
-
-    // ── HEADER SECTION ──
-    // Bill-Till Logo
-    try {
-      doc.addImage("/colored-logo.png", "PNG", 14, 15, 40, 20);
-    } catch (error) {
-      // Fallback to text if image fails to load
-      doc.setFontSize(24);
-      doc.setFont("helvetica", "bold");
-      doc.setTextColor(...primaryColor);
-      doc.text("Bill-Till", 14, 25);
-    }
-
-    // Invoice Meta (Top Right)
-    doc.setFontSize(20);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...secondaryColor);
-    doc.text("INVOICE", 140, 25);
-
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
-    doc.text(`Invoice ID:`, 140, 35);
-    doc.setFont("helvetica", "normal");
-    doc.text(invoiceId, 170, 35);
-
-    doc.setFont("helvetica", "bold");
-    doc.text(`Date:`, 140, 40);
-    doc.setFont("helvetica", "normal");
-    doc.text(new Date().toLocaleDateString(), 170, 40);
-
-    doc.setFont("helvetica", "bold");
-    doc.text(`Status:`, 140, 45);
-    doc.setTextColor(...accentColor);
-    doc.text("PAID", 170, 45);
-    doc.setTextColor(...secondaryColor);
-
-    // ── SENDER & BENEFICIARY ──
-    doc.setDrawColor(226, 232, 240);
-    doc.line(14, 55, 196, 55);
-
-    // From (Sender) - User
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...primaryColor);
-    doc.text("FROM (SENDER)", 14, 65);
-
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...secondaryColor);
-    doc.text(details.businessName || "Valued Customer", 14, 72);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text(`Name: ${details.ownerName}`, 14, 77);
-    doc.text(`Address: ${details.address || "N/A"}`, 14, 82, { maxWidth: 80 });
-    doc.text(`Phone: ${details.phone}`, 14, 87);
-    doc.text(`Email: ${details.email}`, 14, 92);
-
-    // To (Beneficiary) - Bill-Till
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...primaryColor);
-    doc.text("BILL TO (BENEFICIARY)", 110, 65);
-
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...secondaryColor);
-    doc.text("Bill-Till", 110, 72);
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.text("Bill-Till,", 110, 77);
-    doc.text("680A Colombo Road,Kattuwa,Negombo, Sri Lanka ", 110, 82, {
-      maxWidth: 80,
-    });
-    doc.text("Email: support@billtill.com", 110, 87);
-    doc.text("Web: www.billtill.co", 110, 92);
-    doc.text("Phone: 0114 758900", 110, 97);
-
-    // ── TRANSACTION DETAILS ──
-    doc.setDrawColor(241, 245, 249);
-    doc.setFillColor(248, 250, 252);
-    doc.roundedRect(14, 105, 182, 25, 3, 3, "FD");
-
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...grayText);
-    doc.text("Payment ID", 25, 115);
-    doc.text("Confirmation Code", 85, 115);
-    doc.text("Payment Method", 145, 115);
-
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...secondaryColor);
-    doc.text(details.orderId || "N/A", 25, 122);
-    doc.text(confirmationCode, 85, 122);
-    doc.text("Card Payment", 145, 122);
-
-    // ── ITEMS TABLE ──
-    const tableData = [
-      [
-        "01",
-        "Software Subscription",
-        `${details.selectedPlan || "Dynamic"} Plan`,
-        "1",
-        `LKR ${parseFloat(details.amount).toLocaleString()}`,
-        `LKR ${parseFloat(details.amount).toLocaleString()}`,
-      ],
-    ];
-
-    autoTable(doc, {
-      startY: 140,
-      head: [["#", "Service", "Description", "Qty", "Unit Price", "Total"]],
-      body: tableData,
-      theme: "grid",
-      headStyles: {
-        fillColor: primaryColor,
-        fontSize: 9,
-        fontStyle: "bold",
-        halign: "center",
-      },
-      styles: { fontSize: 9, cellPadding: 4 },
-      columnStyles: {
-        0: { halign: "center", cellWidth: 13 },
-        3: { halign: "center", cellWidth: 15 },
-        4: { halign: "right", cellWidth: 35 },
-        5: { halign: "right", cellWidth: 35 },
-      },
-    });
-
-    const finalY = doc.lastAutoTable.finalY + 15;
-
-    // ── TOTALS ──
-    doc.setFontSize(10);
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...grayText);
-    doc.text("Subtotal:", 140, finalY);
-    doc.text(
-      `LKR ${parseFloat(details.amount).toLocaleString()}`,
-      175,
-      finalY,
-      {
-        align: "right",
-      },
-    );
-
-    doc.text("Tax (0%):", 140, finalY + 7);
-    doc.text("LKR 0.00", 175, finalY + 7, { align: "right" });
-
-    doc.setDrawColor(226, 232, 240);
-    doc.line(135, finalY + 10, 196, finalY + 10);
-
-    doc.setFontSize(12);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...primaryColor);
-    doc.text("Total Paid:", 140, finalY + 18);
-    doc.text(
-      `LKR ${parseFloat(details.amount).toLocaleString()}`,
-      185,
-      finalY + 18,
-      { align: "right" },
-    );
-
-    // ── FOOTER ──
-    const pageHeight = doc.internal.pageSize.height;
-
-    doc.setDrawColor(226, 232, 240);
-    doc.line(14, pageHeight - 40, 196, pageHeight - 40);
-
-    doc.setFontSize(9);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(...secondaryColor);
-    doc.text("Thank you for your business!", 14, pageHeight - 33);
-
-    doc.setFont("helvetica", "normal");
-    doc.setTextColor(...grayText);
-    doc.text(
-      "This is a computer-generated document and does not require a physical signature.",
-      14,
-      pageHeight - 28,
-    );
-    doc.text(
-      "For any queries, please contact support@billtill.com or call +94 0114 758900",
-      14,
-      pageHeight - 23,
-    );
-
-    // ── ACTION ──
-    if (action === "view") {
-      window.open(doc.output("bloburl"), "_blank");
-    } else if (action === "download") {
-      doc.save(`BillTill_Invoice_${details.orderId}.pdf`);
-    }
-
-    // ── SEND EMAIL IN BACKGROUND ──
-    // Only send email on the first action (not on every button click)
-    // Use a flag on details to avoid sending twice
-    if (!details._emailSent) {
-      details._emailSent = true;
-      const pdfBlob = doc.output("blob");
-      const filename = `BillTill_Invoice_${details.orderId}.pdf`;
-      const formData = new FormData();
-      formData.append("invoice", pdfBlob, filename);
-      formData.append("email", details.email || "");
-      formData.append("businessName", details.businessName || "");
-      formData.append("invoiceId", invoiceId);
-      formData.append("orderId", details.orderId || "");
-      formData.append("confirmationCode", confirmationCode);
-      formData.append("amount", details.amount || "0");
-      formData.append("plan", details.selectedPlan || "Dynamic");
-
-      axios
-        .post("http://localhost:3000/api/send-invoice", formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-        })
-        .then(() => console.log("Invoice email sent successfully"))
-        .catch((err) =>
-          console.error(
-            "Invoice email failed:",
-            err?.response?.data || err.message,
-          ),
-        );
-    }
   };
 
   const SuccessModal = ({ details, onClose }) => {
@@ -775,7 +612,8 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Amount</span>
                 <span className="font-bold text-emerald-600">
-                  LKR {parseFloat(details.amount).toLocaleString()}
+                  {details.currency || "LKR"}{" "}
+                  {parseFloat(details.amount).toLocaleString()}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
@@ -850,8 +688,8 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       setLoading(true);
 
       const response = await axios.post(
-        "http://localhost:3000/api/create-payment",
-        form,
+        `${import.meta.env.VITE_API_BASE_URL}/create-payment`,
+        { ...form, currency },
       );
 
       const sessionId = response.data.sessionId || response.data.session?.id;
@@ -862,11 +700,35 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       // Save form data to sessionStorage before gateway redirects away
       sessionStorage.setItem(
         "billtill_payment_form",
-        JSON.stringify({ ...form, selectedPlan }),
+        JSON.stringify({
+          ...form,
+          selectedPlan,
+          currency,
+          billingCycle: isMonthly ? "Monthly" : "Annually",
+          confirmationCode: passedConfirmationCode,
+        }),
       );
+      // Also save to localStorage as a backup (iOS Safari may lose sessionStorage on redirect)
+      try {
+        localStorage.setItem(
+          "billtill_payment_form_backup",
+          JSON.stringify({
+            ...form,
+            selectedPlan,
+            currency,
+            billingCycle: isMonthly ? "Monthly" : "Annually",
+            confirmationCode: passedConfirmationCode,
+          }),
+        );
+      } catch (e) {
+        console.warn("Could not save localStorage backup:", e);
+      }
 
       window.cancelCallback = () => {
         sessionStorage.removeItem("billtill_payment_form");
+        try {
+          localStorage.removeItem("billtill_payment_form_backup");
+        } catch (e) {}
         setLoading(false);
       };
 
@@ -894,6 +756,30 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
   return (
     <div className="space-y-7 mt-10 md:mt-0">
+      {/* Currency Toggle */}
+      <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-slate-50 to-blue-50 border border-blue-100">
+        <div className="flex items-center gap-2">
+          <Globe className="w-4 h-4 text-blue-500" />
+          <span className="text-sm text-slate-600">Payment Currency</span>
+        </div>
+        <div className="flex items-center gap-1 bg-white rounded-lg border border-blue-200 shadow-sm p-0.5">
+          {["LKR", "USD"].map((cur) => (
+            <button
+              key={cur}
+              type="button"
+              onClick={() => setCurrency(cur)}
+              className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 ${
+                currency === cur
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                  : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+              }`}
+            >
+              {cur === "LKR" ? "🇱🇰 LKR" : "🇺🇸 USD"}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {/* Plan Selection Dropdown */}
       <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-blue-50 border border-blue-100">
         <div className="flex items-center gap-2">
@@ -927,7 +813,11 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
                 >
                   <span>{plan.name}</span>
                   <span className="text-sm font-bold text-blue-600">
-                    LKR {plan.price.toLocaleString()}
+                    {currency}{" "}
+                    {(isMonthly
+                      ? plan.price
+                      : plan.yearlyPrice * 12
+                    ).toLocaleString()}
                   </span>
                 </button>
               ))}

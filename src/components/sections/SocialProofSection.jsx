@@ -59,7 +59,7 @@ const CountingNumber = ({ target, suffix = '', prefix = '', duration = 2000 }) =
 
 export const SocialProofSection = () => {
   return (
-    <section className="py-16 bg-muted/30 border-b border-border">
+    <section className="py-10 md:py-16 bg-muted/30 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Trust Logos */}
         <motion.div
@@ -110,15 +110,15 @@ export const SocialProofSection = () => {
               transition={{ delay: index * 0.1 }}
               className="text-center"
             >
-              <div className="text-3xl lg:text-4xl font-bold text-primary mb-1">
+              <div className="text-3xl lg:text-4xl font-bold text-[#0957D6] mb-1">
                 <CountingNumber 
                   target={stat.target} 
                   suffix={stat.suffix} 
                   prefix={stat.prefix || ''}
-                  duration={2000}
+                  duration={4000}
                 />
               </div>
-              <div className="text-sm text-muted-foreground">{stat.label}</div>
+              <div className="text-xs md:text-sm text-muted-foreground">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>

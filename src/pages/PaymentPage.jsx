@@ -9,7 +9,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import PaymentForm from "@/components/sections/PaymentForm";
 import { cn } from "@/lib/utils";
 
@@ -134,6 +134,7 @@ const BrandPanel = () => (
 
 const PaymentPage = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   // Hide the main navbar when on payment page
   useEffect(() => {
@@ -186,10 +187,15 @@ const PaymentPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="bg-white rounded-2xl shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] border border-slate-100 p-6 sm:p-8"
           >
-
             {/* The original PaymentForm component */}
-            <PaymentForm selectedPlan="Pro" />
-
+            <PaymentForm
+              selectedPlan={location.state?.selectedPlan || "Pro"}
+              isMonthly={
+                location.state?.isMonthly !== undefined
+                  ? location.state.isMonthly
+                  : true
+              }
+            />
           </motion.div>
 
           {/* Footer note */}

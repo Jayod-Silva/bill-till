@@ -1,6 +1,8 @@
-const prisma = require("../config/prisma");
-const bcrypt = require("bcrypt");
+const axios = require("axios");
 const jwt = require("jsonwebtoken");
+const { sendWelcomeEmail } = require("../services/emailService");
+
+const API_BASE_URL = process.env.EXTERNAL_API_BASE_URL;
 
 // 1️⃣ REGISTER USER
 const register = async (req, res) => {
@@ -24,64 +26,75 @@ const register = async (req, res) => {
             return res.status(400).json({ success: false, message: "Missing required fields" });
         }
 
-        // Hash password
-        const hashedPassword = await bcrypt.hash(password, 10);
+        // 1. Add User to External API
+        const userPayload = {
+            FirstName: first_name,
+            LastName: last_name,
+            Email: email,
+            Password: password,
+            Phone: phone || "",
+            Status: "Active",
+            ProfilePic: null,
+            UniqueCode: null
+        };
 
-        // Call Stored Procedure for atomic registration
-        // Note: Parameter order must match sp_RegisterUserWithBusiness in setup.sql
-        try {
-            // Use $queryRaw to handle cases where we might need return values or specific execution context
-            await prisma.$executeRaw`
-        EXEC sp_RegisterUserWithBusiness 
-          @FirstName = ${first_name}, 
-          @LastName = ${last_name}, 
-          @Email = ${email}, 
-          @Password = ${hashedPassword}, 
-          @Phone = ${phone},
-          @BusinessName = ${business_name}, 
-          @BusinessType = ${business_type}, 
-          @BusinessAddress = ${business_address}, 
-          @City = ${city}, 
-          @Province = ${province}, 
-          @ZipCode = ${zip_code}
-      `;
+        const userResponse = await axios.post(`${API_BASE_URL}/addwebsiteuser`, userPayload);
+        const userId = userResponse.data.userId;
 
-            // Fetch the newly created user for the token payload
-            const user = await prisma.user.findUnique({
-                where: { email },
-                include: { business: true }
-            });
+        // 2. Add Business to External API
+        const businessPayload = {
+            UserId: userId,
+            Name: business_name,
+            Type: business_type || "",
+            Address: business_address || "",
+            City: city || "",
+            Province: province || "",
+            Contact: phone || "",
+            Email: email,
+            Website: "",
+            Currency: "LKR",
+            Vat: ""
+        };
 
-            if (!user) {
-                throw new Error("User creation failed in stored procedure");
-            }
+        await axios.post(`${API_BASE_URL}/addwebsitebusiness`, businessPayload);
 
-            // Generate JWT (Same logic as login)
-            const token = jwt.sign(
-                { id: user.id, email: user.email, role: user.role },
-                process.env.JWT_SECRET,
-                { expiresIn: "1d" }
-            );
+        // Fetch user data for the response (simulating prisma findUnique)
+        const user = {
+            id: userId,
+            firstName: first_name,
+            lastName: last_name,
+            email: email,
+            phone: phone,
+            role: "user", // Default role
+            business: businessPayload
+        };
 
-            // Don't send password
-            const { password: _, ...userWithoutPassword } = user;
+        // Generate JWT
+        const token = jwt.sign(
+            { id: user.id, email: user.email, role: user.role },
+            process.env.JWT_SECRET,
+            { expiresIn: "1d" }
+        );
 
-            res.status(201).json({
-                success: true,
-                message: "User and business registered successfully",
-                token,
-                user: userWithoutPassword
-            });
-        } catch (dbError) {
-            if (dbError.message.includes("Email already registered")) {
-                return res.status(409).json({ success: false, message: "Email already exists" });
-            }
-            throw dbError;
-        }
+        // Send Welcome Email (non-blocking)
+        sendWelcomeEmail({
+            to: email,
+            firstName: first_name,
+            businessName: business_name
+        }).catch(err => console.error("Welcome email failed:", err.message));
+
+        res.status(201).json({
+            success: true,
+            message: "User and business registered successfully",
+            token,
+            user
+        });
 
     } catch (error) {
-        console.error("Registration error:", error);
-        res.status(500).json({ success: false, message: "Server error during registration" });
+        console.error("Registration error:", error.response?.data || error.message);
+        const status = error.response?.status || 500;
+        const message = error.response?.data?.message || "Server error during registration";
+        res.status(status).json({ success: false, message });
     }
 };
 
@@ -94,59 +107,75 @@ const login = async (req, res) => {
             return res.status(400).json({ success: false, message: "Please provide email and password" });
         }
 
-        // Find user
-        const user = await prisma.user.findUnique({
-            where: { email },
-            include: { business: true }
-        });
+        // 1. Login user via External API
+        const loginResponse = await axios.post(`${API_BASE_URL}/loginwebsiteuser`, { Email: email, Password: password });
+        const { user: apiUser } = loginResponse.data;
 
-        if (!user) {
-            return res.status(401).json({ success: false, message: "Invalid credentials" });
+        // 2. Fetch Business details
+        let business = null;
+        try {
+            const businessResponse = await axios.get(`${API_BASE_URL}/getwebsitebusiness/${apiUser.id}`);
+            business = businessResponse.data;
+        } catch (bErr) {
+            console.warn("Could not fetch business for user during login", bErr.message);
         }
 
-        // Compare passwords
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) {
-            return res.status(401).json({ success: false, message: "Invalid credentials" });
-        }
+        const user = {
+            ...apiUser,
+            business
+        };
 
         // Generate JWT
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
+            { id: user.id, email: user.email, role: user.role || "user" },
             process.env.JWT_SECRET,
             { expiresIn: "1d" }
         );
 
-        // Don't send password
-        const { password: _, ...userWithoutPassword } = user;
-
         res.json({
             success: true,
             token,
-            user: userWithoutPassword
+            user
         });
 
     } catch (error) {
-        console.error("Login error:", error);
-        res.status(500).json({ success: false, message: "Server error during login" });
+        console.error("Login error:", error.response?.data || error.message);
+        const status = error.response?.status || 401;
+        const message = error.response?.data?.message || "Invalid credentials";
+        res.status(status).json({ success: false, message });
     }
 };
 
 // 3️⃣ GET CURRENT USER (Protected)
 const getMe = async (req, res) => {
     try {
-        const user = await prisma.user.findUnique({
-            where: { id: req.user.id },
-            include: { business: true }
-        });
+        const userId = req.user.id;
 
-        if (!user) {
+        // Fetch all users and filter by ID (since no getById)
+        const usersResponse = await axios.get(`${API_BASE_URL}/getallwebsiteusers`);
+        const apiUser = usersResponse.data.find(u => u.id === userId);
+
+        if (!apiUser) {
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        const { password: _, ...userWithoutPassword } = user;
-        res.json({ success: true, user: userWithoutPassword });
+        // Fetch business
+        let business = null;
+        try {
+            const businessResponse = await axios.get(`${API_BASE_URL}/getwebsitebusiness/${userId}`);
+            business = businessResponse.data;
+        } catch (bErr) {
+            console.warn("Could not fetch business for user in getMe", bErr.message);
+        }
+
+        const user = {
+            ...apiUser,
+            business
+        };
+
+        res.json({ success: true, user });
     } catch (error) {
+        console.error("getMe error:", error.response?.data || error.message);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };

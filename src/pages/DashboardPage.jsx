@@ -269,7 +269,7 @@ const DashboardPage = () => {
     if (!path)
       return `https://ui-avatars.com/api/?name=${encodeURIComponent((user?.firstName || "U") + " " + (user?.lastName || ""))}&background=3b82f6&color=fff`;
     if (path.startsWith("blob:") || path.startsWith("http")) return path;
-    return `http://localhost:3000${path}`;
+    return `${import.meta.env.VITE_BACKEND_URL}${path}`;
   };
 
   const [activeTab, setActiveTab] = useState("profile");
@@ -319,7 +319,7 @@ const DashboardPage = () => {
         headers: { "Content-Type": "multipart/form-data" },
       });
       const newPicPath = data.profilePic;
-      const fullUrl = `http://localhost:3000${newPicPath}`;
+      const fullUrl = `${import.meta.env.VITE_BACKEND_URL}${newPicPath}`;
       setProfilePic(fullUrl);
       updateUser({ profilePic: newPicPath });
     } catch (err) {
