@@ -184,7 +184,7 @@ export default function Navbar() {
                   >
                     {user.profilePic ? (
                       <img
-                        src={`${import.meta.env.VITE_BACKEND_URL}${user.profilePic}`}
+                        src={`https://caritasconnect.ddns.net${user.profilePic}`}
                         alt="Profile"
                         className="w-full h-full object-cover"
                       />

@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
-const { sendInvoiceEmail, sendAdminNotificationEmail } = require("./services/emailService");
+const { sendInvoiceEmail } = require("./services/emailService");
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -16,26 +16,7 @@ const app = express();
 
 // Middlewares
 app.use(express.json());
-
-// CORS Configuration
-const allowedOrigins = [
-  process.env.FRONTEND_URL || "http://localhost:5173",
-  "https://caritasconnect.ddns.net",
-  "https://billtill.co"
-];
-
-app.use(cors({
-  origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps or curl requests)
-    if (!origin) return callback(null, true);
-    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true
-}));
+app.use(cors());
 
 // Ensure uploads directory exists
 const uploadDir = path.join(__dirname, "uploads");
@@ -102,7 +83,7 @@ app.post("/api/create-payment", async (req, res) => {
         apiOperation: "INITIATE_CHECKOUT",
         interaction: {
           operation: "PURCHASE",
-          returnUrl: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/payment?payment=success&orderId=${orderId}`,
+          returnUrl: `https://caritasconnect.ddns.net/billtill/payment?payment=success&orderId=${orderId}`,
           merchant: {
             name: "BillTill",
             address: { line1: "Sri Lanka" }
@@ -158,21 +139,7 @@ app.get("/api/verify-payment/:orderId", async (req, res) => {
 
 app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
   try {
-    const {
-      email,
-      businessName,
-      businessType,
-      ownerName,
-      phone,
-      address,
-      invoiceId,
-      orderId,
-      confirmationCode,
-      amount,
-      plan,
-      billingCycle,
-      currency,
-    } = req.body;
+    const { email, businessName, invoiceId, orderId, confirmationCode, amount, plan } = req.body;
     const pdfBuffer = req.file?.buffer;
     const filename = req.file?.originalname || `BillTill_Invoice_${orderId}.pdf`;
 
@@ -183,7 +150,6 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
       return res.status(400).json({ success: false, error: "Email is required" });
     }
 
-    // 1. Send Invoice to Customer
     await sendInvoiceEmail({
       to: email,
       businessName,
@@ -194,31 +160,7 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
       confirmationCode,
       amount,
       plan,
-      currency,
     });
-
-    // 2. Notify Admin if it's a Premium Plan (Dynamic or Pro)
-    const premiumPlans = ["Dynamic", "Pro"];
-    if (premiumPlans.includes(plan)) {
-      try {
-        await sendAdminNotificationEmail({
-          businessName,
-          businessType,
-          ownerName,
-          phone,
-          email,
-          address,
-          plan,
-          billingCycle,
-          currency,
-          amount,
-          orderId,
-        });
-      } catch (adminEmailError) {
-        console.error("Admin notification failed:", adminEmailError);
-        // Non-blocking for the customer: we don't return an error to the client
-      }
-    }
 
     res.json({ success: true, message: "Invoice sent successfully" });
   } catch (error) {

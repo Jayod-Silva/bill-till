@@ -18,16 +18,16 @@ export const FreeSwitchSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-4xl lg:text-6xl font-bold text-gray-900 mb-6">
+          <h2 className="text-4xl lg:text-6xl font-bold text-gray-900 px-10 md:px-0 mb-6">
             Switch to BillTill for Free
           </h2>
-          <p className="text-xl lg:text-lg text-gray-700 max-w-xl mx-auto mb-8">
+          <p className="text-md lg:text-lg text-gray-700 px-8 md:px-0 mb-8">
             No hidden fees. No setup costs. No system switching charges. 
             Make the move to a better POS system without breaking the bank.
           </p>
         </motion.div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-16 max-w-5xl mx-auto">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2 md:gap-6 mb-16 max-w-5xl mx-auto px-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -108,7 +108,7 @@ export const FreeSwitchSection = () => {
           <img 
             src="/POS.png" 
             alt="POS Device" 
-            className="max-w-full h-auto max-h-[400px] lg:max-h-[500px] object-contain mx-auto scale-125 lg:scale-150 -mb-5"
+            className="max-w-full h-auto max-h-[400px] lg:max-h-[500px] object-contain mx-auto scale-150 lg:scale-150 -mb-5"
           />
         </motion.div>
       </div>

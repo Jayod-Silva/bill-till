@@ -2,7 +2,7 @@ import axios from "axios";
 
 // Axios instance pointing to the backend server
 const api = axios.create({
-    baseURL: import.meta.env.VITE_API_BASE_URL,
+    baseURL: "https://caritasconnect.ddns.net/billtill/api",
     headers: { "Content-Type": "application/json" },
 });
 

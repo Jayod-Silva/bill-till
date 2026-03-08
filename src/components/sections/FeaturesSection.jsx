@@ -100,7 +100,7 @@ export const FeaturesSection = () => {
         </motion.div>
 
         {/* Features Grid */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {features.map((feature, index) => (
             <motion.div
               key={feature.title}
@@ -109,7 +109,7 @@ export const FeaturesSection = () => {
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: index * 0.05 }}
               style={{ y: index % 2 === 0 ? y1 : y2 }}
-              className="group"
+              className="group lg:block hidden" // Hide on mobile, show on desktop
             >
               <div className="h-full p-6 rounded-2xl bg-card border border-border hover:border-primary/20 hover:shadow-card transition-all duration-300">
                 {/* Icon */}
@@ -135,6 +135,40 @@ export const FeaturesSection = () => {
                 </div>
               </div>
             </motion.div>
+          ))}
+        </div>
+
+        {/* Mobile Features Grid - No Animation */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:hidden gap-6">
+          {features.map((feature, index) => (
+            <div
+              key={feature.title}
+              className="group"
+            >
+              <div className="h-full p-6 rounded-2xl bg-card border border-border hover:border-primary/20 hover:shadow-card transition-all duration-300">
+                {/* Icon */}
+                <div className="w-12 h-12 rounded-xl bg-accent flex items-center justify-center mb-4 group-hover:bg-primary/10 transition-colors duration-300\">
+                  <feature.icon className="w-6 h-6 text-primary" />
+                </div>
+
+                {/* Content */}
+                <div className="flex items-center gap-2 mb-2">
+                  <h3 className="text-base font-semibold text-foreground">
+                    {feature.title}
+                  </h3>
+                </div>
+                <p className="text-sm text-muted-foreground leading-relaxed">
+                  {feature.description}
+                </p>
+
+                {/* Category Tag */}
+                <div className="mt-4">
+                  <span className="text-xs font-medium text-primary/70">
+                    {feature.category}
+                  </span>
+                </div>
+              </div>
+            </div>
           ))}
         </div>
 

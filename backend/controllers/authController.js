@@ -38,8 +38,11 @@ const register = async (req, res) => {
             UniqueCode: null
         };
 
+        console.log(`[Auth] Adding website user: ${email}`);
         const userResponse = await axios.post(`${API_BASE_URL}/addwebsiteuser`, userPayload);
+        console.log(`[Auth] User added, ID: ${userResponse.data.userId}`);
         const userId = userResponse.data.userId;
+
 
         // 2. Add Business to External API
         const businessPayload = {
@@ -56,7 +59,10 @@ const register = async (req, res) => {
             Vat: ""
         };
 
+        console.log(`[Auth] Adding business for UserID: ${userId}`);
         await axios.post(`${API_BASE_URL}/addwebsitebusiness`, businessPayload);
+        console.log(`[Auth] Business added successfully`);
+
 
         // Fetch user data for the response (simulating prisma findUnique)
         const user = {
@@ -107,9 +113,11 @@ const login = async (req, res) => {
             return res.status(400).json({ success: false, message: "Please provide email and password" });
         }
 
-        // 1. Login user via External API
+        console.log(`[Auth] Attempting login for: ${email}`);
         const loginResponse = await axios.post(`${API_BASE_URL}/loginwebsiteuser`, { Email: email, Password: password });
+        console.log(`[Auth] Login successful for: ${email}`);
         const { user: apiUser } = loginResponse.data;
+
 
         // 2. Fetch Business details
         let business = null;
@@ -139,9 +147,10 @@ const login = async (req, res) => {
         });
 
     } catch (error) {
-        console.error("Login error:", error.response?.data || error.message);
+        console.error(`[Auth] Login failed for ${email}:`, error.response?.data || error.message);
         const status = error.response?.status || 401;
         const message = error.response?.data?.message || "Invalid credentials";
+
         res.status(status).json({ success: false, message });
     }
 };

@@ -25,7 +25,7 @@ const plans = [
       "Standard integrations",
     ],
     description: "Perfect for small businesses just getting started.",
-    buttonText: "Start Free Trial",
+    buttonText: "Start Now",
     href: "/register",
     isPopular: false,
   },
@@ -35,17 +35,17 @@ const plans = [
     yearlyPrice: "6,399",
     period: "per month",
     features: [
-      "Unlimited transactions",
-      "Up to 5 Registers",
-      "Advanced analytics",
-      "Priority support",
-      "All integrations",
-      "Inventory management",
-      "Employee management",
-      "Customer loyalty",
+      "POS with Multi Terminal Connectivity",
+      "Real-time Sales Dashboard",
+      "24x7 on call support",
+      "⁠GRN (Advance)",
+      "Debtor Management (advance)",
+      "⁠Creditor Management (Advance)",
+      "Stock and Inventory (Advance)",
+      "⁠Production Module(For Hospitality Only)",
     ],
     description: "For growing businesses that need more power.",
-    buttonText: "Start Free Trial",
+    buttonText: "Start Now",
     href: "/register",
     isPopular: true,
   },
@@ -62,7 +62,6 @@ const plans = [
       "Multi-location management",
       "Advanced security features",
       "Custom reporting",
-      "White-label options",
     ],
     description: "Get a personalized solution for your business.",
     buttonText: "Get in Touch",
@@ -135,7 +134,7 @@ export const PricingSection = () => {
           <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-muted-foreground text-lg whitespace-pre-line">
+          <p className="text-muted-foreground text-md md:text-lg whitespace-pre-line">
             Choose the plan that works for you All plans include access to our
             platform, lead generation tools, and dedicated support.
           </p>
@@ -158,8 +157,8 @@ export const PricingSection = () => {
           </span>
         </div>
 
-        {/* Pricing Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {/* Pricing Cards - Desktop (with animations) */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-4">
           {plans.map((plan, index) => (
             <motion.div
               key={plan.name}
@@ -167,7 +166,7 @@ export const PricingSection = () => {
               whileInView={{
                 y: plan.isPopular ? -20 : 0,
                 opacity: 1,
-                x: index === 2 ? -30 : index === 0 ? 30 : 0,
+                x: 0, // Remove horizontal transforms on mobile
                 scale: index === 0 || index === 2 ? 0.94 : 1.0,
               }}
               viewport={{ once: true }}
@@ -180,13 +179,12 @@ export const PricingSection = () => {
                 opacity: { duration: 0.5 },
               }}
               className={cn(
-                "rounded-2xl border-[1px] p-6 bg-background text-center lg:flex lg:flex-col lg:justify-center relative",
+                "rounded-2xl border-[1px] p-6 bg-background text-center flex flex-col relative w-full max-w-full overflow-hidden",
                 plan.isPopular ? "border-primary border-2" : "border-border",
-                "flex flex-col",
+                // Apply responsive margin to all non-popular cards
                 !plan.isPopular && "mt-5",
-                index === 0 || index === 2
-                  ? "z-0 transform translate-x-0 translate-y-0 -translate-z-[50px] rotate-y-[10deg]"
-                  : "z-10",
+                // Apply complex transforms on desktop only
+                "origin-right translate-x-0 translate-y-0 -translate-z-[50px] rotate-y-[10deg]",
                 index === 0 && "origin-right",
                 index === 2 && "origin-left",
               )}
@@ -215,7 +213,7 @@ export const PricingSection = () => {
                     </div>
                   ) : (
                     <>
-                      <span className="text-5xl font-bold tracking-tight text-foreground">
+                      <span className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
                         LKR {isMonthly ? plan.price : plan.yearlyPrice}
                       </span>
                       <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
@@ -260,6 +258,89 @@ export const PricingSection = () => {
                 </p>
               </div>
             </motion.div>
+          ))}
+        </div>
+
+        {/* Pricing Cards - Mobile (no animations) */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:hidden gap-4">
+          {plans.map((plan, index) => (
+            <div
+              key={plan.name}
+              className={cn(
+                "rounded-2xl border-[1px] p-6 bg-background text-center flex flex-col relative w-full max-w-full overflow-hidden",
+                plan.isPopular ? "border-primary border-2" : "border-border",
+                // No margin on mobile for better spacing
+              )}
+            >
+              {plan.isPopular && (
+                <div className="absolute top-0 right-0 bg-primary py-0.5 px-2 rounded-bl-xl rounded-tr-xl flex items-center">
+                  <Star className="text-primary-foreground h-4 w-4 fill-current" />
+                  <span className="text-primary-foreground ml-1 font-sans font-semibold">
+                    Popular
+                  </span>
+                </div>
+              )}
+              <div className="flex-1 flex flex-col">
+                <p className="text-base font-semibold text-muted-foreground">
+                  {plan.name}
+                </p>
+                <div className="mt-6 flex items-center justify-center gap-x-2">
+                  {plan.isContact ? (
+                    <div className="text-center">
+                      <span className="text-3xl font-bold tracking-tight text-foreground">
+                        Custom
+                      </span>
+                      <p className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground mt-2">
+                        tailored solution
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <span className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+                        LKR {isMonthly ? plan.price : plan.yearlyPrice}
+                      </span>
+                      <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
+                        / {plan.period}
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {!plan.isContact && (
+                  <p className="text-xs leading-5 text-muted-foreground">
+                    {isMonthly ? "billed monthly" : "billed annually"}
+                  </p>
+                )}
+
+                <ul className="mt-5 gap-2 flex flex-col">
+                  {plan.features.map((feature, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <Check className="h-4 w-4 text-primary mt-1 flex-shrink-0" />
+                      <span className="text-left">{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <hr className="w-full my-4" />
+
+                <Button
+                  variant={plan.isPopular ? "default" : "outline"}
+                  className={cn(
+                    "w-full gap-2 overflow-hidden text-lg font-semibold tracking-tighter",
+                    "transform-gpu ring-offset-current transition-all duration-300 ease-out hover:ring-2 hover:ring-primary hover:ring-offset-1 hover:bg-primary hover:text-primary-foreground",
+                    plan.isPopular
+                      ? "bg-primary text-primary-foreground"
+                      : "bg-background text-foreground",
+                  )}
+                  onClick={() => handleCTA(plan, plan.href)}
+                >
+                  {plan.buttonText}
+                </Button>
+                <p className="mt-6 text-xs leading-5 text-muted-foreground">
+                  {plan.description}
+                </p>
+              </div>
+            </div>
           ))}
         </div>
 

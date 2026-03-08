@@ -1,5 +1,5 @@
 const nodemailer = require("nodemailer");
-const { getInvoiceEmailHtml, getWelcomeEmailHtml, getAdminNotificationEmailHtml } = require("../../src/templates/EmailTemplates.cjs");
+const { getInvoiceEmailHtml, getWelcomeEmailHtml, getAdminNotificationEmailHtml } = require("../templates/EmailTemplates.cjs");
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST || "smtp.gmail.com",

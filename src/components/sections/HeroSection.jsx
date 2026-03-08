@@ -1,7 +1,7 @@
 import React, { useRef, useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { ArrowRight, ChevronRight, Play } from "lucide-react";
+import { ArrowRight, ChevronRight, Play, Zap } from "lucide-react";
 
 export const HeroSection = () => {
   const containerRef = useRef(null);
@@ -48,7 +48,7 @@ export const HeroSection = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-white/30 via-white/10 to-white z-10" />
 
         {/* Subtle primary glow blob */}
-        {/* <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-blue-400/10 blur-[120px] z-10" /> */}
+        {/* <div className="absolute top-[-60px] left-1/2 -translate-x-1/2 w-[800px] h-[400px] rounded-full bg-[#0957D6] blur-[120px] z-10" /> */}
       </div>
 
       {/* ── Hero content ── */}
@@ -60,11 +60,11 @@ export const HeroSection = () => {
           transition={{ duration: 0.55, ease: [0.4, 0, 0.2, 1] }}
           className="inline-flex items-center gap-2 px-1.5 py-1 rounded-full border border-slate-200 bg-white backdrop-blur-sm shadow-sm mb-7 group cursor-pointer hover:border-blue-200 transition-colors duration-200"
         >
-          <span className="flex items-center justify-center w-12 h-6 rounded-full bg-[#0957D6] text-[10px] font-bold text-white tracking-wide">
-            NEW
+          <span className="flex items-center justify-center w-10 h-6 rounded-full bg-[#0957D6] text-white">
+            <Zap className="w-3 h-3 fill-white" />
           </span>
           <span className="text-xs text-slate-600 font-medium pr-1">
-            Simplify Your Billing Today
+            Lightning Fast Setup
           </span>
         </motion.div>
 
@@ -85,7 +85,7 @@ export const HeroSection = () => {
           transition={{ duration: 0.6, delay: 0.18, ease: [0.4, 0, 0.2, 1] }}
           className="text-sm md:text-md text-slate-500 max-w-md mx-auto mb-3 leading-relaxed"
         >
-          The modern retail POS system beautifully simple, powerfully connected.
+          Simple to use, powerful to help your business grow, and priced affordably for everyone in retail
         </motion.p>
 
         {/* CTA Buttons */}

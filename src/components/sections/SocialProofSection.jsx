@@ -8,8 +8,8 @@ const logos = [
 ];
 
 const stats = [
-  { value: '50K+', label: 'Active Businesses', target: 50, suffix: 'K+' },
-  { value: '$2.5B+', label: 'Transactions Processed', target: 2.5, suffix: 'B+', prefix: '$' },
+  { value: '1K+', label: 'Active Businesses', target: 1, suffix: 'K+' },
+  { value: '4.9★', label: 'Customer Rating', target: 4.9, suffix: ' ★' },
   { value: '99.9%', label: 'Uptime Guarantee', target: 99.9, suffix: '%' },
   { value: '24/7', label: 'Customer Support', target: 24, suffix: '/7' },
 ];
@@ -44,8 +44,13 @@ const CountingNumber = ({ target, suffix = '', prefix = '', duration = 2000 }) =
   }, [isInView, target, duration]);
 
   const formatNumber = (num) => {
-    if (num % 1 === 0) {
+    // For whole numbers, don't show decimal places
+    if (num >= 1 && num % 1 === 0) {
       return Math.floor(num).toString();
+    }
+    // For numbers less than 1 or with decimals, show at most 1 decimal place
+    if (num < 1) {
+      return num.toFixed(1);
     }
     return num.toFixed(1);
   };

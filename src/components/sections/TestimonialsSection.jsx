@@ -251,7 +251,7 @@ export const TestimonialsSection = () => {
                 </div>
 
                 {/* Quote */}
-                <blockquote className="text-lg lg:text-xl text-gray-700 leading-relaxed mb-8">
+                <blockquote className="text-md lg:text-xl text-gray-700 leading-relaxed mb-8">
                   "{testimonials[currentIndex].quote}"
                 </blockquote>
 

@@ -158,7 +158,7 @@ export const IndustriesSection = () => {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
-            className="text-lg lg:text-xl text-muted-foreground max-w-3xl mx-auto"
+            className="text-sm lg:text-xl text-muted-foreground max-w-3xl mx-auto"
           >
             Tailored solutions that transform businesses across all sectors. 
             Experience the power of specialized POS technology designed for your unique needs.
@@ -268,7 +268,7 @@ export const IndustriesSection = () => {
                       <industry.icon className="w-8 h-8 text-white" />
                     </motion.div>
                     <div>
-                      <h3 className="text-3xl lg:text-4xl font-bold text-foreground">
+                      <h3 className="text-2xl lg:text-4xl font-bold text-foreground">
                         {industry.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
@@ -279,7 +279,7 @@ export const IndustriesSection = () => {
                   </div>
 
                   {/* Description */}
-                  <p className="text-lg text-muted-foreground leading-relaxed">
+                  <p className="text-md md:text-lg text-muted-foreground leading-relaxed">
                     {industry.description}
                   </p>
 
