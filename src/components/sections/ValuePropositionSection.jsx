@@ -24,105 +24,108 @@ const propositions = [
     description:
       "Process transactions in milliseconds. No lag, no waiting, just seamless checkout experiences.",
     color: "text-warning",
-    titleKey: "value_prop2_title",
-    descKey: "value_prop2_desc",
-    color: "amber",
+    bgColor: "bg-warning/10",
   },
   {
     icon: Shield,
-    titleKey: "value_prop3_title",
-    descKey: "value_prop3_desc",
-    color: "green",
+    title: "Bank-Grade Security",
+    description:
+      "End-to-end encryption, PCI DSS compliance, and fraud protection built into every transaction.",
+    color: "text-success",
+    bgColor: "bg-success/10",
   },
 ];
 
+const additionalFeatures = [
+  { icon: Cloud, label: "Cloud-Based" },
+  { icon: Smartphone, label: "Mobile Ready" },
+  { icon: CreditCard, label: "All Payments" },
+];
+
 export const ValuePropositionSection = () => {
-  const { t } = useLanguage();
+  const sectionRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ["start end", "end start"],
+  });
+
+  const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
 
   return (
-    <section className="py-24 bg-slate-50 relative overflow-hidden">
+    <section
+      id="company"
+      ref={sectionRef}
+      className="py-16 md:py-24 lg:pt-32 lg:pb-10 overflow-hidden"
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto mb-20">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-4xl md:text-5xl font-bold text-gray-900 mb-6"
-          >
-            <span data-i18n="value_title">{t("value_title")}</span>{" "}
-            <span className="text-blue-600">Bill Till</span>
-          </motion.h2>
-          <motion.p
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            className="text-lg text-gray-600 leading-relaxed"
-            data-i18n="value_subtitle"
-          >
-            {t("value_subtitle")}
-          </motion.p>
-        </div>
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center max-w-3xl mx-auto mb-16"
+        >
+          <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 md:mb-6">
+            Why businesses choose{" "}
+            <span className="text-primary">Bill Till</span>
+          </h2>
+          <p className="text-sm lg:text-md px-5 text-muted-foreground">
+            Built for the modern era, our platform combines cutting-edge
+            technology with intuitive design to deliver the ultimate POS
+            experience.
+          </p>
+        </motion.div>
 
-        {/* Propositions Grid */}
-        <div className="grid md:grid-cols-3 gap-8">
+        {/* Main Propositions */}
+        <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-10">
           {propositions.map((prop, index) => (
             <motion.div
-              key={prop.titleKey}
+              key={prop.title}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="bg-white p-8 rounded-3xl shadow-xl shadow-gray-200/50 border border-gray-100 hover:border-blue-100 transition-all duration-300 group"
+              transition={{ duration: 0.6, delay: index * 0.1 }}
+              className="group"
             >
-              <div
-                className={`w-14 h-14 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 bg-${prop.color}-50`}
-              >
-                <prop.icon className={`w-7 h-7 text-${prop.color}-600`} />
+              <div className="h-full p-8 rounded-2xl bg-card border border-border hover:border-primary/20 hover:shadow-card transition-all duration-300">
+                <div
+                  className={`w-14 h-14 rounded-xl ${prop.bgColor} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}
+                >
+                  <prop.icon className={`w-7 h-7 ${prop.color}`} />
+                </div>
+                <h3 className="text-lg md:text-xl font-semibold text-foreground mb-3">
+                  {prop.title}
+                </h3>
+                <p className="text-muted-foreground leading-relaxed text-md">
+                  {prop.description}
+                </p>
               </div>
-              <h3
-                className="text-xl font-bold text-gray-900 mb-4"
-                data-i18n={prop.titleKey}
-              >
-                {t(prop.titleKey)}
-              </h3>
-              <p
-                className="text-gray-600 leading-relaxed"
-                data-i18n={prop.descKey}
-              >
-                {t(prop.descKey)}
-              </p>
             </motion.div>
           ))}
         </div>
 
         {/* Additional Features Strip */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          className="mt-20 flex flex-wrap justify-center items-center gap-8 md:gap-16 grayscale opacity-60"
+          transition={{ duration: 0.6 }}
+          className="flex flex-wrap items-center justify-center gap-8 pt-8 border-t border-border"
         >
-          <div className="flex items-center gap-2">
-            <Cloud className="w-5 h-5" />
-            <span className="font-semibold" data-i18n="value_cloud">
-              {t("value_cloud")}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Smartphone className="w-5 h-5" />
-            <span className="font-semibold" data-i18n="value_mobile">
-              {t("value_mobile")}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Zap className="w-5 h-5" />
-            <span className="font-semibold" data-i18n="value_payments">
-              {t("value_payments")}
-            </span>
-          </div>
+          {additionalFeatures.map((feature, index) => (
+            <motion.div
+              key={feature.label}
+              initial={{ opacity: 0, y: 10 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="flex items-center gap-2 text-muted-foreground"
+            >
+              <feature.icon className="w-5 h-5 text-primary" />
+              <span className="text-xs font-medium">{feature.label}</span>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
     </section>
