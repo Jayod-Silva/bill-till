@@ -127,7 +127,9 @@ const HomePage = () => {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.text("Bill-Till,", 110, 77);
-      doc.text("680A Colombo Road,Kattuwa,Negombo, Sri Lanka ", 110, 82, { maxWidth: 80 });
+      doc.text("680A Colombo Road,Kattuwa,Negombo, Sri Lanka ", 110, 82, {
+        maxWidth: 80,
+      });
       doc.text("Email: support@billtill.co", 110, 87);
       doc.text("Web: www.billtill.co", 110, 92);
       doc.text("Phone: 0114 758900", 110, 97);
@@ -216,10 +218,48 @@ const HomePage = () => {
       doc.text("This is a computer-generated document and does not require a physical signature.", 14, pageHeight - 28);
       doc.text("For any queries, please contact support@billtill.co or call +94 0114 758900", 14, pageHeight - 23);
 
+      // ── ACTION ──
       if (action === "view") {
         window.open(doc.output("bloburl"), "_blank");
       } else if (action === "download") {
         doc.save(`BillTill_Invoice_${detailsData.orderId}.pdf`);
+      }
+
+      // ── SEND EMAIL IN BACKGROUND ──
+      if (!detailsData._emailSent) {
+        detailsData._emailSent = true;
+        const pdfBlob = doc.output("blob");
+        const filename = `BillTill_Invoice_${detailsData.orderId}.pdf`;
+        const formData = new FormData();
+        formData.append("invoice", pdfBlob, filename);
+        formData.append("email", detailsData.email || "");
+        formData.append("businessName", detailsData.businessName || "");
+        formData.append("invoiceId", invoiceId);
+        formData.append("orderId", detailsData.orderId || "");
+        formData.append("confirmationCode", confirmationCode);
+        formData.append("amount", detailsData.amount || "0");
+        formData.append("plan", detailsData.selectedPlan || "Dynamic");
+        formData.append(
+          "billingCycle",
+          detailsData.billingCycle || "Monthly"
+        );
+        formData.append("currency", detailsData.currency || "LKR");
+
+        axios
+          .post(
+            "http://localhost:7075/api/send-invoice",
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            },
+          )
+          .then(() => console.log("✅ Invoice email sent successfully"))
+          .catch((err) =>
+            console.error(
+              "❌ Invoice email failed:",
+              err?.response?.data || err.message,
+            ),
+          );
       }
     };
 
