@@ -33,6 +33,7 @@ import CompanyPage from "@/pages/CompanyPage";
 import PricingPage from "@/pages/PricingPage";
 
 import { AuthProvider } from "@/context/AuthContext";
+import { LanguageProvider } from "@/translations/LanguageContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
 
 // Home Page Component
@@ -80,35 +81,37 @@ const NavigationWrapper = () => {
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <NavigationWrapper />
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/shop" element={<ShopPage />} />
-          <Route path="/pricing" element={<PricingPage />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/company" element={<CompanyPage />} />
-          <Route path="/payment" element={<PaymentPage />} />
-          <Route path="/confirm-code" element={<ConfirmationCodePage />} />
-          <Route path="/register" element={<RegistrationPage />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route
-            path="/terms-and-conditions"
-            element={<TermsAndConditionsPage />}
-          />
-          <Route path="/return-policy" element={<ReturnPolicyPage />} />
-          <Route
-            path="/dashboard"
-            element={
-              <ProtectedRoute>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-        </Routes>
+      <LanguageProvider>
+        <BrowserRouter>
+          <NavigationWrapper />
+          <Routes>
+            <Route path="/" element={<HomePage />} />
+            <Route path="/shop" element={<ShopPage />} />
+            <Route path="/pricing" element={<PricingPage />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/company" element={<CompanyPage />} />
+            <Route path="/payment" element={<PaymentPage />} />
+            <Route path="/confirm-code" element={<ConfirmationCodePage />} />
+            <Route path="/register" element={<RegistrationPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/terms-and-conditions"
+              element={<TermsAndConditionsPage />}
+            />
+            <Route path="/return-policy" element={<ReturnPolicyPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+          </Routes>
 
-        <Toaster position="bottom-right" />
-      </BrowserRouter>
+          <Toaster position="bottom-right" />
+        </BrowserRouter>
+      </LanguageProvider>
     </AuthProvider>
   );
 }

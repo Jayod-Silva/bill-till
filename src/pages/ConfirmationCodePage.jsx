@@ -293,8 +293,20 @@ const ConfirmationCodePage = () => {
 
   const handleSubmit = async () => {
     let hasError = false;
-    // MOCK CODE FOR TESTING
-    const MOCK_CODE = "#BT123456";
+    // MOCK CODES FOR TESTING
+    const MOCK_CODES = [
+      "#BT123456",
+      "#BT789012",
+      "#BT345678",
+      "#BT901234",
+      "#BT567890",
+      "#BT234567",
+      "#BT890123",
+      "#BT456789",
+      "#BT012345",
+      "#BT678901",
+      "#BT111111"
+    ];
 
     if (!code || code.trim() === "") {
       setError("Please enter your confirmation code.");
@@ -314,9 +326,9 @@ const ConfirmationCodePage = () => {
     try {
       await new Promise((r) => setTimeout(r, 1200)); // simulate network
 
-      if (code !== MOCK_CODE) {
+      if (!MOCK_CODES.includes(code)) {
         throw new Error(
-          "Invalid confirmation code. For testing, use #BT123456.",
+          "Invalid confirmation code. For testing, use: #BT123456, #BT789012, #BT345678, #BT901234, #BT567890, #BT234567, #BT890123, #BT456789, #BT012345, #BT678901, or #BT111111.",
         );
       }
 

@@ -1,142 +1,117 @@
-import React, { useState, useEffect } from "react";
-import { motion, useInView } from "framer-motion";
+import React from "react";
+import { motion } from "framer-motion";
+import { Users, Star, Shield, Headset } from "lucide-react";
+import { useLanguage } from "@/translations/LanguageContext";
 
-const logos = [
-  { name: "Visa", src: "/visa.png", width: 90 },
-  { name: "Master", src: "/master.svg", width: 60 },
-  { name: "KOKO", src: "/koko.png", width: 100 },
+const partners = [
+  { name: "Stripe", logo: "/stripe.png" },
+  { name: "Visa", logo: "/visa.png" },
+  { name: "Mastercard", logo: "/mastercard.png" },
+  { name: "Payhere", logo: "/payhere.png" },
+  { name: "Commercial Bank", logo: "/comb.png" },
+  { name: "Sampath Bank", logo: "/sampath.png" },
 ];
-
-const stats = [
-  { value: "1K+", label: "Active Businesses", target: 1, suffix: "K+" },
-  { value: "4.9★", label: "Customer Rating", target: 4.9, suffix: " ★" },
-  { value: "99.9%", label: "Uptime Guarantee", target: 99.9, suffix: "%" },
-  { value: "24/7", label: "Customer Support", target: 24, suffix: "/7" },
-];
-
-const CountingNumber = ({
-  target,
-  suffix = "",
-  prefix = "",
-  duration = 2000,
-}) => {
-  const [count, setCount] = useState(0);
-  const ref = React.useRef();
-  const isInView = useInView(ref, { once: true });
-
-  useEffect(() => {
-    if (isInView) {
-      const startTime = Date.now();
-      const endTime = startTime + duration;
-
-      const updateCount = () => {
-        const now = Date.now();
-        const progress = Math.min((now - startTime) / duration, 1);
-
-        // Easing function for smooth animation
-        const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-
-        const currentCount = target * easeOutQuart;
-        setCount(currentCount);
-
-        if (progress < 1) {
-          requestAnimationFrame(updateCount);
-        }
-      };
-
-      requestAnimationFrame(updateCount);
-    }
-  }, [isInView, target, duration]);
-
-  const formatNumber = (num) => {
-    // For whole numbers, don't show decimal places
-    if (num >= 1 && num % 1 === 0) {
-      return Math.floor(num).toString();
-    }
-    // For numbers less than 1 or with decimals, show at most 1 decimal place
-    if (num < 1) {
-      return num.toFixed(1);
-    }
-    return num.toFixed(1);
-  };
-
-  return (
-    <span ref={ref}>
-      {prefix}
-      {formatNumber(count)}
-      {suffix}
-    </span>
-  );
-};
 
 export const SocialProofSection = () => {
-  return (
-    <section className="py-10 md:py-16 bg-muted/30 border-b border-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Trust Logos */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-          className="text-center mb-12"
-        >
-          <p className="text-sm text-muted-foreground mb-8">
-            Trusted by leading businesses and integrated with top payment
-            providers
-          </p>
-          <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-20">
-            {logos.map((logo, index) => (
-              <motion.div
-                key={logo.name}
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                className=" opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-300"
-              >
-                <img
-                  src={logo.src}
-                  alt={logo.name}
-                  className="h-15 w-auto object-contain"
-                  style={{ maxWidth: logo.width }}
-                />
-              </motion.div>
-            ))}
-          </div>
-        </motion.div>
+  const { t } = useLanguage();
 
-        {/* Stats */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-8 pt-8 border-t border-border"
-        >
+  const stats = [
+    {
+      icon: Users,
+      value: "5,000+",
+      label: t("social_active_businesses"),
+      key: "social_active_businesses",
+      color: "text-blue-600",
+      bg: "bg-blue-50",
+    },
+    {
+      icon: Star,
+      value: "4.9/5",
+      label: t("social_customer_rating"),
+      key: "social_customer_rating",
+      color: "text-amber-500",
+      bg: "bg-amber-50",
+    },
+    {
+      icon: Shield,
+      value: "99.9%",
+      label: t("social_uptime"),
+      key: "social_uptime",
+      color: "text-green-600",
+      bg: "bg-green-50",
+    },
+    {
+      icon: Headset,
+      value: "24/7",
+      label: t("social_support"),
+      key: "social_support",
+      color: "text-purple-600",
+      bg: "bg-purple-50",
+    },
+  ];
+
+  return (
+    <section className="py-20 bg-white overflow-hidden">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Partner Logos */}
+        <div className="mb-20">
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center text-sm font-medium text-muted-foreground mb-12 uppercase tracking-widest"
+            data-i18n="social_trusted"
+          >
+            {t("social_trusted")}
+          </motion.p>
+
+          <div className="relative">
+            {/* Gradient Overlays */}
+            <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-white to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-white to-transparent z-10" />
+
+            <div className="flex flex-wrap justify-center items-center gap-8 md:gap-16 opacity-60">
+              {partners.map((partner) => (
+                <motion.img
+                  key={partner.name}
+                  src={partner.logo}
+                  alt={partner.name}
+                  className="h-8 md:h-12 w-auto grayscale hover:grayscale-0 transition-all duration-300 transform hover:scale-110"
+                  whileHover={{ scale: 1.1 }}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {stats.map((stat, index) => (
             <motion.div
               key={stat.label}
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: index * 0.1 }}
-              className="text-center"
+              transition={{ duration: 0.5, delay: index * 0.1 }}
+              className="text-center p-8 rounded-3xl bg-gray-50/50 border border-gray-100/50 hover:bg-white hover:shadow-2xl hover:shadow-blue-500/5 transition-all duration-500 group"
             >
-              <div className="text-3xl lg:text-4xl font-bold text-[#0957D6] mb-1">
-                <CountingNumber
-                  target={stat.target}
-                  suffix={stat.suffix}
-                  prefix={stat.prefix || ""}
-                  duration={4000}
-                />
+              <div
+                className={`w-14 h-14 rounded-2xl ${stat.bg} flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-500`}
+              >
+                <stat.icon className={`w-7 h-7 ${stat.color}`} />
               </div>
-              <div className="text-xs md:text-sm text-muted-foreground">
+              <div className="text-4xl font-bold text-foreground mb-2">
+                {stat.value}
+              </div>
+              <div
+                className="text-sm font-medium text-muted-foreground"
+                data-i18n={stat.key}
+              >
                 {stat.label}
               </div>
             </motion.div>
           ))}
-        </motion.div>
+        </div>
       </div>
     </section>
   );

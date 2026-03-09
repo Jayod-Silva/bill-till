@@ -3,9 +3,12 @@ import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronRight, Play, Zap } from "lucide-react";
 
+import { useLanguage } from "@/translations/LanguageContext";
+
 export const HeroSection = () => {
   const containerRef = useRef(null);
   const [isMobile, setIsMobile] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     const checkMobile = () => setIsMobile(window.innerWidth < 768);
@@ -63,8 +66,11 @@ export const HeroSection = () => {
           <span className="flex items-center justify-center w-10 h-6 rounded-full bg-[#0957D6] text-white">
             <Zap className="w-3 h-3 fill-white" />
           </span>
-          <span className="text-xs text-slate-600 font-medium pr-1">
-            Lightning Fast Setup
+          <span
+            className="text-xs text-slate-600 font-medium pr-1"
+            data-i18n="hero_badge"
+          >
+            {t("hero_badge")}
           </span>
         </motion.div>
 
@@ -73,12 +79,9 @@ export const HeroSection = () => {
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, delay: 0.08, ease: [0.4, 0, 0.2, 1] }}
-          className="text-[42px] md:text-7xl lg:text-[4rem] font-semibold tracking-tight mb-6  "
+          className="text-[42px] md:text-7xl lg:text-[4rem] font-semibold tracking-tight mb-6"
         >
-          Track, Analyze, and Grow Your <br />
-          <span className="bg-[#0957D6] bg-clip-text text-transparent">
-            Business Easy
-          </span>
+          <span data-i18n="hero_headline">{t("hero_headline")}</span>
         </motion.h1>
 
         {/* Sub-headline */}
@@ -87,15 +90,18 @@ export const HeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.18, ease: [0.4, 0, 0.2, 1] }}
           className="text-sm md:text-md text-slate-500 max-w-md mx-auto mb-3 leading-relaxed"
+          data-i18n="hero_subheadline"
         >
-          Simple to use, powerful to help your business grow, and priced
-          affordably for everyone in retail
+          {t("hero_subheadline")}
         </motion.p>
 
         {/* CTA Buttons */}
         <div className="mt-2 md:mt-10 flex items-center justify-center gap-3 text-sm mb-20">
-          <button className="px-6 py-3 rounded-full bg-[#0957D6] text-white font-medium shadow-md hover:bg-black transition">
-            Demo
+          <button
+            className="px-6 py-3 rounded-full bg-[#0957D6] text-white font-medium shadow-md hover:bg-black transition"
+            data-i18n="hero_cta_demo"
+          >
+            {t("hero_cta_demo")}
           </button>
 
           <button
@@ -106,8 +112,9 @@ export const HeroSection = () => {
               }
             }}
             className="px-6 py-3 rounded-full bg-white border border-gray-300 text-gray-700 font-medium hover:bg-gray-100 transition"
+            data-i18n="hero_cta_pricing"
           >
-            View Pricing
+            {t("hero_cta_pricing")}
           </button>
         </div>
 

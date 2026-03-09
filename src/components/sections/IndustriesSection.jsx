@@ -239,10 +239,10 @@ export const IndustriesSection = () => {
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
-              transition={{ 
-                duration: 0.6, 
+              transition={{
+                duration: 0.6,
                 delay: index * 0.05,
-                ease: [0.25, 0.46, 0.45, 0.94]
+                ease: [0.25, 0.46, 0.45, 0.94],
               }}
               className={`relative flex flex-col lg:flex-row items-center gap-8 lg:gap-20 ${
                 index % 2 === 1 ? "lg:flex-row-reverse" : ""
@@ -339,10 +339,10 @@ export const IndustriesSection = () => {
                 initial={{ opacity: 0, x: index % 2 === 1 ? 50 : -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ 
-                  duration: 0.6, 
+                transition={{
+                  duration: 0.6,
                   delay: index * 0.05 + 0.1,
-                  ease: [0.25, 0.46, 0.45, 0.94]
+                  ease: [0.25, 0.46, 0.45, 0.94],
                 }}
               >
                 <div className="space-y-4">

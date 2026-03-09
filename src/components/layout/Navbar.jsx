@@ -16,22 +16,18 @@ import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
-/* Mock Language Hook */
-const useLanguage = () => {
-  const [language, setLanguage] = useState("en");
-  const toggleLanguage = () => setLanguage((l) => (l === "en" ? "si" : "en"));
-  return { language, toggleLanguage };
-};
+import { useLanguage } from "@/translations/LanguageContext";
 
 export default function Navbar() {
   const [activeLink, setActiveLink] = useState("shop");
   const [menuOpen, setMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const { language, toggleLanguage } = useLanguage();
+  const { language, setLanguage, t } = useLanguage();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -56,26 +52,16 @@ export default function Navbar() {
     };
   }, [menuOpen]);
 
-  const navItems =
-    language === "en"
-      ? [
-        { id: "stories", label: "Who we serve", href: "/#industries" },
-        { id: "pricing", label: "Pricing", href: "/#pricing" },
-        { id: "company", label: "Company", href: "/company" },
-        { id: "contact", label: "Contact", href: "/contact" },
-        { id: "pay", label: "Pay Online", href: "/confirm-code" },
-        { id: "shop", label: "Shop", href: "/shop" },
-      ]
-      : [
-        { id: "stories", label: "අප සේවය කරන්නේ කාටද", href: "/#industries" },
-        { id: "pricing", label: "මිල ගණන්", href: "/#pricing" },
-        { id: "company", label: "සමාගම", href: "/company" },
-        { id: "contact", label: "සම්බන්ධ වන්න", href: "/contact" },
-        { id: "pay", label: "මාර්ගගත ගෙවීම", href: "/confirm-code" },
-        { id: "shop", label: "වෙලඳසැල", href: "/shop" },
-      ];
+  const navItems = [
+    { id: "stories", label: t("nav_who_we_serve"), href: "/#industries" },
+    { id: "pricing", label: t("nav_pricing"), href: "/#pricing" },
+    { id: "company", label: t("nav_company"), href: "/company" },
+    { id: "contact", label: t("nav_contact"), href: "/contact" },
+    { id: "pay", label: t("nav_pay_online"), href: "/confirm-code" },
+    { id: "shop", label: t("nav_shop"), href: "/shop" },
+  ];
 
-  const buyText = language === "en" ? "Sign In" : "ඇසුම්ම කරන්න";
+  const buyText = t("nav_sign_in");
 
   const handleClick = (item) => {
     setActiveLink(item.id);
@@ -118,16 +104,18 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-6 left-1/2 -translate-x-1/2 w-full mx-auto transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] z-[100] ${scrolled
-          ? "max-w-[1500px] md:max-w-[1500px]"
-          : "max-w-md -mt-2 md:-mt-8 md:max-w-[1500px]"
-          }`}
+        className={`fixed top-6 left-1/2 -translate-x-1/2 w-full mx-auto transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] z-[100] ${
+          scrolled
+            ? "max-w-[1500px] md:max-w-[1500px]"
+            : "max-w-md -mt-2 md:-mt-8 md:max-w-[1500px]"
+        }`}
       >
         <div
-          className={`px-8 py-3 md:py-4 transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] ${scrolled
-            ? "bg-white  shadow-lg -mt-6 md:-mt-7 rounded-b-3xl md:scale-[1.02]"
-            : "-mt-2 md:mt-2 scale-[1]"
-            }`}
+          className={`px-8 py-3 md:py-4 transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] ${
+            scrolled
+              ? "bg-white  shadow-lg -mt-6 md:-mt-7 rounded-b-3xl md:scale-[1.02]"
+              : "-mt-2 md:mt-2 scale-[1]"
+          }`}
         >
           <div className="flex items-center justify-between">
             {/* LOGO */}
@@ -153,10 +141,11 @@ export default function Navbar() {
                   key={item.id}
                   onClick={() => handleClick(item)}
                   className={`relative group text-[14px] font-medium font-poppins transition-all duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]
-                  ${activeLink === item.id
+                  ${
+                    activeLink === item.id
                       ? "text-blue-600 scale-105"
                       : "text-gray-600 hover:text-gray-900 hover:scale-105"
-                    }`}
+                  }`}
                 >
                   {item.label}
 
@@ -173,12 +162,45 @@ export default function Navbar() {
 
             {/* DESKTOP ACTIONS */}
             <div className="hidden lg:flex items-center gap-2">
-              <button
-                onClick={toggleLanguage}
-                className="w-9 h-9 rounded-full border border-blue-900/50 flex items-center justify-center hover:scale-110 hover:bg-blue-900/20 transition-all duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]"
-              >
-                <Globe className="w-4 h-4 text-black" />
-              </button>
+              <div className="relative">
+                <button
+                  onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+                  className="w-9 h-9 rounded-full border border-blue-900/50 flex items-center justify-center hover:scale-110 hover:bg-blue-900/20 transition-all duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]"
+                >
+                  <Globe className="w-4 h-4 text-black" />
+                </button>
+
+                {langDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-40"
+                      onClick={() => setLangDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-[110] animate-in fade-in slide-in-from-top-2 duration-200">
+                      {[
+                        { code: "en", label: "English" },
+                        { code: "si", label: "සිංහල" },
+                        { code: "ta", label: "தமிழ்" },
+                      ].map((lang) => (
+                        <button
+                          key={lang.code}
+                          onClick={() => {
+                            setLanguage(lang.code);
+                            setLangDropdownOpen(false);
+                          }}
+                          className={`w-full text-left block px-4 py-2 text-[11px] font-medium tracking-wider transition ${
+                            language === lang.code
+                              ? "bg-blue-50 text-blue-600"
+                              : "text-gray-700 hover:bg-gray-50"
+                          }`}
+                        >
+                          {lang.label.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
+              </div>
 
               {!user && (
                 <button
@@ -309,10 +331,11 @@ export default function Navbar() {
                         damping: 30,
                       }}
                       onClick={() => handleClick(item)}
-                      className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeLink === item.id
-                        ? "bg-blue-50 text-blue-600"
-                        : "text-gray-700 hover:bg-gray-50"
-                        }`}
+                      className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
+                        activeLink === item.id
+                          ? "bg-blue-50 text-blue-600"
+                          : "text-gray-700 hover:bg-gray-50"
+                      }`}
                     >
                       {item.label}
                     </motion.button>
@@ -320,22 +343,37 @@ export default function Navbar() {
                 </div>
 
                 <div className="mt-6 space-y-3">
-                  <motion.button
-                    initial={{ y: 20, opacity: 0 }}
-                    animate={{ y: 0, opacity: 1 }}
-                    exit={{ y: 20, opacity: 0 }}
-                    transition={{
-                      delay: 0.4,
-                      type: "spring",
-                      stiffness: 300,
-                      damping: 30,
-                    }}
-                    onClick={toggleLanguage}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Globe className="w-4 h-4" />
-                    {language === "en" ? "EN" : "සිං"}
-                  </motion.button>
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { code: "en", label: "EN" },
+                      { code: "si", label: "සිං" },
+                      { code: "ta", label: "த" },
+                    ].map((lang) => (
+                      <motion.button
+                        key={lang.code}
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 20, opacity: 0 }}
+                        transition={{
+                          delay: 0.4,
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 30,
+                        }}
+                        onClick={() => {
+                          setLanguage(lang.code);
+                          setMenuOpen(false);
+                        }}
+                        className={`px-4 py-3 rounded-lg border text-sm font-medium transition-colors flex items-center justify-center gap-2 ${
+                          language === lang.code
+                            ? "bg-blue-600 border-blue-600 text-white"
+                            : "border-gray-300 text-gray-700 hover:bg-gray-50"
+                        }`}
+                      >
+                        {lang.label}
+                      </motion.button>
+                    ))}
+                  </div>
 
                   {!user && (
                     <motion.button
