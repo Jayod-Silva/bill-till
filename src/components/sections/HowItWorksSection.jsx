@@ -3,43 +3,49 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Download, Settings, Rocket, TrendingUp } from "lucide-react";
+import { useLanguage } from "../../translations/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
-const steps = [
-  {
-    number: "01",
-    icon: Download,
-    title: "Sign Up & Install",
-    description:
-      "Create your account in minutes. Download our app on any device - tablet, phone, or desktop.",
-  },
-  {
-    number: "02",
-    icon: Settings,
-    title: "Configure Your Store",
-    description:
-      "Set up products, prices, and staff permissions. Import existing data or start fresh.",
-  },
-  {
-    number: "03",
-    icon: Rocket,
-    title: "Go Live",
-    description:
-      "Start accepting payments immediately. Train your team with our interactive tutorials.",
-  },
-  {
-    number: "04",
-    icon: TrendingUp,
-    title: "Grow & Scale",
-    description:
-      "Use analytics to optimize. Add locations, integrate apps, and scale without limits.",
-  },
-];
-
 export const HowItWorksSection = () => {
+  const { t } = useLanguage();
   const sectionRef = useRef(null);
   const lineRef = useRef(null);
+
+  const steps = [
+    {
+      number: "01",
+      icon: Download,
+      title: t("how_step1_title"),
+      description: t("how_step1_desc"),
+      i18nTitle: "how_step1_title",
+      i18nDesc: "how_step1_desc",
+    },
+    {
+      number: "02",
+      icon: Settings,
+      title: t("how_step2_title"),
+      description: t("how_step2_desc"),
+      i18nTitle: "how_step2_title",
+      i18nDesc: "how_step2_desc",
+    },
+    {
+      number: "03",
+      icon: Rocket,
+      title: t("how_step3_title"),
+      description: t("how_step3_desc"),
+      i18nTitle: "how_step3_title",
+      i18nDesc: "how_step3_desc",
+    },
+    {
+      number: "04",
+      icon: TrendingUp,
+      title: t("how_step4_title"),
+      description: t("how_step4_desc"),
+      i18nTitle: "how_step4_title",
+      i18nDesc: "how_step4_desc",
+    },
+  ];
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -97,11 +103,26 @@ export const HowItWorksSection = () => {
           className="text-center max-w-3xl mx-auto mb-20"
         >
           <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Get started in <span className="text-primary">4 simple steps</span>
+            <span data-i18n="how_title">
+              {t("how_title").split("4 simple steps")[0]}
+            </span>
+            <span className="text-primary" data-i18n="how_title">
+              {t("how_title").includes("4 simple steps")
+                ? "4 simple steps"
+                : ""}
+            </span>
+            <span data-i18n="how_title">
+              {t("how_title").split("4 simple steps")[1] ||
+                (t("how_title").includes("4 simple steps")
+                  ? ""
+                  : t("how_title"))}
+            </span>
           </h2>
-          <p className="text-base lg:text-lg text-muted-foreground">
-            From sign-up to your first sale in under 10 minutes. No technical
-            expertise required.
+          <p
+            className="text-base lg:text-lg text-muted-foreground"
+            data-i18n="how_subtitle"
+          >
+            {t("how_subtitle")}
           </p>
         </motion.div>
 
@@ -133,12 +154,19 @@ export const HowItWorksSection = () => {
                     className={`${index % 2 === 0 ? "lg:pr-16 lg:text-right" : "lg:pl-16"} text-center lg:text-left`}
                   >
                     <span className="text-sm font-medium text-primary mb-2 block">
-                      Step {step.number}
+                      <span data-i18n="how_step">{t("how_step")}</span>{" "}
+                      {step.number}
                     </span>
-                    <h3 className="text-2xl font-bold text-foreground mb-3">
+                    <h3
+                      className="text-2xl font-bold text-foreground mb-3"
+                      data-i18n={step.i18nTitle}
+                    >
                       {step.title}
                     </h3>
-                    <p className="text-muted-foreground leading-relaxed">
+                    <p
+                      className="text-muted-foreground leading-relaxed"
+                      data-i18n={step.i18nDesc}
+                    >
                       {step.description}
                     </p>
                   </div>

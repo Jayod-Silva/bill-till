@@ -1,4 +1,5 @@
 import React, { useRef, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, ChevronRight, Play, Zap } from "lucide-react";
@@ -7,6 +8,7 @@ import { useLanguage } from "@/translations/LanguageContext";
 
 export const HeroSection = () => {
   const containerRef = useRef(null);
+  const navigate = useNavigate();
   const [isMobile, setIsMobile] = useState(false);
   const { t } = useLanguage();
 
@@ -74,14 +76,16 @@ export const HeroSection = () => {
           </span>
         </motion.div>
 
-        {/* Headline */}
         <motion.h1
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.65, delay: 0.08, ease: [0.4, 0, 0.2, 1] }}
           className="text-[42px] md:text-7xl lg:text-[4rem] font-semibold tracking-tight mb-6"
         >
-          <span data-i18n="hero_headline">{t("hero_headline")}</span>
+          <span data-i18n="hero_headline_1">{t("hero_headline_1")}</span> <br />
+          <span className="text-[#0957D6]" data-i18n="hero_headline_2">
+            {t("hero_headline_2")}
+          </span>
         </motion.h1>
 
         {/* Sub-headline */}
@@ -98,6 +102,7 @@ export const HeroSection = () => {
         {/* CTA Buttons */}
         <div className="mt-2 md:mt-10 flex items-center justify-center gap-3 text-sm mb-20">
           <button
+            onClick={() => navigate("/contact")}
             className="px-6 py-3 rounded-full bg-[#0957D6] text-white font-medium shadow-md hover:bg-black transition"
             data-i18n="hero_cta_demo"
           >

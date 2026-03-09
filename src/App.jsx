@@ -12,6 +12,7 @@ import autoTable from "jspdf-autotable";
 // Layout Components
 import Navbar from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import ScrollToTop from "@/components/layout/ScrollToTop";
 
 // Section Components
 import { HeroSection } from "@/components/sections/HeroSection";
@@ -46,23 +47,33 @@ import ProtectedRoute from "@/components/auth/ProtectedRoute";
 const HomePage = () => {
   // Initialize Lenis smooth scroll
   useLenis();
-  const { showSuccess, setShowSuccess, paymentResult, setPaymentResult, paymentFailed, setPaymentFailed, failureMessage, setFailureMessage } = usePaymentStore();
+  const {
+    showSuccess,
+    setShowSuccess,
+    paymentResult,
+    setPaymentResult,
+    paymentFailed,
+    setPaymentFailed,
+    failureMessage,
+    setFailureMessage,
+  } = usePaymentStore();
 
   // Payment success/failure modal components
   const SuccessModal = ({ details, onClose }) => {
     const handleClose = () => {
       onClose();
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = "/";
       }, 300);
     };
 
     const generateInvoice = (detailsData, action = "download") => {
-
       // console.log("📄 Generating invoice for:", detailsData);
 
       const doc = new jsPDF();
-      const invoiceId = detailsData.invoiceId || `INV-${Math.floor(100000 + Math.random() * 900000)}`;
+      const invoiceId =
+        detailsData.invoiceId ||
+        `INV-${Math.floor(100000 + Math.random() * 900000)}`;
       const confirmationCode = detailsData.confirmationCode || "N/A";
 
       const primaryColor = [7, 60, 148];
@@ -115,7 +126,9 @@ const HomePage = () => {
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
       doc.text(`Name: ${detailsData.ownerName}`, 14, 77);
-      doc.text(`Address: ${detailsData.address || "N/A"}`, 14, 82, { maxWidth: 80 });
+      doc.text(`Address: ${detailsData.address || "N/A"}`, 14, 82, {
+        maxWidth: 80,
+      });
       doc.text(`Phone: ${detailsData.phone}`, 14, 87);
       doc.text(`Email: ${detailsData.email}`, 14, 92);
 
@@ -193,7 +206,12 @@ const HomePage = () => {
       doc.setFont("helvetica", "normal");
       doc.setTextColor(...grayText);
       doc.text("Subtotal:", 140, finalY);
-      doc.text(`${cur} ${parseFloat(detailsData.amount).toFixed(2)}`, 175, finalY, { align: "right" });
+      doc.text(
+        `${cur} ${parseFloat(detailsData.amount).toFixed(2)}`,
+        175,
+        finalY,
+        { align: "right" },
+      );
 
       doc.text("Tax (0%):", 140, finalY + 7);
       doc.text(`${cur} 0.00`, 175, finalY + 7, { align: "right" });
@@ -205,7 +223,12 @@ const HomePage = () => {
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...primaryColor);
       doc.text("Total Paid:", 140, finalY + 18);
-      doc.text(`${cur} ${parseFloat(detailsData.amount).toFixed(2)}`, 185, finalY + 18, { align: "right" });
+      doc.text(
+        `${cur} ${parseFloat(detailsData.amount).toFixed(2)}`,
+        185,
+        finalY + 18,
+        { align: "right" },
+      );
 
       const pageHeight = doc.internal.pageSize.height;
       doc.setDrawColor(226, 232, 240);
@@ -218,8 +241,16 @@ const HomePage = () => {
 
       doc.setFont("helvetica", "normal");
       doc.setTextColor(...grayText);
-      doc.text("This is a computer-generated document and does not require a physical signature.", 14, pageHeight - 28);
-      doc.text("For any queries, please contact support@billtill.co or call +94 0114 758900", 14, pageHeight - 23);
+      doc.text(
+        "This is a computer-generated document and does not require a physical signature.",
+        14,
+        pageHeight - 28,
+      );
+      doc.text(
+        "For any queries, please contact support@billtill.co or call +94 0114 758900",
+        14,
+        pageHeight - 23,
+      );
 
       // ── ACTION ──
       if (action === "view") {
@@ -242,20 +273,13 @@ const HomePage = () => {
         formData.append("confirmationCode", confirmationCode);
         formData.append("amount", detailsData.amount || "0");
         formData.append("plan", detailsData.selectedPlan);
-        formData.append(
-          "billingCycle",
-          detailsData.billingCycle
-        );
+        formData.append("billingCycle", detailsData.billingCycle);
         formData.append("currency", detailsData.currency || "LKR");
 
         axios
-          .post(
-            "http://localhost:7075/api/send-invoice",
-            formData,
-            {
-              headers: { "Content-Type": "multipart/form-data" },
-            },
-          )
+          .post("http://localhost:7075/api/send-invoice", formData, {
+            headers: { "Content-Type": "multipart/form-data" },
+          })
           .then(() => console.log("✅ Invoice email sent successfully"))
           .catch((err) =>
             console.error(
@@ -309,25 +333,35 @@ const HomePage = () => {
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Business</span>
                 <span className="font-bold text-slate-900">
-                  {details.businessName || (details.description && details.description.split("-")[0]) || "N/A"}
+                  {details.businessName ||
+                    (details.description &&
+                      details.description.split("-")[0]) ||
+                    "N/A"}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Amount</span>
                 <span className="font-bold text-emerald-600">
-                  {details.currency || "LKR"} {parseFloat(details.amount || 0).toFixed(2)}
+                  {details.currency || "LKR"}{" "}
+                  {parseFloat(details.amount || 0).toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Subscription Plan</span>
                 <span className="font-bold text-slate-900">
-                  {details.selectedPlan || (details.description && details.description.split("-")[1]) || "Dynamic"}
+                  {details.selectedPlan ||
+                    (details.description &&
+                      details.description.split("-")[1]) ||
+                    "Dynamic"}
                 </span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-slate-400">Billing Cycle</span>
                 <span className="font-bold text-slate-900">
-                  {details.billingCycle || (details.description && details.description.split("-")[2]) || "Monthly"}
+                  {details.billingCycle ||
+                    (details.description &&
+                      details.description.split("-")[2]) ||
+                    "Monthly"}
                 </span>
               </div>
               <div className="flex justify-between text-sm py-2 px-3 bg-blue-50/50 rounded-lg border border-blue-100/50 mt-1">
@@ -362,7 +396,9 @@ const HomePage = () => {
             <p className="text-xs text-slate-400">
               A copy of this invoice has been sent to{" "}
               <span className="text-slate-600 font-medium">
-                {details.email && details.email !== "N/A" ? details.email : "(email not available)"}
+                {details.email && details.email !== "N/A"
+                  ? details.email
+                  : "(email not available)"}
               </span>
             </p>
           </div>
@@ -376,7 +412,7 @@ const HomePage = () => {
       const timer = setTimeout(() => {
         onClose();
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = "/";
         }, 300);
       }, 5000);
       return () => clearTimeout(timer);
@@ -385,7 +421,7 @@ const HomePage = () => {
     const handleClose = () => {
       onClose();
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = "/";
       }, 300);
     };
 
@@ -417,7 +453,8 @@ const HomePage = () => {
               Payment Failed
             </h2>
             <p className="text-slate-600 mb-8 font-medium">
-              {message || "Your payment could not be processed. Please try again."}
+              {message ||
+                "Your payment could not be processed. Please try again."}
             </p>
 
             <button
@@ -472,7 +509,7 @@ const HomePage = () => {
             currency: "LKR",
             amount: "0",
             selectedPlan: "Dynamic",
-            billingCycle: "Monthly"
+            billingCycle: "Monthly",
           });
           setShowSuccess(true);
         });
@@ -480,7 +517,9 @@ const HomePage = () => {
       console.log("⚠️ Payment failed detected");
       window.history.replaceState({}, document.title, window.location.pathname);
       setPaymentFailed(true);
-      setFailureMessage("Your payment was cancelled or failed. Please try again.");
+      setFailureMessage(
+        "Your payment was cancelled or failed. Please try again.",
+      );
     }
   }, [setShowSuccess, setPaymentResult, setPaymentFailed, setFailureMessage]);
 
@@ -546,6 +585,7 @@ function App() {
     <AuthProvider>
       <LanguageProvider>
         <BrowserRouter>
+          <ScrollToTop />
           <NavigationWrapper />
           <Routes>
             <Route path="/" element={<HomePage />} />

@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
+import { useLanguage } from "../../translations/LanguageContext";
 import {
   Zap,
   Shield,
@@ -9,40 +10,8 @@ import {
   Smartphone,
 } from "lucide-react";
 
-const propositions = [
-  {
-    icon: BarChart3,
-    title: "Access Anywhere",
-    description:
-      "Check your POS system anytime, anywhere with any device. Complete mobility and flexibility for modern business management.",
-    color: "text-primary",
-    bgColor: "bg-primary/10",
-  },
-  {
-    icon: Zap,
-    title: "Lightning Fast",
-    description:
-      "Process transactions in milliseconds. No lag, no waiting, just seamless checkout experiences.",
-    color: "text-warning",
-    bgColor: "bg-warning/10",
-  },
-  {
-    icon: Shield,
-    title: "Bank-Grade Security",
-    description:
-      "End-to-end encryption, PCI DSS compliance, and fraud protection built into every transaction.",
-    color: "text-success",
-    bgColor: "bg-success/10",
-  },
-];
-
-const additionalFeatures = [
-  { icon: Cloud, label: "Cloud-Based" },
-  { icon: Smartphone, label: "Mobile Ready" },
-  { icon: CreditCard, label: "All Payments" },
-];
-
 export const ValuePropositionSection = () => {
+  const { t } = useLanguage();
   const sectionRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -50,6 +19,54 @@ export const ValuePropositionSection = () => {
   });
 
   const y = useTransform(scrollYProgress, [0, 1], [50, -50]);
+
+  const propositions = [
+    {
+      icon: BarChart3,
+      title: t("value_prop1_title"),
+      description: t("value_prop1_desc"),
+      i18nTitle: "value_prop1_title",
+      i18nDesc: "value_prop1_desc",
+      color: "text-primary",
+      bgColor: "bg-primary/10",
+    },
+    {
+      icon: Zap,
+      title: t("value_prop2_title"),
+      description: t("value_prop2_desc"),
+      i18nTitle: "value_prop2_title",
+      i18nDesc: "value_prop2_desc",
+      color: "text-warning",
+      bgColor: "bg-warning/10",
+    },
+    {
+      icon: Shield,
+      title: t("value_prop3_title"),
+      description: t("value_prop3_desc"),
+      i18nTitle: "value_prop3_title",
+      i18nDesc: "value_prop3_desc",
+      color: "text-success",
+      bgColor: "bg-success/10",
+    },
+  ];
+
+  const additionalFeatures = [
+    {
+      icon: Cloud,
+      label: t("value_feature_cloud"),
+      i18n: "value_feature_cloud",
+    },
+    {
+      icon: Smartphone,
+      label: t("value_feature_mobile"),
+      i18n: "value_feature_mobile",
+    },
+    {
+      icon: CreditCard,
+      label: t("value_feature_payments"),
+      i18n: "value_feature_payments",
+    },
+  ];
 
   return (
     <section
@@ -67,13 +84,19 @@ export const ValuePropositionSection = () => {
           className="text-center max-w-3xl mx-auto mb-16"
         >
           <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 md:mb-6">
-            Why businesses choose{" "}
+            <span data-i18n="value_title">
+              {t("value_title").split("Bill Till")[0]}
+            </span>
             <span className="text-primary">Bill Till</span>
+            <span data-i18n="value_title">
+              {t("value_title").split("Bill Till")[1]}
+            </span>
           </h2>
-          <p className="text-sm lg:text-md px-5 text-muted-foreground">
-            Built for the modern era, our platform combines cutting-edge
-            technology with intuitive design to deliver the ultimate POS
-            experience.
+          <p
+            className="text-sm lg:text-md px-5 text-muted-foreground"
+            data-i18n="value_subtitle"
+          >
+            {t("value_subtitle")}
           </p>
         </motion.div>
 
@@ -81,7 +104,7 @@ export const ValuePropositionSection = () => {
         <div className="grid md:grid-cols-3 gap-6 lg:gap-8 mb-10">
           {propositions.map((prop, index) => (
             <motion.div
-              key={prop.title}
+              key={prop.i18nTitle}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -94,10 +117,16 @@ export const ValuePropositionSection = () => {
                 >
                   <prop.icon className={`w-7 h-7 ${prop.color}`} />
                 </div>
-                <h3 className="text-lg md:text-xl font-semibold text-foreground mb-3">
+                <h3
+                  className="text-lg md:text-xl font-semibold text-foreground mb-3"
+                  data-i18n={prop.i18nTitle}
+                >
                   {prop.title}
                 </h3>
-                <p className="text-muted-foreground leading-relaxed text-md">
+                <p
+                  className="text-muted-foreground leading-relaxed text-md"
+                  data-i18n={prop.i18nDesc}
+                >
                   {prop.description}
                 </p>
               </div>
@@ -115,7 +144,7 @@ export const ValuePropositionSection = () => {
         >
           {additionalFeatures.map((feature, index) => (
             <motion.div
-              key={feature.label}
+              key={feature.i18n}
               initial={{ opacity: 0, y: 10 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -123,7 +152,9 @@ export const ValuePropositionSection = () => {
               className="flex items-center gap-2 text-muted-foreground"
             >
               <feature.icon className="w-5 h-5 text-primary" />
-              <span className="text-xs font-medium">{feature.label}</span>
+              <span className="text-xs font-medium" data-i18n={feature.i18n}>
+                {feature.label}
+              </span>
             </motion.div>
           ))}
         </motion.div>

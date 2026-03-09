@@ -1,8 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import PaymentForm from "./PaymentForm";
+import { useLanguage } from "../../translations/LanguageContext";
 
 export const PaymentSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section id="pay" className="py-24 lg:py-32 relative overflow-hidden">
       {/* Background Decor */}
@@ -19,12 +22,17 @@ export const PaymentSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-16"
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Online Registration Payment
+          <h2
+            className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6"
+            data-i18n="pay_title"
+          >
+            {t("pay_title")}
           </h2>
-          <p className="text-base lg:text-md text-muted-foreground">
-            Complete your registration by paying online securely through our
-            payment gateway.
+          <p
+            className="text-base lg:text-md text-muted-foreground"
+            data-i18n="pay_desc"
+          >
+            {t("pay_desc")}
           </p>
         </motion.div>
 

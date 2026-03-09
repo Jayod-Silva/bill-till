@@ -1,17 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { motion, useInView } from "framer-motion";
+import { useLanguage } from "../../translations/LanguageContext";
 
 const logos = [
   { name: "Visa", src: "/visa.png", width: 90 },
   { name: "Master", src: "/master.svg", width: 60 },
   { name: "KOKO", src: "/koko.png", width: 100 },
-];
-
-const stats = [
-  { value: "1K+", label: "Active Businesses", target: 1, suffix: "K+" },
-  { value: "4.9★", label: "Customer Rating", target: 4.9, suffix: " ★" },
-  { value: "99.9%", label: "Uptime Guarantee", target: 99.9, suffix: "%" },
-  { value: "24/7", label: "Customer Support", target: 24, suffix: "/7" },
 ];
 
 const CountingNumber = ({
@@ -70,6 +64,35 @@ const CountingNumber = ({
 };
 
 export const SocialProofSection = () => {
+  const { t } = useLanguage();
+
+  const stats = [
+    {
+      target: 1,
+      suffix: "K+",
+      label: t("social_businesses"),
+      i18n: "social_businesses",
+    },
+    {
+      target: 4.9,
+      suffix: " ★",
+      label: t("social_rating"),
+      i18n: "social_rating",
+    },
+    {
+      target: 99.9,
+      suffix: "%",
+      label: t("social_uptime"),
+      i18n: "social_uptime",
+    },
+    {
+      target: 24,
+      suffix: "/7",
+      label: t("social_support"),
+      i18n: "social_support",
+    },
+  ];
+
   return (
     <section className="py-10 md:py-16 bg-muted/30 border-b border-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -81,9 +104,11 @@ export const SocialProofSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <p className="text-sm text-muted-foreground mb-8">
-            Trusted by leading businesses and integrated with top payment
-            providers
+          <p
+            className="text-sm text-muted-foreground mb-8"
+            data-i18n="social_trusted"
+          >
+            {t("social_trusted")}
           </p>
           <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-20">
             {logos.map((logo, index) => (
@@ -116,7 +141,7 @@ export const SocialProofSection = () => {
         >
           {stats.map((stat, index) => (
             <motion.div
-              key={stat.label}
+              key={stat.i18n}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -131,7 +156,10 @@ export const SocialProofSection = () => {
                   duration={4000}
                 />
               </div>
-              <div className="text-xs md:text-sm text-muted-foreground">
+              <div
+                className="text-xs md:text-sm text-muted-foreground"
+                data-i18n={stat.i18n}
+              >
                 {stat.label}
               </div>
             </motion.div>

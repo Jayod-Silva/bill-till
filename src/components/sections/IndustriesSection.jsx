@@ -20,105 +20,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const industries = [
-  {
-    icon: UtensilsCrossed,
-    name: "Restaurants",
-    description:
-      "Complete POS solution for restaurants with table management, kitchen display systems, and split billing capabilities.",
-    image: "/Promo6.png",
-    features: [
-      "Table Management",
-      "Kitchen Display",
-      "Split Billing",
-      "Menu Management",
-    ],
-    color: "from-orange-400 to-red-500",
-    bgPattern: "restaurant",
-    stats: { users: "50K+", satisfaction: "98%", growth: "+25%" },
-  },
-  {
-    icon: ShoppingCart,
-    name: "Supermarkets",
-    description:
-      "Comprehensive supermarket management with inventory tracking, barcode scanning, and customer loyalty programs.",
-    image: "/Promo5.png",
-    features: [
-      "Inventory Tracking",
-      "Barcode Support",
-      "Loyalty Programs",
-      "Scale Integration",
-    ],
-    color: "from-green-400 to-emerald-500",
-    bgPattern: "supermarket",
-    stats: { users: "120K+", satisfaction: "96%", growth: "+32%" },
-  },
-  {
-    icon: Shirt,
-    name: "Clothing Shops",
-    description:
-      "Specialized POS for fashion retail with size tracking, seasonal inventory management, and customer preferences.",
-    image: "/Promo7.png",
-    features: [
-      "Size & Color Tracking",
-      "Seasonal Inventory",
-      "Customer Profiles",
-      "Style Recommendations",
-    ],
-    color: "from-purple-400 to-pink-500",
-    bgPattern: "fashion",
-    stats: { users: "35K+", satisfaction: "97%", growth: "+28%" },
-  },
-  {
-    icon: Wine,
-    name: "Wine Stores",
-    description:
-      "Tailored solution for wine shops with vintage tracking, age verification, and tasting event management.",
-    image: "/Promo 4.png",
-    features: [
-      "Vintage Tracking",
-      "Age Verification",
-      "Tasting Events",
-      "Wine Club Management",
-    ],
-    color: "from-amber-400 to-orange-500",
-    bgPattern: "wine",
-    stats: { users: "15K+", satisfaction: "99%", growth: "+18%" },
-  },
-  {
-    icon: Cpu,
-    name: "Computer Shops",
-    description:
-      "Advanced POS for computer retailers with warranty tracking, service management, and technical support integration.",
-    image: "/Promo 3.png",
-    features: [
-      "Warranty Tracking",
-      "Service Management",
-      "Technical Support",
-      "Build Configuration",
-    ],
-    color: "from-blue-400 to-indigo-500",
-    bgPattern: "tech",
-    stats: { users: "25K+", satisfaction: "95%", growth: "+22%" },
-  },
-  {
-    icon: Wrench,
-    name: "Hardware Shops",
-    description:
-      "Robust POS for hardware stores with bulk pricing, project tracking, and supplier management.",
-    image: "/Promo 1.png",
-    features: [
-      "Bulk Pricing",
-      "Project Tracking",
-      "Supplier Management",
-      "Tool Rental",
-    ],
-    color: "from-gray-600 to-slate-700",
-    bgPattern: "hardware",
-    stats: { users: "40K+", satisfaction: "94%", growth: "+20%" },
-  },
-];
+import { useLanguage } from "../../translations/LanguageContext";
 
 const GlowingOrb = ({ position, delay }) => {
   return (
@@ -142,7 +44,7 @@ const GlowingOrb = ({ position, delay }) => {
   );
 };
 
-const StatCard = ({ icon: Icon, value, label, delay }) => {
+const StatCard = ({ icon: Icon, value, label, delay, i18nLabel }) => {
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.8 }}
@@ -157,7 +59,9 @@ const StatCard = ({ icon: Icon, value, label, delay }) => {
         </div>
         <div>
           <div className="text-xl font-bold text-foreground">{value}</div>
-          <div className="text-xs text-muted-foreground">{label}</div>
+          <div className="text-xs text-muted-foreground" data-i18n={i18nLabel}>
+            {label}
+          </div>
         </div>
       </div>
     </motion.div>
@@ -165,12 +69,118 @@ const StatCard = ({ icon: Icon, value, label, delay }) => {
 };
 
 export const IndustriesSection = () => {
+  const { t } = useLanguage();
   const containerRef = useRef(null);
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start end", "end start"],
   });
+
+  const industries = [
+    {
+      icon: UtensilsCrossed,
+      name: t("ind_restaurant"),
+      description: t("ind_restaurant_desc"),
+      i18nName: "ind_restaurant",
+      i18nDesc: "ind_restaurant_desc",
+      image: "/Promo6.png",
+      features: [
+        { label: t("ind_restaurant_f1"), i18n: "ind_restaurant_f1" },
+        { label: t("ind_restaurant_f2"), i18n: "ind_restaurant_f2" },
+        { label: t("ind_restaurant_f3"), i18n: "ind_restaurant_f3" },
+        { label: t("ind_restaurant_f4"), i18n: "ind_restaurant_f4" },
+      ],
+      color: "from-orange-400 to-red-500",
+      bgPattern: "restaurant",
+      stats: { users: "50K+", satisfaction: "98%", growth: "+25%" },
+    },
+    {
+      icon: ShoppingCart,
+      name: t("ind_supermarket"),
+      description: t("ind_supermarket_desc"),
+      i18nName: "ind_supermarket",
+      i18nDesc: "ind_supermarket_desc",
+      image: "/Promo5.png",
+      features: [
+        { label: t("ind_supermarket_f1"), i18n: "ind_supermarket_f1" },
+        { label: t("ind_supermarket_f2"), i18n: "ind_supermarket_f2" },
+        { label: t("ind_supermarket_f3"), i18n: "ind_supermarket_f3" },
+        { label: t("ind_supermarket_f4"), i18n: "ind_supermarket_f4" },
+      ],
+      color: "from-green-400 to-emerald-500",
+      bgPattern: "supermarket",
+      stats: { users: "120K+", satisfaction: "96%", growth: "+32%" },
+    },
+    {
+      icon: Shirt,
+      name: t("ind_clothing"),
+      description: t("ind_clothing_desc"),
+      i18nName: "ind_clothing",
+      i18nDesc: "ind_clothing_desc",
+      image: "/Promo7.png",
+      features: [
+        { label: t("ind_clothing_f1"), i18n: "ind_clothing_f1" },
+        { label: t("ind_clothing_f2"), i18n: "ind_clothing_f2" },
+        { label: t("ind_clothing_f3"), i18n: "ind_clothing_f3" },
+        { label: t("ind_clothing_f4"), i18n: "ind_clothing_f4" },
+      ],
+      color: "from-purple-400 to-pink-500",
+      bgPattern: "fashion",
+      stats: { users: "35K+", satisfaction: "97%", growth: "+28%" },
+    },
+    {
+      icon: Wine,
+      name: t("ind_wine"),
+      description: t("ind_wine_desc"),
+      i18nName: "ind_wine",
+      i18nDesc: "ind_wine_desc",
+      image: "/Promo 4.png",
+      features: [
+        { label: t("ind_wine_f1"), i18n: "ind_wine_f1" },
+        { label: t("ind_wine_f2"), i18n: "ind_wine_f2" },
+        { label: t("ind_wine_f3"), i18n: "ind_wine_f3" },
+        { label: t("ind_wine_f4"), i18n: "ind_wine_f4" },
+      ],
+      color: "from-amber-400 to-orange-500",
+      bgPattern: "wine",
+      stats: { users: "15K+", satisfaction: "99%", growth: "+18%" },
+    },
+    {
+      icon: Cpu,
+      name: t("ind_computer"),
+      description: t("ind_computer_desc"),
+      i18nName: "ind_computer",
+      i18nDesc: "ind_computer_desc",
+      image: "/Promo 3.png",
+      features: [
+        { label: t("ind_computer_f1"), i18n: "ind_computer_f1" },
+        { label: t("ind_computer_f2"), i18n: "ind_computer_f2" },
+        { label: t("ind_computer_f3"), i18n: "ind_computer_f3" },
+        { label: t("ind_computer_f4"), i18n: "ind_computer_f4" },
+      ],
+      color: "from-blue-400 to-indigo-500",
+      bgPattern: "tech",
+      stats: { users: "25K+", satisfaction: "95%", growth: "+22%" },
+    },
+    {
+      icon: Wrench,
+      name: t("ind_hardware"),
+      description: t("ind_hardware_desc"),
+      i18nName: "ind_hardware",
+      i18nDesc: "ind_hardware_desc",
+      image: "/Promo 1.png",
+      features: [
+        { label: t("ind_hardware_f1"), i18n: "ind_hardware_f1" },
+        { label: t("ind_hardware_f2"), i18n: "ind_hardware_f2" },
+        { label: t("ind_hardware_f3"), i18n: "ind_hardware_f3" },
+        { label: t("ind_hardware_f4"), i18n: "ind_hardware_f4" },
+      ],
+      color: "from-gray-600 to-slate-700",
+      bgPattern: "hardware",
+      stats: { users: "40K+", satisfaction: "94%", growth: "+20%" },
+    },
+  ];
 
   const x = useTransform(scrollYProgress, [0, 1], [0, -50]);
   const rotate = useTransform(scrollYProgress, [0, 1], [0, 5]);
@@ -200,8 +210,11 @@ export const IndustriesSection = () => {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-blue-500/10 border border-primary/20 mb-6"
           >
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">
-              Industry Solutions
+            <span
+              className="text-sm font-medium text-primary"
+              data-i18n="ind_badge"
+            >
+              {t("ind_badge")}
             </span>
           </motion.div>
 
@@ -212,9 +225,12 @@ export const IndustriesSection = () => {
             transition={{ duration: 0.6, delay: 0.3 }}
             className="text-5xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6"
           >
-            Built for every{" "}
-            <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
-              industry
+            <span data-i18n="ind_title_main">{t("ind_title_main")}</span>{" "}
+            <span
+              className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent"
+              data-i18n="ind_title_highlight"
+            >
+              {t("ind_title_highlight")}
             </span>
           </motion.h2>
 
@@ -224,10 +240,9 @@ export const IndustriesSection = () => {
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-sm lg:text-xl text-muted-foreground max-w-3xl mx-auto"
+            data-i18n="ind_subtitle"
           >
-            Tailored solutions that transform businesses across all sectors.
-            Experience the power of specialized POS technology designed for your
-            unique needs.
+            {t("ind_subtitle")}
           </motion.p>
         </motion.div>
 
@@ -235,7 +250,7 @@ export const IndustriesSection = () => {
         <div className="space-y-32 lg:space-y-48">
           {industries.map((industry, index) => (
             <motion.div
-              key={industry.name}
+              key={industry.i18nName}
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: "-50px" }}
@@ -300,16 +315,20 @@ export const IndustriesSection = () => {
 
                   {/* Industry Name Overlay */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-8">
-                    <h3 className="text-3xl font-bold text-white mb-2">
+                    <h3
+                      className="text-3xl font-bold text-white mb-2"
+                      data-i18n={industry.i18nName}
+                    >
                       {industry.name}
                     </h3>
                     <div className="flex gap-2">
                       {industry.features.slice(0, 2).map((feature) => (
                         <span
-                          key={feature}
+                          key={feature.i18n}
                           className="px-3 py-1 text-xs font-medium bg-white/20 backdrop-blur-sm text-white rounded-full"
+                          data-i18n={feature.i18n}
                         >
-                          {feature}
+                          {feature.label}
                         </span>
                       ))}
                     </div>
@@ -321,13 +340,15 @@ export const IndustriesSection = () => {
                   <StatCard
                     icon={TrendingUp}
                     value={industry.stats.growth}
-                    label="Growth"
+                    label={t("ind_growth")}
+                    i18nLabel="ind_growth"
                     delay={0.1}
                   />
                   <StatCard
                     icon={Shield}
                     value={industry.stats.satisfaction}
-                    label="Satisfaction"
+                    label={t("ind_satisfaction")}
+                    i18nLabel="ind_satisfaction"
                     delay={0.2}
                   />
                 </div>
@@ -356,20 +377,27 @@ export const IndustriesSection = () => {
                       <industry.icon className="w-8 h-8 text-white" />
                     </motion.div>
                     <div>
-                      <h3 className="text-2xl lg:text-4xl font-bold text-foreground">
+                      <h3
+                        className="text-2xl lg:text-4xl font-bold text-foreground"
+                        data-i18n={industry.i18nName}
+                      >
                         {industry.name}
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
                         <Zap className="w-4 h-4 text-primary" />
                         <span className="text-sm font-medium text-primary">
-                          {industry.stats.users} Active Users
+                          {industry.stats.users}{" "}
+                          <span data-i18n="ind_users">{t("ind_users")}</span>
                         </span>
                       </div>
                     </div>
                   </div>
 
                   {/* Description */}
-                  <p className="text-md md:text-lg text-muted-foreground leading-relaxed">
+                  <p
+                    className="text-md md:text-lg text-muted-foreground leading-relaxed"
+                    data-i18n={industry.i18nDesc}
+                  >
                     {industry.description}
                   </p>
 
@@ -377,7 +405,7 @@ export const IndustriesSection = () => {
                   <div className="flex flex-wrap gap-3">
                     {industry.features.map((feature, featureIndex) => (
                       <motion.span
-                        key={feature}
+                        key={feature.i18n}
                         initial={{ opacity: 0, scale: 0.8 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
@@ -386,8 +414,9 @@ export const IndustriesSection = () => {
                           delay: index * 0.1 + featureIndex * 0.1 + 0.5,
                         }}
                         className={`px-4 py-2 text-sm font-medium bg-gradient-to-r ${industry.color} text-white rounded-full shadow-lg`}
+                        data-i18n={feature.i18n}
                       >
-                        {feature}
+                        {feature.label}
                       </motion.span>
                     ))}
                   </div>

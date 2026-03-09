@@ -1,8 +1,11 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Check, Zap, Shield, TrendingUp, ArrowRight } from "lucide-react";
+import { useLanguage } from "../../translations/LanguageContext";
 
 export const FreeSwitchSection = () => {
+  const { t } = useLanguage();
+
   return (
     <section
       id="free-switch"
@@ -17,12 +20,17 @@ export const FreeSwitchSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <h2 className="text-5xl lg:text-6xl font-bold text-gray-900 px-10 md:px-0 mb-6">
-            Switch to BillTill for Free
+          <h2
+            className="text-5xl lg:text-6xl font-bold text-gray-900 px-10 md:px-0 mb-6"
+            data-i18n="free_title"
+          >
+            {t("free_title")}
           </h2>
-          <p className="text-md lg:text-lg text-gray-700 px-8 md:px-0 mb-8">
-            No hidden fees. No setup costs. No system switching charges. Make
-            the move to a better POS system without breaking the bank.
+          <p
+            className="text-md lg:text-lg text-gray-700 px-8 md:px-0 mb-8"
+            data-i18n="free_desc"
+          >
+            {t("free_desc")}
           </p>
         </motion.div>
 
@@ -37,12 +45,17 @@ export const FreeSwitchSection = () => {
             <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mb-3">
               <Check className="w-6 h-6 text-blue-600" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
-              Zero Setup Fees
+            <h3
+              className="text-lg font-bold text-gray-900 mb-2"
+              data-i18n="free_setup_title"
+            >
+              {t("free_setup_title")}
             </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              No charges for initial setup and configuration of your new POS
-              system
+            <p
+              className="text-sm text-gray-600 leading-relaxed"
+              data-i18n="free_setup_desc"
+            >
+              {t("free_setup_desc")}
             </p>
           </motion.div>
 
@@ -56,11 +69,17 @@ export const FreeSwitchSection = () => {
             <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mb-3">
               <Zap className="w-6 h-6 text-green-600" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
-              Free Data Migration
+            <h3
+              className="text-lg font-bold text-gray-900 mb-2"
+              data-i18n="free_migration_title"
+            >
+              {t("free_migration_title")}
             </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              We'll migrate your existing data at no cost with zero downtime
+            <p
+              className="text-sm text-gray-600 leading-relaxed"
+              data-i18n="free_migration_desc"
+            >
+              {t("free_migration_desc")}
             </p>
           </motion.div>
 
@@ -74,11 +93,17 @@ export const FreeSwitchSection = () => {
             <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mb-3">
               <Shield className="w-6 h-6 text-purple-600" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
-              No Switching Charges
+            <h3
+              className="text-lg font-bold text-gray-900 mb-2"
+              data-i18n="free_switching_title"
+            >
+              {t("free_switching_title")}
             </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Completely free transition from your current POS system
+            <p
+              className="text-sm text-gray-600 leading-relaxed"
+              data-i18n="free_switching_desc"
+            >
+              {t("free_switching_desc")}
             </p>
           </motion.div>
 
@@ -92,11 +117,17 @@ export const FreeSwitchSection = () => {
             <div className="w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center mb-3">
               <TrendingUp className="w-6 h-6 text-orange-600" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 mb-2">
-              Free Training
+            <h3
+              className="text-lg font-bold text-gray-900 mb-2"
+              data-i18n="free_training_title"
+            >
+              {t("free_training_title")}
             </h3>
-            <p className="text-sm text-gray-600 leading-relaxed">
-              Complimentary staff training to ensure smooth adoption
+            <p
+              className="text-sm text-gray-600 leading-relaxed"
+              data-i18n="free_training_desc"
+            >
+              {t("free_training_desc")}
             </p>
           </motion.div>
         </div>

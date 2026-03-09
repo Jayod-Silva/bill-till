@@ -1,41 +1,88 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { Twitter, Linkedin, Github, Mail, MapPin, Phone } from "lucide-react";
-
-const footerLinks = {
-  whoWeServe: [
-    { name: "Industries", href: "/#industries" },
-    { name: "Features", href: "/#features" },
-    { name: "Pricing", href: "/#pricing" },
-    { name: "Integrations", href: "#" },
-  ],
-  company: [
-    { name: "About Us", href: "/company" },
-    { name: "Careers", href: "#" },
-    { name: "Blog", href: "#" },
-    { name: "Press", href: "#" },
-  ],
-  resources: [
-    { name: "Documentation", href: "#" },
-    { name: "Help Center", href: "#" },
-    { name: "API Reference", href: "#" },
-    { name: "Status", href: "#" },
-  ],
-  legal: [
-    { name: "Privacy Policy", href: "#" },
-    { name: "Terms of Service", href: "#" },
-    { name: "Cookie Policy", href: "#" },
-    { name: "GDPR", href: "#" },
-  ],
-};
-
-const socialLinks = [
-  { icon: Twitter, href: "#", label: "Twitter" },
-  { icon: Linkedin, href: "#", label: "LinkedIn" },
-  { icon: Github, href: "#", label: "GitHub" },
-];
+import { useLanguage } from "../../translations/LanguageContext";
 
 export const Footer = () => {
+  const { t } = useLanguage();
+
+  const footerLinks = {
+    whoWeServe: [
+      {
+        name: t("footer_industries"),
+        href: "/#industries",
+        i18nKey: "footer_industries",
+      },
+      {
+        name: t("footer_features"),
+        href: "/#features",
+        i18nKey: "footer_features",
+      },
+      {
+        name: t("footer_pricing"),
+        href: "/#pricing",
+        i18nKey: "footer_pricing",
+      },
+      {
+        name: t("footer_integrations"),
+        href: "#",
+        i18nKey: "footer_integrations",
+      },
+    ],
+    company: [
+      {
+        name: t("footer_about_us"),
+        href: "/company",
+        i18nKey: "footer_about_us",
+      },
+      { name: t("footer_careers"), href: "#", i18nKey: "footer_careers" },
+      { name: t("footer_blog"), href: "#", i18nKey: "footer_blog" },
+      { name: t("footer_press"), href: "#", i18nKey: "footer_press" },
+    ],
+    resources: [
+      {
+        name: t("footer_documentation"),
+        href: "#",
+        i18nKey: "footer_documentation",
+      },
+      {
+        name: t("footer_help_center"),
+        href: "#",
+        i18nKey: "footer_help_center",
+      },
+      {
+        name: t("footer_api_reference"),
+        href: "#",
+        i18nKey: "footer_api_reference",
+      },
+      { name: t("footer_status"), href: "#", i18nKey: "footer_status" },
+    ],
+    legal: [
+      {
+        name: t("footer_privacy_policy"),
+        href: "#",
+        i18nKey: "footer_privacy_policy",
+      },
+      {
+        name: t("footer_terms_of_service"),
+        href: "#",
+        i18nKey: "footer_terms_of_service",
+      },
+      {
+        name: t("footer_cookie_policy"),
+        href: "#",
+        i18nKey: "footer_cookie_policy",
+      },
+      { name: t("footer_gdpr"), href: "#", i18nKey: "footer_gdpr" },
+    ],
+  };
+
+  const socialLinks = [
+    { icon: Twitter, href: "#", label: "Twitter" },
+    { icon: Linkedin, href: "#", label: "LinkedIn" },
+    { icon: Github, href: "#", label: "GitHub" },
+  ];
+
   return (
     <footer className="bg-foreground border-t border-blue-800/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -52,9 +99,11 @@ export const Footer = () => {
                 />
               </div>
             </div>
-            <p className="text-white text-sm leading-relaxed mb-6 max-w-xs">
-              The modern cloud-based POS platform that helps businesses grow
-              smarter and faster.
+            <p
+              className="text-white text-sm leading-relaxed mb-6 max-w-xs"
+              data-i18n="footer_tagline"
+            >
+              {t("footer_tagline")}
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm text-blue-200">
@@ -78,13 +127,19 @@ export const Footer = () => {
 
           {/* Links Columns */}
           <div>
-            <h3 className="font-semibold text-white mb-4">Who we serve</h3>
+            <h3
+              className="font-semibold text-white mb-4"
+              data-i18n="footer_who_we_serve"
+            >
+              {t("footer_who_we_serve")}
+            </h3>
             <ul className="space-y-3">
               {footerLinks.whoWeServe.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
                     className="text-sm text-blue-200 hover:text-white transition-colors"
+                    data-i18n={link.i18nKey}
                   >
                     {link.name}
                   </a>
@@ -94,13 +149,19 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Company</h3>
+            <h3
+              className="font-semibold text-white mb-4"
+              data-i18n="footer_company"
+            >
+              {t("footer_company")}
+            </h3>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
                     className="text-sm text-blue-200 hover:text-white transition-colors"
+                    data-i18n={link.i18nKey}
                   >
                     {link.name}
                   </a>
@@ -110,13 +171,19 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Resources</h3>
+            <h3
+              className="font-semibold text-white mb-4"
+              data-i18n="footer_resources"
+            >
+              {t("footer_resources")}
+            </h3>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
                     className="text-sm text-blue-200 hover:text-white transition-colors"
+                    data-i18n={link.i18nKey}
                   >
                     {link.name}
                   </a>
@@ -126,13 +193,19 @@ export const Footer = () => {
           </div>
 
           <div>
-            <h3 className="font-semibold text-white mb-4">Legal</h3>
+            <h3
+              className="font-semibold text-white mb-4"
+              data-i18n="footer_legal"
+            >
+              {t("footer_legal")}
+            </h3>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
                     className="text-sm text-blue-200 hover:text-white transition-colors"
+                    data-i18n={link.i18nKey}
                   >
                     {link.name}
                   </a>
@@ -145,7 +218,8 @@ export const Footer = () => {
         {/* Bottom Bar */}
         <div className="py-6 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-sm text-blue-200">
-            © {new Date().getFullYear()} Bill Till. All rights reserved.
+            © {new Date().getFullYear()} Bill Till.{" "}
+            <span data-i18n="footer_rights">{t("footer_rights")}</span>
           </p>
           <div className="flex items-center gap-4">
             {socialLinks.map((social) => (

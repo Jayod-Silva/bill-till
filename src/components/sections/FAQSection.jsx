@@ -6,41 +6,50 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-
-const faqs = [
-  {
-    question: "How long does it take to set up Bill Till?",
-    answer:
-      "Most businesses are up and running within 10 minutes. Simply create an account, add your products, and start accepting payments. Our setup wizard guides you through every step, and our support team is available 24/7 if you need help.",
-  },
-  {
-    question: "What payment methods does Bill Till support?",
-    answer:
-      "Bill Till supports major credit and debit cards (Visa, Mastercard, KOKO)",
-  },
-  {
-    question: "Can I use Bill Till offline?",
-    answer:
-      "Yes! Bill Till works seamlessly offline. All transactions are stored locally and automatically sync when your internet connection is restored. You'll never miss a sale due to connectivity issues.",
-  },
-  {
-    question: "Is my data secure with Bill Till?",
-    answer:
-      "Absolutely. We use bank-level security with end-to-end encryption, are PCI DSS compliant, and employ multiple layers of protection including fraud detection, secure authentication, and regular security audits. Your data is always safe with us.",
-  },
-  {
-    question: "Can I manage multiple locations?",
-    answer:
-      "Yes, our Pro and Enterprise plans support unlimited locations. You'll have a centralized dashboard to view sales, inventory, and performance across all your stores in real-time. Each location can have its own settings while maintaining consistent branding.",
-  },
-  {
-    question: "What kind of support do you offer?",
-    answer:
-      "We offer email support for Starter plans, priority support with live chat for Pro plans, and 24/7 dedicated phone support with a personal account manager for Enterprise customers. All plans include access to our comprehensive knowledge base and video tutorials.",
-  },
-];
+import { useLanguage } from "../../translations/LanguageContext";
 
 export const FAQSection = () => {
+  const { t } = useLanguage();
+
+  const faqs = [
+    {
+      question: t("faq_q1"),
+      answer: t("faq_a1"),
+      i18nQ: "faq_q1",
+      i18nA: "faq_a1",
+    },
+    {
+      question: t("faq_q2"),
+      answer: t("faq_a2"),
+      i18nQ: "faq_q2",
+      i18nA: "faq_a2",
+    },
+    {
+      question: t("faq_q3"),
+      answer: t("faq_a3"),
+      i18nQ: "faq_q3",
+      i18nA: "faq_a3",
+    },
+    {
+      question: t("faq_q4"),
+      answer: t("faq_a4"),
+      i18nQ: "faq_q4",
+      i18nA: "faq_a4",
+    },
+    {
+      question: t("faq_q5"),
+      answer: t("faq_a5"),
+      i18nQ: "faq_q5",
+      i18nA: "faq_a5",
+    },
+    {
+      question: t("faq_q6"),
+      answer: t("faq_a6"),
+      i18nQ: "faq_q6",
+      i18nA: "faq_a6",
+    },
+  ];
+
   return (
     <section className="py-14 lg:py-24">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -53,13 +62,22 @@ export const FAQSection = () => {
           className="text-center mb-12"
         >
           <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Frequently asked <span className="text-primary">questions</span>
+            <span data-i18n="faq_title_main">{t("faq_title_main")}</span>{" "}
+            <span className="text-primary" data-i18n="faq_title_highlight">
+              {t("faq_title_highlight")}
+            </span>
           </h2>
-          <p className="text-base lg:text-lg text-muted-foreground">
-            Everything you need to know about Bill Till. Can't find the answer
-            you're looking for?
-            <a href="#" className="text-primary hover:underline ml-1">
-              Contact our support team
+          <p
+            className="text-base lg:text-lg text-muted-foreground"
+            data-i18n="faq_subtitle"
+          >
+            {t("faq_subtitle")}
+            <a
+              href="#"
+              className="text-primary hover:underline ml-1"
+              data-i18n="faq_contact"
+            >
+              {t("faq_contact")}
             </a>
             .
           </p>
@@ -80,10 +98,16 @@ export const FAQSection = () => {
                   value={`item-${index}`}
                   className="bg-card border border-border rounded-xl px-6 data-[state=open]:border-primary/20 data-[state=open]:shadow-card transition-all duration-300"
                 >
-                  <AccordionTrigger className="text-left font-medium text-foreground hover:text-primary py-5 [&[data-state=open]>svg]:rotate-180">
+                  <AccordionTrigger
+                    className="text-left font-medium text-foreground hover:text-primary py-5 [&[data-state=open]>svg]:rotate-180"
+                    data-i18n={faq.i18nQ}
+                  >
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-5 leading-relaxed">
+                  <AccordionContent
+                    className="text-muted-foreground pb-5 leading-relaxed"
+                    data-i18n={faq.i18nA}
+                  >
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>
@@ -97,10 +121,16 @@ export const FAQSection = () => {
                   value={`item-${index + Math.ceil(faqs.length / 2)}`}
                   className="bg-card border border-border rounded-xl px-6 data-[state=open]:border-primary/20 data-[state=open]:shadow-card transition-all duration-300"
                 >
-                  <AccordionTrigger className="text-left font-medium text-foreground hover:text-primary py-5 [&[data-state=open]>svg]:rotate-180">
+                  <AccordionTrigger
+                    className="text-left font-medium text-foreground hover:text-primary py-5 [&[data-state=open]>svg]:rotate-180"
+                    data-i18n={faq.i18nQ}
+                  >
                     {faq.question}
                   </AccordionTrigger>
-                  <AccordionContent className="text-muted-foreground pb-5 leading-relaxed">
+                  <AccordionContent
+                    className="text-muted-foreground pb-5 leading-relaxed"
+                    data-i18n={faq.i18nA}
+                  >
                     {faq.answer}
                   </AccordionContent>
                 </AccordionItem>

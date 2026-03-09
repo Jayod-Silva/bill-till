@@ -176,11 +176,11 @@ export default function Navbar() {
                       className="fixed inset-0 z-40"
                       onClick={() => setLangDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-[110] animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="absolute right-0 mt-2 w-32 bg-white rounded-xl shadow-xl border font-medium border-gray-100 py-2 z-[110] animate-in fade-in slide-in-from-top-2 duration-200">
                       {[
-                        { code: "en", label: "English" },
-                        { code: "si", label: "සිංහල" },
-                        { code: "ta", label: "தமிழ்" },
+                        { code: "en", label: "En" },
+                        { code: "si", label: "සිං" },
+                        { code: "ta", label: "தமி" },
                       ].map((lang) => (
                         <button
                           key={lang.code}

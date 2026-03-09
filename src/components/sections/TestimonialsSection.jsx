@@ -9,40 +9,45 @@ import {
 import { Quote, ChevronLeft, ChevronRight, Star } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-
-const testimonials = [
-  {
-    id: 1,
-    quote:
-      "Bill Till has completely transformed how we handle our daily operations. The interface is intuitive, the features are comprehensive, and the support team is exceptional.",
-    author: "Corey Philips",
-    role: "CEO, TechStore Solutions",
-    avatar: "/testimonial-avatar.jpg",
-    rating: 5,
-  },
-  {
-    id: 2,
-    quote:
-      "We've tried multiple POS systems before, but Bill Till stands out. The analytics and reporting features have helped us make better business decisions.",
-    author: "Jessica Martinez",
-    role: "Owner, Fashion Forward",
-    avatar: "/testimonial-avatar.jpg",
-    rating: 5,
-  },
-  {
-    id: 3,
-    quote:
-      "The mobile app is a game-changer for our restaurant. Staff can take orders tableside and everything syncs perfectly with the kitchen display.",
-    author: "Robert Chen",
-    role: "Manager, The Garden Bistro",
-    avatar: "/testimonial-avatar.jpg",
-    rating: 5,
-  },
-];
+import { useLanguage } from "../../translations/LanguageContext";
 
 export const TestimonialsSection = () => {
+  const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hoveredIndex, setHoveredIndex] = useState(null);
+
+  const testimonials = [
+    {
+      id: 1,
+      quote: t("test_q1"),
+      author: "Corey Philips",
+      role: t("test_role1"),
+      avatar: "/testimonial-avatar.jpg",
+      rating: 5,
+      i18nQuote: "test_q1",
+      i18nRole: "test_role1",
+    },
+    {
+      id: 2,
+      quote: t("test_q2"),
+      author: "Jessica Martinez",
+      role: t("test_role2"),
+      avatar: "/testimonial-avatar.jpg",
+      rating: 5,
+      i18nQuote: "test_q2",
+      i18nRole: "test_role2",
+    },
+    {
+      id: 3,
+      quote: t("test_q3"),
+      author: "Robert Chen",
+      role: t("test_role3"),
+      avatar: "/testimonial-avatar.jpg",
+      rating: 5,
+      i18nQuote: "test_q3",
+      i18nRole: "test_role3",
+    },
+  ];
 
   const springConfig = { stiffness: 100, damping: 5 };
   const x = useMotionValue(0);
@@ -91,8 +96,13 @@ export const TestimonialsSection = () => {
           className="text-center "
         >
           <h2 className="text-5xl md:text-5xl lg:text-6xl font-bold tracking-tight font-poppins text-left text-foreground mb-4">
-            What Our Users
-            <br /> Are <span className="text-primary">Saying</span>
+            <span data-i18n="test_title_main">{t("test_title_main")}</span>
+            <br /> <span data-i18n="test_title_sub">
+              {t("test_title_sub")}
+            </span>{" "}
+            <span className="text-primary" data-i18n="test_title_highlight">
+              {t("test_title_highlight")}
+            </span>
           </h2>
         </motion.div>
 
@@ -131,11 +141,17 @@ export const TestimonialsSection = () => {
                     <div className="text-4xl font-bold text-primary mb-2">
                       99%
                     </div>
-                    <div className="text-sm font-medium text-gray-600 mb-1">
-                      Customer satisfaction
+                    <div
+                      className="text-sm font-medium text-gray-600 mb-1"
+                      data-i18n="test_satisfaction"
+                    >
+                      {t("test_satisfaction")}
                     </div>
-                    <div className="text-xs text-green-600 font-medium">
-                      - and growing!
+                    <div
+                      className="text-xs text-green-600 font-medium"
+                      data-i18n="test_growing"
+                    >
+                      {t("test_growing")}
                     </div>
                   </div>
                 </motion.div>
@@ -154,8 +170,11 @@ export const TestimonialsSection = () => {
                 <div className="text-6xl font-bold text-foreground mb-2">
                   99K
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Customers worldwide
+                <div
+                  className="text-sm text-muted-foreground"
+                  data-i18n="test_worldwide"
+                >
+                  {t("test_worldwide")}
                 </div>
               </motion.div>
               <motion.div
@@ -168,8 +187,11 @@ export const TestimonialsSection = () => {
                 <div className="text-4xl md:text-5xl font-bold text-foreground mt-5 mb-2">
                   #2
                 </div>
-                <div className="text-sm text-muted-foreground">
-                  Banking apps in Europe
+                <div
+                  className="text-sm text-muted-foreground"
+                  data-i18n="test_banking"
+                >
+                  {t("test_banking")}
                 </div>
               </motion.div>
             </div>
@@ -218,7 +240,10 @@ export const TestimonialsSection = () => {
                         <div className="font-bold text-background relative z-30 text-base">
                           {testimonial.author}
                         </div>
-                        <div className="text-muted-foreground text-xs">
+                        <div
+                          className="text-muted-foreground text-xs"
+                          data-i18n={testimonial.i18nRole}
+                        >
                           {testimonial.role}
                         </div>
                       </motion.div>
@@ -286,7 +311,10 @@ export const TestimonialsSection = () => {
                 </div>
 
                 {/* Quote */}
-                <blockquote className="text-md lg:text-xl text-gray-700 leading-relaxed mb-8">
+                <blockquote
+                  className="text-md lg:text-xl text-gray-700 leading-relaxed mb-8"
+                  data-i18n={testimonials[currentIndex].i18nQuote}
+                >
                   "{testimonials[currentIndex].quote}"
                 </blockquote>
 
@@ -305,7 +333,10 @@ export const TestimonialsSection = () => {
                     <div className="font-semibold text-foreground">
                       {testimonials[currentIndex].author}
                     </div>
-                    <div className="text-sm text-muted-foreground">
+                    <div
+                      className="text-sm text-muted-foreground"
+                      data-i18n={testimonials[currentIndex].i18nRole}
+                    >
                       {testimonials[currentIndex].role}
                     </div>
                   </div>
