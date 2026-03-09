@@ -89,7 +89,7 @@ export const generateInvoice = (details, action = "download") => {
     doc.text("680A Colombo Road,Kattuwa,Negombo, Sri Lanka ", 110, 82, {
       maxWidth: 80,
     });
-    doc.text("Email: support@billtill.com", 110, 87);
+    doc.text("Email: support@billtill.co", 110, 87);
     doc.text("Web: www.billtill.co", 110, 92);
     doc.text("Phone: 0114 758900", 110, 97);
 
@@ -197,7 +197,7 @@ export const generateInvoice = (details, action = "download") => {
       pageHeight - 28,
     );
     doc.text(
-      "For any queries, please contact support@billtill.com or call +94 0114 758900",
+      "For any queries, please contact support@billtill.co or call +94 0114 758900",
       14,
       pageHeight - 23,
     );

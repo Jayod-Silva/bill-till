@@ -102,7 +102,7 @@ const getInvoiceEmailHtml = ({
       <p style="font-size:12px; color:#94a3b8; margin:0;">
         © ${new Date().getFullYear()} Bill-Till<br>
         680A Colombo Road, Kattuwa, Negombo, Sri Lanka<br>
-        support@billtill.com
+        support@billtill.co
       </p>
       <p style="font-size:11px; color:#cbd5f5; margin-top:6px;">
         This is an automated email. Please do not reply.
@@ -164,7 +164,7 @@ const getWelcomeEmailHtml = ({ firstName, businessName }) => {
             <p style="font-size:12px; color:#94a3b8; margin:0;">
               © ${new Date().getFullYear()} Bill-Till<br>
               680A Colombo Road, Kattuwa, Negombo, Sri Lanka<br>
-              support@billtill.com
+              support@billtill.co
             </p>
           </div>
 

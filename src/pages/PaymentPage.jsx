@@ -77,7 +77,7 @@ const BrandPanel = () => (
     >
       <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-medium mb-6">
         <Sparkles className="w-3 h-3" />
-        Trusted by 2,000+ businesses
+        Trusted by 1,000+ businesses
       </div>
 
       <h2 className="text-4xl font-bold text-white leading-tight mb-4">
@@ -90,7 +90,7 @@ const BrandPanel = () => (
 
       <p className="text-slate-400 text-sm leading-relaxed max-w-xs">
         Manage your entire business from a single, beautiful platform. Payments,
-        inventory, and analytics — all in one place.
+        inventory, and analytics - all in one place.
       </p>
 
       {/* Feature pills */}
@@ -194,10 +194,10 @@ const PaymentPage = () => {
           <p className="mt-8 text-center text-xs text-slate-400">
             Need help? Contact our support at{" "}
             <a
-              href="mailto:support@billtill.com"
-              className="text-slate-500 hover:text-slate-700 underline underline-offset-2"
+              href="mailto:support@billtill.co"
+              className="text-blue-400 hover:text-slate-700 underline underline-offset-2"
             >
-              support@billtill.com
+              support@billtill.co
             </a>
           </p>
         </div>

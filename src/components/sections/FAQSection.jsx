@@ -16,7 +16,7 @@ const faqs = [
   {
     question: "What payment methods does Bill Till support?",
     answer:
-      "Bill Till supports all major credit and debit cards (Visa, Mastercard, American Express, Discover), mobile payments (Apple Pay, Google Pay, Samsung Pay), contactless payments, and cash. We also integrate with popular payment processors like Stripe and Square.",
+      "Bill Till supports major credit and debit cards (Visa, Mastercard, KOKO)",
   },
   {
     question: "Can I use Bill Till offline?",

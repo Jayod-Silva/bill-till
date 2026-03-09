@@ -13,7 +13,7 @@ import { SocialProofSection } from "@/components/sections/SocialProofSection";
 import { ValuePropositionSection } from "@/components/sections/ValuePropositionSection";
 import { IndustriesSection } from "@/components/sections/IndustriesSection";
 import { HowItWorksSection } from "@/components/sections/HowItWorksSection";
-import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
+// import { TestimonialsSection } from "@/components/sections/TestimonialsSection";
 import { PricingSection } from "@/components/sections/PricingSection";
 import { FeaturesSection } from "@/components/sections/FeaturesSection";
 import { FreeSwitchSection } from "@/components/sections/FreeSwitchSection";
@@ -52,7 +52,7 @@ const HomePage = () => {
         <FreeSwitchSection />
         <FeaturesSection />
         <FAQSection />
-        <TestimonialsSection />
+        {/* <TestimonialsSection /> */}
       </main>
 
       <Footer />
