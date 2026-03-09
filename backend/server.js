@@ -8,7 +8,10 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
-const { sendInvoiceEmail, sendAdminNotificationEmail } = require("./services/emailService");
+const {
+  sendInvoiceEmail,
+  sendAdminNotificationEmail,
+} = require("./services/emailService");
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -36,14 +39,24 @@ app.use("/api/dashboard", dashboardRoutes);
 // --------------------------------------------------------
 const paymentCredentials = {
   LKR: {
-    merchantId: process.env.MERCHANT_ID_LKR || process.env.MERCHANT_ID || "MPGS00000348",
-    apiPassword: process.env.API_PASSWORD_LKR || process.env.API_PASSWORD || "078809c1ac7c0359ef5e1a13ff9728a5",
-    apiBaseUrl: process.env.API_BASE_URL_LKR || process.env.API_BASE_URL || "https://seylan.gateway.mastercard.com/api/rest/version/69",
+    merchantId:
+      process.env.MERCHANT_ID_LKR || process.env.MERCHANT_ID || "MPGS00000348",
+    apiPassword:
+      process.env.API_PASSWORD_LKR ||
+      process.env.API_PASSWORD ||
+      "078809c1ac7c0359ef5e1a13ff9728a5",
+    apiBaseUrl:
+      process.env.API_BASE_URL_LKR ||
+      process.env.API_BASE_URL ||
+      "https://seylan.gateway.mastercard.com/api/rest/version/100",
   },
   USD: {
     merchantId: process.env.MERCHANT_ID_USD || "MPGS00000349",
-    apiPassword: process.env.API_PASSWORD_USD || "2102663c909bc3b8b15f792cba596fbd",
-    apiBaseUrl: process.env.API_BASE_URL_USD || "https://seylan.gateway.mastercard.com/api/rest/version/69",
+    apiPassword:
+      process.env.API_PASSWORD_USD || "2102663c909bc3b8b15f792cba596fbd",
+    apiBaseUrl:
+      process.env.API_BASE_URL_USD ||
+      "https://seylan.gateway.mastercard.com/api/rest/version/100",
   },
 };
 
@@ -60,12 +73,12 @@ const orderCurrencyMap = {};
 // In-memory map to store business details for the order until verification/invoice
 const orderDataMap = {};
 
-app.get('/api/test', (req, res) => {
+app.get("/api/test", (req, res) => {
   res.json({
-    status: 'Server OK',
+    status: "Server OK",
     timestamp: new Date().toISOString(),
     auth: "JWT enabled",
-    prisma: "SQL Server ready"
+    prisma: "SQL Server ready",
   });
 });
 
@@ -75,36 +88,103 @@ app.post("/api/create-payment", async (req, res) => {
     const amount = req?.body?.amount;
     const currency = req?.body?.currency === "USD" ? "USD" : "LKR";
     const confirmationCode = req?.body?.confirmationCode;
+    const billingCycle = req?.body?.billingCycle;
+    const selectedPlan = req?.body?.selectedPlan;
     const creds = getCredentials(currency);
 
     // Remember currency for this order (used during verification)
     orderCurrencyMap[orderId] = currency;
     // Remember form data for this order
-    orderDataMap[orderId] = { ...req.body, orderId, currency, confirmationCode };
+    orderDataMap[orderId] = {
+      ...req.body,
+      orderId,
+      currency,
+      confirmationCode,
+    };
+
+    // Build billing address object with zip code included
+    const billingAddressData = {
+      street: req?.body?.address,
+      city: req?.body?.city || "",
+      stateProvince: req?.body?.state || "",
+      // country: req?.body?.country || "LKA", // Default to Sri Lanka (ISO 3166-1 alpha-3)
+    };
+
+    // Filter out empty/undefined/null values from billing address
+    const billingAddress = Object.fromEntries(
+      Object.entries(billingAddressData).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "",
+      ),
+    );
+
+    // Build billing object with address
+    const billingObj = {
+      address: billingAddress,
+    };
+
+    // Store postal code in orderDataMap for records (not sent to payment gateway)
+    // Note: Mastercard Gateway does not support postal codes in any billing field
+    if (req?.body?.zipCode) {
+      orderDataMap[orderId].zipCode = req.body.zipCode;
+    }
+
+    // Build customer/payer object with only non-empty values
+    const customerData = {
+      email: req?.body?.email,
+      phone: req?.body?.phone || req?.body?.phoneNumber,
+      firstName: req?.body?.firstName,
+      lastName: req?.body?.lastName,
+      title: req?.body?.title,
+    };
+
+    // Filter out empty/undefined/null values from customer object
+    const customer = Object.fromEntries(
+      Object.entries(customerData).filter(
+        ([_, v]) => v !== null && v !== undefined && v !== "",
+      ),
+    );
+
+    // Build request payload with enhanced merchant and customer details
+    const paymentRequest = {
+      apiOperation: "INITIATE_CHECKOUT",
+      interaction: {
+        operation: "PURCHASE",
+        returnUrl: `http://localhost:5173?payment=success&orderId=${orderId}`,
+        cancelUrl: `http://localhost:5173?payment=failure&orderId=${orderId}`,
+        merchant: {
+          name: "BillTill",
+          address: {
+            line1: "Sri Lanka",
+          },
+        },
+      },
+
+      order: {
+        id: orderId,
+        amount: amount,
+        currency: currency,
+        description: `${req.body.businessName} - ${selectedPlan} - ${billingCycle} Plan for ${req.body.ownerName}`,
+        reference: confirmationCode,
+      },
+    };
+
+    // Add billing address only if there are valid fields
+    if (Object.keys(billingAddress).length > 0) {
+      paymentRequest.billing = billingObj;
+    }
+
+    // Add customer/payer details only if there are valid fields
+    if (Object.keys(customer).length > 0) {
+      paymentRequest.customer = customer;
+    }
 
     const sessionResponse = await axios.post(
       `${creds.apiBaseUrl}/merchant/${creds.merchantId}/session`,
-      {
-        apiOperation: "INITIATE_CHECKOUT",
-        interaction: {
-          operation: "PURCHASE",
-          returnUrl: `https://billtill.co/payment?payment=success&orderId=${orderId}`,
-          merchant: {
-            name: "BillTill",
-            address: { line1: "Sri Lanka" }
-          }
-        },
-        order: {
-          id: orderId,
-          amount: amount,
-          currency: currency,
-          description: `${req.body.businessName} - Business Registration`
-        }
-      },
+      paymentRequest,
       {
         auth: { username: creds.apiUsername, password: creds.apiPassword },
-        headers: { "Content-Type": "application/json" }
-      }
+        headers: { "Content-Type": "application/json" },
+      },
     );
 
     res.json({
@@ -114,12 +194,12 @@ app.post("/api/create-payment", async (req, res) => {
       currency: currency,
       session: { id: sessionResponse.data.session.id },
       // Return details just in case the frontend wants them immediately
-      details: orderDataMap[orderId]
+      details: orderDataMap[orderId],
     });
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.response?.data || error.message
+      error: error.response?.data || error.message,
     });
   }
 });
@@ -133,35 +213,67 @@ app.get("/api/verify-payment/:orderId", async (req, res) => {
 
     const response = await axios.get(
       `${creds.apiBaseUrl}/merchant/${creds.merchantId}/order/${orderId}`,
-      { auth: { username: creds.apiUsername, password: creds.apiPassword } }
+      { auth: { username: creds.apiUsername, password: creds.apiPassword } },
     );
-    
+
     // Attach stored business details to the verification response
     const verificationData = response.data;
     if (orderDataMap[orderId]) {
       verificationData.storedDetails = orderDataMap[orderId];
     }
 
+    // Check payment status and add clear indicators
+    const paymentStatus = response.data?.result || "UNKNOWN";
+    const isSuccessful =
+      paymentStatus === "SUCCESS" &&
+      response.data?.transaction?.[0]?.result === "SUCCESS";
+
+    // Add payment status summary
+    verificationData.paymentSuccessful = isSuccessful;
+    verificationData.paymentStatus = paymentStatus;
+
+    // If payment failed, include failure message
+    if (!isSuccessful) {
+      verificationData.paymentFailed = true;
+      verificationData.failureMessage =
+        response.data?.transaction?.[0]?.response?.gatewayRecommendation ||
+        `Payment ${paymentStatus.toLowerCase()}. Please try again.`;
+    }
+
     res.json(verificationData);
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: error.response?.data || error.message
+      paymentSuccessful: false,
+      paymentFailed: true,
+      failureMessage: "Unable to verify payment. Please contact support.",
+      error: error.response?.data || error.message,
     });
   }
 });
 
 app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
   try {
-    const { email, businessName, invoiceId, orderId, confirmationCode, amount, plan } = req.body;
+    const {
+      email,
+      businessName,
+      invoiceId,
+      orderId,
+      confirmationCode,
+      amount,
+      plan,
+    } = req.body;
     const pdfBuffer = req.file?.buffer;
-    const filename = req.file?.originalname || `BillTill_Invoice_${orderId}.pdf`;
+    const filename =
+      req.file?.originalname || `BillTill_Invoice_${orderId}.pdf`;
 
     if (!pdfBuffer) {
       return res.status(400).json({ success: false, error: "No PDF attached" });
     }
     if (!email) {
-      return res.status(400).json({ success: false, error: "Email is required" });
+      return res
+        .status(400)
+        .json({ success: false, error: "Email is required" });
     }
 
     // 1. Get stored details for admin notification
@@ -178,12 +290,14 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
       confirmationCode,
       amount,
       plan,
-      currency: storedDetails.currency || "LKR"
+      currency: storedDetails.currency || "LKR",
     });
 
     // 3. Send Admin Notification Email
     try {
-      const billingCycle = (plan || "").toLowerCase().includes("annually") ? "Annual" : "Monthly";
+      const billingCycle = (plan || "").toLowerCase().includes("annually")
+        ? "Annual"
+        : "Monthly";
       await sendAdminNotificationEmail({
         ...storedDetails,
         businessName: businessName || storedDetails.businessName,
@@ -194,11 +308,14 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
         plan,
         billingCycle,
         currency: storedDetails.currency || "LKR",
-        invoiceId
+        invoiceId,
       });
       console.log(`[Email] Admin notification sent for order ${orderId}`);
     } catch (adminEmailErr) {
-      console.error("[Email] Admin notification failed:", adminEmailErr.message);
+      console.error(
+        "[Email] Admin notification failed:",
+        adminEmailErr.message,
+      );
     }
 
     res.json({ success: true, message: "Invoice sent successfully" });
@@ -211,9 +328,12 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
 app.post("/api/contact", async (req, res) => {
   try {
     const { name, email, phone, business, message } = req.body;
-    
+
     if (!name || !email || !message) {
-      return res.status(400).json({ success: false, error: "Name, email, and message are required" });
+      return res.status(400).json({
+        success: false,
+        error: "Name, email, and message are required",
+      });
     }
 
     const { sendContactEmail } = require("./services/emailService");
@@ -227,7 +347,7 @@ app.post("/api/contact", async (req, res) => {
 });
 
 // START SERVER
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 7075;
 app.listen(PORT, () => {
   console.log(`🚀 Backend running on port ${PORT}`);
   console.log(`📍 Test endpoint: https://caritasconnect.ddns.net/api/test`);

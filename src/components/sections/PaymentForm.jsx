@@ -28,6 +28,7 @@ import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
 import confetti from "canvas-confetti";
 import { useAuth } from "@/context/AuthContext";
+import { usePaymentStore } from "@/stores/usePaymentStore";
 
 /* ── Pricing Plans ───────────────────────────────────── */
 const pricingPlans = [
@@ -405,9 +406,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     }
   }, [selectedPlan, billingCycle]);
 
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [paymentResult, setPaymentResult] = useState(null);
-
+  const { showSuccess, setShowSuccess, paymentResult, setPaymentResult, paymentFailed, setPaymentFailed, failureMessage, setFailureMessage } = usePaymentStore();
   const { user } = useAuth();
 
   // Handle plan selection change
@@ -474,13 +473,11 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
         setShowSuccess(true);
         triggerConfetti();
         // Delay invoice generation slightly to ensure UI renders first
-        setTimeout(() => {
-          try {
-            generateInvoice(enrichedDetails, "silent");
-          } catch (err) {
-            console.error("Invoice generation failed (non-blocking):", err);
-          }
-        }, 500);
+        try {
+          generateInvoice(enrichedDetails, "silent");
+        } catch (err) {
+          console.error("Invoice generation failed (non-blocking):", err);
+        }
       };
 
       // Retrieve saved form data
@@ -541,6 +538,11 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
           };
           showSuccessAndSendInvoice(resultDetails);
         });
+    } else if (payment === "failure") {
+      // Clean up URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+      setPaymentFailed(true);
+      setFailureMessage("Your payment was cancelled or failed. Please try again.");
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -817,6 +819,13 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
   };
 
   const SuccessModal = ({ details, onClose }) => {
+    const handleClose = () => {
+      onClose();
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 300);
+    };
+
     return (
       <motion.div
         initial={{ opacity: 0 }}
@@ -830,7 +839,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
           className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
         >
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5 text-slate-400" />
@@ -921,6 +930,71 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     );
   };
 
+  const FailureModal = ({ message, onClose }) => {
+    useEffect(() => {
+      const timer = setTimeout(() => {
+        onClose();
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 300);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }, [onClose]);
+
+    const handleClose = () => {
+      onClose();
+      setTimeout(() => {
+        window.location.href = '/';
+      }, 300);
+    };
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm"
+      >
+        <motion.div
+          initial={{ scale: 0.9, opacity: 0, y: 20 }}
+          animate={{ scale: 1, opacity: 1, y: 0 }}
+          className="relative w-full max-w-lg bg-white rounded-3xl shadow-2xl overflow-hidden"
+        >
+          <button
+            onClick={handleClose}
+            className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 transition-colors"
+          >
+            <X className="w-5 h-5 text-slate-400" />
+          </button>
+
+          <div className="p-8 text-center">
+            <div className="inline-flex items-center justify-center w-20 h-20 mb-6 rounded-full bg-red-50 text-red-500">
+              <AlertCircle className="w-10 h-10" />
+            </div>
+
+            <h2 className="text-3xl font-extrabold text-slate-900 mb-2">
+              Payment Failed
+            </h2>
+            <p className="text-slate-600 mb-8 font-medium">
+              {message || "Your payment could not be processed. Please try again."}
+            </p>
+
+            <button
+              onClick={handleClose}
+              className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-all shadow-lg shadow-red-500/20"
+            >
+              Try Again
+            </button>
+
+            <p className="text-xs text-slate-400 mt-6">
+              Redirecting to home in 5 seconds...
+            </p>
+          </div>
+        </motion.div>
+      </motion.div>
+    );
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
@@ -956,8 +1030,8 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       const verifiedCode = localStorage.getItem("billtill_verified_code") || "";
 
       const response = await axios.post(
-        "https://caritasconnect.ddns.net/billtill/api/create-payment",
-        { ...form, currency, confirmationCode: verifiedCode, billingCycle, state: user.business?.province, city: user.business?.city },
+        "http://localhost:7075/api/create-payment",
+        { ...form, currency, confirmationCode: verifiedCode, billingCycle, selectedPlan, state: user.business?.province, city: user.business?.city },
       );
 
       const sessionId = response.data.sessionId || response.data.session?.id;
@@ -1295,6 +1369,16 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
           <SuccessModal
             details={paymentResult}
             onClose={() => setShowSuccess(false)}
+          />
+        )}
+      </AnimatePresence>
+
+      {/* Failure Modal */}
+      <AnimatePresence>
+        {paymentFailed && (
+          <FailureModal
+            message={failureMessage}
+            onClose={() => setPaymentFailed(false)}
           />
         )}
       </AnimatePresence>
