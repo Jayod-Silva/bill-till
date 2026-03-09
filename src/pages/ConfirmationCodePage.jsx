@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import {
@@ -290,6 +290,12 @@ const ConfirmationCodePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+
+    setCode(localStorage.getItem("billtill_verified_code") || "");
+
+  }, [])
 
   const handleSubmit = async () => {
     let hasError = false;

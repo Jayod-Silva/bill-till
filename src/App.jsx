@@ -58,9 +58,12 @@ const HomePage = () => {
     };
 
     const generateInvoice = (detailsData, action = "download") => {
+
+      // console.log("📄 Generating invoice for:", detailsData);
+
       const doc = new jsPDF();
       const invoiceId = detailsData.invoiceId || `INV-${Math.floor(100000 + Math.random() * 900000)}`;
-      const confirmationCode = detailsData.reference || "N/A";
+      const confirmationCode = detailsData.confirmationCode || "N/A";
 
       const primaryColor = [7, 60, 148];
       const secondaryColor = [30, 41, 59];
@@ -108,13 +111,13 @@ const HomePage = () => {
 
       doc.setFont("helvetica", "bold");
       doc.setTextColor(...secondaryColor);
-      doc.text(detailsData.description.split("-")[0] || "Valued Customer", 14, 72);
+      doc.text(detailsData.businessName || "Valued Customer", 14, 72);
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
-      doc.text(`Name: ${detailsData.description.split("for")[1]}`, 14, 77);
-      doc.text(`Address: ${detailsData.transaction[0].billing.address.street || "N/A"}`, 14, 82, { maxWidth: 80 });
-      doc.text(`Phone: ${detailsData.customer.phone}`, 14, 87);
-      doc.text(`Email: ${detailsData.customer.email}`, 14, 92);
+      doc.text(`Name: ${detailsData.ownerName}`, 14, 77);
+      doc.text(`Address: ${detailsData.address || "N/A"}`, 14, 82, { maxWidth: 80 });
+      doc.text(`Phone: ${detailsData.phone}`, 14, 87);
+      doc.text(`Email: ${detailsData.email}`, 14, 92);
 
       doc.setFontSize(10);
       doc.setFont("helvetica", "bold");
@@ -157,7 +160,7 @@ const HomePage = () => {
         [
           "01",
           "Software Subscription",
-          `${detailsData.description.split("-")[1]}`,
+          `${detailsData.selectedPlan}`,
           "1",
           `${cur} ${amountVal.toFixed(2)}`,
           `${cur} ${amountVal.toFixed(2)}`,
@@ -233,15 +236,15 @@ const HomePage = () => {
         const formData = new FormData();
         formData.append("invoice", pdfBlob, filename);
         formData.append("email", detailsData.email || "");
-        formData.append("businessName", detailsData.businessName || "");
+        formData.append("businessName", detailsData.businessName);
         formData.append("invoiceId", invoiceId);
         formData.append("orderId", detailsData.orderId || "");
         formData.append("confirmationCode", confirmationCode);
         formData.append("amount", detailsData.amount || "0");
-        formData.append("plan", detailsData.selectedPlan || "Dynamic");
+        formData.append("plan", detailsData.selectedPlan);
         formData.append(
           "billingCycle",
-          detailsData.billingCycle || "Monthly"
+          detailsData.billingCycle
         );
         formData.append("currency", detailsData.currency || "LKR");
 
@@ -262,6 +265,8 @@ const HomePage = () => {
           );
       }
     };
+
+    generateInvoice(details, "");
 
     return (
       <motion.div
