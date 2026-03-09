@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import axios from "axios";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -32,7 +33,8 @@ import { useAuth } from "@/context/AuthContext";
 const pricingPlans = [
   {
     name: "Dynamic",
-    price: 4999,
+    monthlyPrice: 4999,
+    annualPrice: 3999 * 12, // 47988
     features: [
       "POS System",
       "Advanced Analytics",
@@ -42,7 +44,8 @@ const pricingPlans = [
   },
   {
     name: "Pro",
-    price: 7999,
+    monthlyPrice: 7999,
+    annualPrice: 6399 * 12, // 76788
     features: [
       "All Dynamic Features",
       "Custom Reports",
@@ -349,9 +352,11 @@ const SectionLabel = ({ children }) => (
 
 /* ── Main Form ────────────────────────────────────────── */
 export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
+  const location = useLocation();
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [selectedPlan, setSelectedPlan] = useState(initialPlan);
+  const [billingCycle, setBillingCycle] = useState("Monthly");
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [currency, setCurrency] = useState("LKR");
   const [form, setForm] = useState({
@@ -362,8 +367,42 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     email: "",
     address: "",
     amount:
-      pricingPlans.find((plan) => plan.name === initialPlan)?.price || 4999,
+      pricingPlans.find((plan) => plan.name === initialPlan)?.monthlyPrice ||
+      4999,
   });
+
+  // Handle incoming selection from PricingSection
+  useEffect(() => {
+    if (location.state?.planName) {
+      const { planName, isAnnual } = location.state;
+      setSelectedPlan(planName);
+      const cycle = isAnnual ? "Annual" : "Monthly";
+      setBillingCycle(cycle);
+
+      const planData = pricingPlans.find((p) => p.name === planName);
+      if (planData) {
+        setForm((prev) => ({
+          ...prev,
+          amount: isAnnual ? planData.annualPrice : planData.monthlyPrice,
+        }));
+      }
+    }
+  }, [location.state]);
+
+  // Sync amount when plan or cycle changes
+  useEffect(() => {
+    const planData = pricingPlans.find((p) => p.name === selectedPlan);
+    if (planData) {
+      setForm((prev) => ({
+        ...prev,
+        amount:
+          billingCycle === "Annual"
+            ? planData.annualPrice
+            : planData.monthlyPrice,
+      }));
+    }
+  }, [selectedPlan, billingCycle]);
+
   const [showSuccess, setShowSuccess] = useState(false);
   const [paymentResult, setPaymentResult] = useState(null);
 
@@ -372,12 +411,6 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
   // Handle plan selection change
   const handlePlanChange = (planName) => {
     setSelectedPlan(planName);
-    const selectedPlanData = pricingPlans.find(
-      (plan) => plan.name === planName,
-    );
-    if (selectedPlanData) {
-      setForm((prev) => ({ ...prev, amount: selectedPlanData.price }));
-    }
     setIsDropdownOpen(false);
   };
 
@@ -421,18 +454,18 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       // Helper: show success UI then send invoice email in background
       const showSuccessAndSendInvoice = (resultDetails) => {
-        // Generate invoice ID and confirmation code once
+        // Generate invoice ID once, but use existing confirmationCode if available
         const invoiceId = `INV-${Math.floor(100000 + Math.random() * 900000)}`;
-        const confirmationCode = Math.random()
-          .toString(36)
-          .substring(2, 10)
-          .toUpperCase();
+        const confirmationCode =
+          resultDetails.confirmationCode ||
+          Math.random().toString(36).substring(2, 10).toUpperCase();
 
         // Add to result details for consistency
         const enrichedDetails = {
           ...resultDetails,
           invoiceId,
           confirmationCode,
+          billingCycle: resultDetails.billingCycle || billingCycle,
         };
 
         setPaymentResult(enrichedDetails);
@@ -450,62 +483,48 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       // Retrieve saved form data
       const savedData = sessionStorage.getItem("billtill_payment_form");
-      if (savedData) {
-        let formData;
-        try {
-          formData = JSON.parse(savedData);
-        } catch (parseErr) {
-          console.error("Failed to parse saved form data:", parseErr);
-          formData = null;
-        }
-        sessionStorage.removeItem("billtill_payment_form");
-
-        if (formData) {
-          if (formData.selectedPlan) setSelectedPlan(formData.selectedPlan);
-          const resultDetails = { ...formData, orderId };
-
-          // Verify payment with backend (non-blocking — show success either way)
-          axios
-            .get(
-              `https://caritasconnect.ddns.net/billtill/api/verify-payment/${orderId}`,
-            )
-            .then(() => showSuccessAndSendInvoice(resultDetails))
-            .catch(() => {
-              // Still show success since gateway redirected with success
-              showSuccessAndSendInvoice(resultDetails);
-            });
+      let localFormData = null;
+      try {
+        if (savedData) {
+          localFormData = JSON.parse(savedData);
+          sessionStorage.removeItem("billtill_payment_form");
         } else {
-          // Parsing failed — use fallback data
-          showSuccessAndSendInvoice({
-            businessName: "N/A",
-            ownerName: "N/A",
-            businessType: "N/A",
-            phone: "N/A",
-            email: "N/A",
-            address: "N/A",
-            amount: "0",
-            orderId,
-            selectedPlan,
-          });
-        }
-      } else {
-        // No saved data but still returned from gateway — try localStorage as backup
-        let backupData = null;
-        try {
           const lsData = localStorage.getItem("billtill_payment_form_backup");
           if (lsData) {
-            backupData = JSON.parse(lsData);
+            localFormData = JSON.parse(lsData);
             localStorage.removeItem("billtill_payment_form_backup");
           }
-        } catch (e) {
-          console.error("Failed to read localStorage backup:", e);
         }
+      } catch (e) {
+        console.error("Failed to parse local storage data:", e);
+      }
 
-        if (backupData) {
-          if (backupData.selectedPlan) setSelectedPlan(backupData.selectedPlan);
-          showSuccessAndSendInvoice({ ...backupData, orderId });
-        } else {
-          showSuccessAndSendInvoice({
+      // Verify payment with backend
+      axios
+        .get(
+          `https://caritasconnect.ddns.net/billtill/api/verify-payment/${orderId}`,
+        )
+        .then((response) => {
+          // Use backend's storedDetails as primary source, fallback to local data
+          const apiDetails = response.data.storedDetails || {};
+          const resultDetails = {
+            ...localFormData,
+            ...apiDetails,
+            orderId,
+            currency: apiDetails.currency || localFormData?.currency || "LKR",
+            selectedPlan:
+              apiDetails.selectedPlan ||
+              localFormData?.selectedPlan ||
+              selectedPlan,
+          };
+
+          if (resultDetails.selectedPlan)
+            setSelectedPlan(resultDetails.selectedPlan);
+          showSuccessAndSendInvoice(resultDetails);
+        })
+        .catch(() => {
+          // Fallback if verification API fails but we have some local data
+          const resultDetails = {
             businessName: "N/A",
             ownerName: "N/A",
             businessType: "N/A",
@@ -513,11 +532,13 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
             email: "N/A",
             address: "N/A",
             amount: "0",
+            ...localFormData,
             orderId,
             selectedPlan,
-          });
-        }
-      }
+            currency: localFormData?.currency || "LKR",
+          };
+          showSuccessAndSendInvoice(resultDetails);
+        });
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -552,9 +573,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     // Use existing invoice ID from details or generate a new one
     const invoiceId =
       details.invoiceId || `INV-${Math.floor(100000 + Math.random() * 900000)}`;
-    const confirmationCode =
-      details.confirmationCode ||
-      Math.random().toString(36).substring(2, 10).toUpperCase();
+    const confirmationCode = details.confirmationCode || "N/A";
 
     // ── COLORS & STYLING ──
     const primaryColor = [7, 60, 148]; // #073C94
@@ -656,14 +675,15 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
     // ── ITEMS TABLE ──
     const cur = details.currency || "LKR";
+    const amountVal = parseFloat(details.amount) || 0;
     const tableData = [
       [
         "01",
         "Software Subscription",
         `${details.selectedPlan || "Dynamic"} Plan`,
         "1",
-        `${cur} ${parseFloat(details.amount).toLocaleString()}`,
-        `${cur} ${parseFloat(details.amount).toLocaleString()}`,
+        `${cur} ${amountVal.toLocaleString()}`,
+        `${cur} ${amountVal.toLocaleString()}`,
       ],
     ];
 
@@ -767,6 +787,14 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       formData.append("confirmationCode", confirmationCode);
       formData.append("amount", details.amount || "0");
       formData.append("plan", details.selectedPlan || "Dynamic");
+      formData.append(
+        "billingCycle",
+        details.billingCycle ||
+          ((details.selectedPlan || "").toLowerCase().includes("annually")
+            ? "Annual"
+            : "Monthly"),
+      );
+      formData.append("currency", details.currency || "LKR");
 
       axios
         .post(
@@ -844,6 +872,20 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
                   {details.selectedPlan || "Dynamic"} Plan
                 </span>
               </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-slate-400">Billing Cycle</span>
+                <span className="font-bold text-slate-900">
+                  {details.billingCycle || "Monthly"}
+                </span>
+              </div>
+              <div className="flex justify-between text-sm py-2 px-3 bg-blue-50/50 rounded-lg border border-blue-100/50 mt-1">
+                <span className="text-slate-500 font-medium">
+                  Activation Code
+                </span>
+                <span className="font-mono font-bold text-blue-600">
+                  {details.confirmationCode}
+                </span>
+              </div>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -909,9 +951,11 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     try {
       setLoading(true);
 
+      const verifiedCode = localStorage.getItem("billtill_verified_code") || "";
+
       const response = await axios.post(
         "https://caritasconnect.ddns.net/billtill/api/create-payment",
-        { ...form, currency },
+        { ...form, currency, confirmationCode: verifiedCode, billingCycle },
       );
 
       const sessionId = response.data.sessionId || response.data.session?.id;
@@ -965,7 +1009,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
   };
 
   return (
-    <div className="space-y-7 mt-10 md:mt-0">
+    <div className="space-y-7 mt-2 md:mt-0">
       {/* Currency Toggle */}
       <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-slate-50 to-blue-50 border border-blue-100">
         <div className="flex items-center gap-2">
@@ -990,45 +1034,67 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
         </div>
       </div>
 
-      {/* Plan Selection Dropdown */}
-      <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-blue-50 border border-blue-100">
-        <div className="flex items-center gap-2">
-          <CreditCard className="w-4 h-4 text-blue-500" />
-          <span className="text-sm text-slate-600">Select Plan</span>
-        </div>
-        <div className="relative">
-          <button
-            type="button"
-            onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-            className="text-sm font-bold text-blue-600 bg-white px-3 py-1 rounded-lg border border-blue-200 shadow-sm flex items-center gap-2 hover:bg-blue-50 transition-colors"
-          >
-            {selectedPlan}
-            <ChevronDown
-              className={`w-4 h-4 transition-transform ${isDropdownOpen ? "rotate-180" : ""}`}
-            />
-          </button>
+      {/* Plan Selection & Billing Cycle */}
+      <div className="flex flex-row items-center justify-between gap-2 px-3 sm:px-4 py-3 rounded-xl bg-blue-50/50 border border-blue-200 shadow-sm">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <div className="w-8 h-8 rounded-lg bg-blue-600 text-white flex items-center justify-center shrink-0 shadow-md shadow-blue-500/20 hidden xs:flex">
+            <CreditCard className="w-4 h-4" />
+          </div>
+          <div className="relative">
+            <button
+              type="button"
+              onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+              className="text-sm font-bold text-slate-700 bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm flex items-center gap-2 hover:bg-slate-50 transition-all min-w-[120px]"
+            >
+              {selectedPlan}
+              <ChevronDown
+                className={`w-4 h-4 transition-transform text-slate-400 ${isDropdownOpen ? "rotate-180" : ""}`}
+              />
+            </button>
 
-          {isDropdownOpen && (
-            <div className="absolute right-0 top-full mt-1 bg-white border border-blue-200 rounded-lg shadow-lg z-50 min-w-[200px]">
-              {pricingPlans.map((plan) => (
-                <button
-                  key={plan.name}
-                  type="button"
-                  onClick={() => handlePlanChange(plan.name)}
-                  className={`w-full text-left px-3 py-2 hover:bg-blue-50 transition-colors flex items-center justify-between ${
-                    selectedPlan === plan.name
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : "text-gray-700"
-                  }`}
-                >
-                  <span>{plan.name}</span>
-                  <span className="text-sm font-bold text-blue-600">
-                    {currency} {plan.price.toLocaleString()}
-                  </span>
-                </button>
-              ))}
-            </div>
-          )}
+            {isDropdownOpen && (
+              <div className="absolute left-0 top-full mt-1 bg-white border border-slate-200 rounded-xl shadow-xl z-50 min-w-[200px] overflow-hidden">
+                {pricingPlans.map((plan) => (
+                  <button
+                    key={plan.name}
+                    type="button"
+                    onClick={() => handlePlanChange(plan.name)}
+                    className={`w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center justify-between ${
+                      selectedPlan === plan.name
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : "text-slate-600"
+                    }`}
+                  >
+                    <span className="text-sm">{plan.name}</span>
+                    <span className="text-xs font-bold text-blue-600 bg-blue-100/50 px-2 py-0.5 rounded-full">
+                      {currency}{" "}
+                      {(billingCycle === "Annual"
+                        ? plan.annualPrice
+                        : plan.monthlyPrice
+                      ).toLocaleString()}
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-1 bg-white rounded-lg border border-slate-200 shadow-sm p-0.5 shrink-0">
+          {["Monthly", "Annual"].map((cycle) => (
+            <button
+              key={cycle}
+              type="button"
+              onClick={() => setBillingCycle(cycle)}
+              className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-200 ${
+                billingCycle === cycle
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                  : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+              }`}
+            >
+              {cycle === "Monthly" ? "Month" : "Annual"}
+            </button>
+          ))}
         </div>
       </div>
 

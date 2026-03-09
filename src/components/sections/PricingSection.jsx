@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext";
 import confetti from "canvas-confetti";
 
 const plans = [
@@ -16,13 +15,14 @@ const plans = [
     yearlyPrice: "3,999",
     period: "per month",
     features: [
-      "Up to 1,000 transactions/month",
-      "1 Register",
-      "Basic reporting",
-      "Email support",
-      "Standard integrations",
-      "Email support",
-      "Standard integrations",
+      "Item Registry",
+      "⁠Customer Registry with Loyalty Scheme",
+      "⁠POS",
+      "GRN (Basic)",
+      "Debtor Management (Basic)",
+      "Creditor Management (Basic)",
+      "Stock and Inventory (Basic)",
+      "For Hospitality Only(KOT/BOT) Management",
     ],
     description: "Perfect for small businesses just getting started.",
     buttonText: "Start Now",
@@ -36,11 +36,11 @@ const plans = [
     period: "per month",
     features: [
       "POS with Multi Terminal Connectivity",
-      "Real-time Sales Dashboard",
+      "⁠Real-time Sales Dashboard",
       "24x7 on call support",
-      "⁠GRN (Advance)",
+      "GRN (Advance)",
       "Debtor Management (advance)",
-      "⁠Creditor Management (Advance)",
+      "Creditor Management (Advance)",
       "Stock and Inventory (Advance)",
       "⁠Production Module(For Hospitality Only)",
     ],
@@ -62,10 +62,12 @@ const plans = [
       "Multi-location management",
       "Advanced security features",
       "Custom reporting",
+      "White-label options",
+      "API access and developer support",
     ],
     description: "Get a personalized solution for your business.",
     buttonText: "Get in Touch",
-    href: "mailto:sales@billtill.com",
+    href: "https://wa.me/94761869668?text=Hi!%20I'm%20interested%20in%20getting%20a%20tailored%20software%20solution%20for%20my%20business.%20Can%20you%20provide%20more%20information%20about%20your%20enterprise%20plans?",
     isPopular: false,
     isContact: true,
   },
@@ -75,7 +77,6 @@ export const PricingSection = () => {
   const [isMonthly, setIsMonthly] = useState(true);
   const navigate = useNavigate();
   const switchRef = useRef(null);
-  const { user } = useAuth();
 
   const handleToggle = (checked) => {
     setIsMonthly(!checked);
@@ -106,17 +107,15 @@ export const PricingSection = () => {
     }
   };
 
-  const handleCTA = (plan, href) => {
-    if (href.startsWith("mailto:")) {
-      window.location.href = href;
-    } else {
-      const targetPath = user ? "/confirm-code" : href;
-      navigate(targetPath, {
-        state: {
-          selectedPlan: plan.name,
-          isMonthly: isMonthly,
-        },
+  const handleCTA = (plan) => {
+    if (plan.href.startsWith("mailto:")) {
+      window.location.href = plan.href;
+    } else if (plan.name === "Dynamic" || plan.name === "Pro") {
+      navigate("/payment", {
+        state: { planName: plan.name, isAnnual: !isMonthly },
       });
+    } else {
+      navigate(plan.href);
     }
   };
 
@@ -131,10 +130,10 @@ export const PricingSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center space-y-4 mb-12"
         >
-          <h2 className="text-4xl font-bold tracking-tight sm:text-5xl">
+          <h2 className="text-4xl font-bold tracking-tight ">
             Simple, Transparent Pricing
           </h2>
-          <p className="text-muted-foreground text-md md:text-lg whitespace-pre-line">
+          <p className="text-muted-foreground text-sm md:text-md whitespace-pre-line">
             Choose the plan that works for you All plans include access to our
             platform, lead generation tools, and dedicated support.
           </p>
@@ -166,7 +165,7 @@ export const PricingSection = () => {
               whileInView={{
                 y: plan.isPopular ? -20 : 0,
                 opacity: 1,
-                x: 0, // Remove horizontal transforms on mobile
+                x: index === 2 ? -30 : index === 0 ? 30 : 0,
                 scale: index === 0 || index === 2 ? 0.94 : 1.0,
               }}
               viewport={{ once: true }}
@@ -179,12 +178,13 @@ export const PricingSection = () => {
                 opacity: { duration: 0.5 },
               }}
               className={cn(
-                "rounded-2xl border-[1px] p-6 bg-background text-center flex flex-col relative w-full max-w-full overflow-hidden",
+                "rounded-2xl border-[1px] p-6 bg-background text-center lg:flex lg:flex-col lg:justify-center relative",
                 plan.isPopular ? "border-primary border-2" : "border-border",
-                // Apply responsive margin to all non-popular cards
+                "flex flex-col",
                 !plan.isPopular && "mt-5",
-                // Apply complex transforms on desktop only
-                "origin-right translate-x-0 translate-y-0 -translate-z-[50px] rotate-y-[10deg]",
+                index === 0 || index === 2
+                  ? "z-0 transform translate-x-0 translate-y-0 -translate-z-[50px] rotate-y-[10deg]"
+                  : "z-10",
                 index === 0 && "origin-right",
                 index === 2 && "origin-left",
               )}
@@ -213,7 +213,7 @@ export const PricingSection = () => {
                     </div>
                   ) : (
                     <>
-                      <span className="text-4xl md:text-5xl font-bold tracking-tight text-foreground">
+                      <span className="text-5xl font-bold tracking-tight text-foreground">
                         LKR {isMonthly ? plan.price : plan.yearlyPrice}
                       </span>
                       <span className="text-sm font-semibold leading-6 tracking-wide text-muted-foreground">
@@ -224,7 +224,7 @@ export const PricingSection = () => {
                 </div>
 
                 {!plan.isContact && (
-                  <p className="text-xs leading-5 text-muted-foreground">
+                  <p className="text-xs leading-5 mt-5 text-muted-foreground">
                     {isMonthly ? "billed monthly" : "billed annually"}
                   </p>
                 )}
@@ -249,7 +249,7 @@ export const PricingSection = () => {
                       ? "bg-primary text-primary-foreground"
                       : "bg-background text-foreground",
                   )}
-                  onClick={() => handleCTA(plan, plan.href)}
+                  onClick={() => handleCTA(plan)}
                 >
                   {plan.buttonText}
                 </Button>
@@ -269,7 +269,6 @@ export const PricingSection = () => {
               className={cn(
                 "rounded-2xl border-[1px] p-6 bg-background text-center flex flex-col relative w-full max-w-full overflow-hidden",
                 plan.isPopular ? "border-primary border-2" : "border-border",
-                // No margin on mobile for better spacing
               )}
             >
               {plan.isPopular && (
@@ -332,7 +331,7 @@ export const PricingSection = () => {
                       ? "bg-primary text-primary-foreground"
                       : "bg-background text-foreground",
                   )}
-                  onClick={() => handleCTA(plan, plan.href)}
+                  onClick={() => handleCTA(plan)}
                 >
                   {plan.buttonText}
                 </Button>

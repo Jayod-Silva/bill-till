@@ -1,36 +1,39 @@
-
-import React, { useRef, useEffect } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { Download, Settings, Rocket, TrendingUp } from 'lucide-react';
+import React, { useRef, useEffect } from "react";
+import { motion, useScroll, useTransform } from "framer-motion";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Download, Settings, Rocket, TrendingUp } from "lucide-react";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const steps = [
   {
-    number: '01',
+    number: "01",
     icon: Download,
-    title: 'Sign Up & Install',
-    description: 'Create your account in minutes. Download our app on any device - tablet, phone, or desktop.',
+    title: "Sign Up & Install",
+    description:
+      "Create your account in minutes. Download our app on any device - tablet, phone, or desktop.",
   },
   {
-    number: '02',
+    number: "02",
     icon: Settings,
-    title: 'Configure Your Store',
-    description: 'Set up products, prices, and staff permissions. Import existing data or start fresh.',
+    title: "Configure Your Store",
+    description:
+      "Set up products, prices, and staff permissions. Import existing data or start fresh.",
   },
   {
-    number: '03',
+    number: "03",
     icon: Rocket,
-    title: 'Go Live',
-    description: 'Start accepting payments immediately. Train your team with our interactive tutorials.',
+    title: "Go Live",
+    description:
+      "Start accepting payments immediately. Train your team with our interactive tutorials.",
   },
   {
-    number: '04',
+    number: "04",
     icon: TrendingUp,
-    title: 'Grow & Scale',
-    description: 'Use analytics to optimize. Add locations, integrate apps, and scale without limits.',
+    title: "Grow & Scale",
+    description:
+      "Use analytics to optimize. Add locations, integrate apps, and scale without limits.",
   },
 ];
 
@@ -40,10 +43,10 @@ export const HowItWorksSection = () => {
 
   const { scrollYProgress } = useScroll({
     target: sectionRef,
-    offset: ["start center", "end center"]
+    offset: ["start center", "end center"],
   });
 
-  const lineHeight = useTransform(scrollYProgress, [0, 1], ['0%', '100%']);
+  const lineHeight = useTransform(scrollYProgress, [0, 1], ["0%", "100%"]);
 
   useEffect(() => {
     const ctx = gsap.context(() => {
@@ -56,13 +59,13 @@ export const HowItWorksSection = () => {
             opacity: 1,
             x: 0,
             duration: 0.8,
-            ease: 'power2.out',
+            ease: "power2.out",
             scrollTrigger: {
               trigger: `.step-${index}`,
-              start: 'top 80%',
-              toggleActions: 'play none none reverse',
+              start: "top 80%",
+              toggleActions: "play none none reverse",
             },
-          }
+          },
         );
       });
     }, sectionRef);
@@ -71,13 +74,17 @@ export const HowItWorksSection = () => {
   }, []);
 
   return (
-    <section ref={sectionRef} className="py-24 lg:py-32 overflow-hidden relative">
+    <section
+      ref={sectionRef}
+      className="py-24 lg:py-32 overflow-hidden relative"
+    >
       {/* Background Pattern with Radial Fade */}
-      <div 
+      <div
         className="absolute inset-0 opacity-30 pointer-events-none"
         style={{
           backgroundImage: `url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' width='60' height='60' fill='none' stroke='rgb(37 99 235 / 0.4)' stroke-width='0.5'%3e%3cpath d='m0 .5h32m-32 32v-32'/%3e%3c/svg%3e")`,
-          maskImage: 'radial-gradient(circle at center, black 10%, transparent 100%)',
+          maskImage:
+            "radial-gradient(circle at center, black 10%, transparent 100%)",
         }}
       />
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -89,12 +96,12 @@ export const HowItWorksSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center max-w-3xl mx-auto mb-20"
         >
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6">
-            Get started in{' '}
-            <span className="text-primary">4 simple steps</span>
+          <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+            Get started in <span className="text-primary">4 simple steps</span>
           </h2>
           <p className="text-base lg:text-lg text-muted-foreground">
-            From sign-up to your first sale in under 10 minutes. No technical expertise required.
+            From sign-up to your first sale in under 10 minutes. No technical
+            expertise required.
           </p>
         </motion.div>
 
@@ -115,16 +122,16 @@ export const HowItWorksSection = () => {
               <div
                 key={step.number}
                 className={`step-${index} lg:grid lg:grid-cols-2 lg:gap-12 lg:items-center ${
-                  index !== steps.length - 1 ? 'lg:pb-24' : ''
+                  index !== steps.length - 1 ? "lg:pb-24" : ""
                 }`}
               >
                 {/* Content */}
                 <div
-                  className={`${
-                    index % 2 === 0 ? 'lg:order-1' : 'lg:order-2'
-                  }`}
+                  className={`${index % 2 === 0 ? "lg:order-1" : "lg:order-2"}`}
                 >
-                  <div className={`${index % 2 === 0 ? 'lg:pr-16 lg:text-right' : 'lg:pl-16'} text-center lg:text-left`}>
+                  <div
+                    className={`${index % 2 === 0 ? "lg:pr-16 lg:text-right" : "lg:pl-16"} text-center lg:text-left`}
+                  >
                     <span className="text-sm font-medium text-primary mb-2 block">
                       Step {step.number}
                     </span>
@@ -140,10 +147,12 @@ export const HowItWorksSection = () => {
                 {/* Icon/Visual */}
                 <div
                   className={`mt-6 lg:mt-0 ${
-                    index % 2 === 0 ? 'lg:order-2' : 'lg:order-1'
+                    index % 2 === 0 ? "lg:order-2" : "lg:order-1"
                   }`}
                 >
-                  <div className={`flex ${index % 2 === 0 ? 'lg:justify-start' : 'lg:justify-end'} justify-center`}>
+                  <div
+                    className={`flex ${index % 2 === 0 ? "lg:justify-start" : "lg:justify-end"} justify-center`}
+                  >
                     <div className="relative">
                       {/* Circle with Icon */}
                       <motion.div

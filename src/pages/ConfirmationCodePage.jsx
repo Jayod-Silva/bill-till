@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import {
   KeyRound,
   AlertCircle,
@@ -210,7 +210,7 @@ const CodeInput = ({ value, onChange, error }) => {
 /* ─────────────────────────────────────────────
    Success Screen
 ───────────────────────────────────────────── */
-const SuccessScreen = ({ code: passedCode, planInfo: passedPlanInfo }) => {
+const SuccessScreen = ({ code }) => {
   const navigate = useNavigate();
   const particles = Array.from({ length: 18 });
   return (
@@ -267,25 +267,9 @@ const SuccessScreen = ({ code: passedCode, planInfo: passedPlanInfo }) => {
           now active.
         </p>
         <button
-          onClick={() => {
-            let state = { confirmationCode: passedCode };
-
-            // Priority 1: State passed directly (from logged-in pricing redirect)
-            if (passedPlanInfo && passedPlanInfo.selectedPlan) {
-              state = { ...state, ...passedPlanInfo };
-            }
-            // Priority 2: Local storage (from registration flow)
-            else {
-              const saved = localStorage.getItem("registration_progress");
-              if (saved) {
-                try {
-                  const { planInfo } = JSON.parse(saved);
-                  if (planInfo) state = { ...state, ...planInfo };
-                } catch (e) {}
-              }
-            }
-            navigate("/payment", { state });
-          }}
+          onClick={() =>
+            navigate("/payment", { state: { confirmationCode: code } })
+          }
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-200"
         >
           Proceed to Payment <ArrowRight className="w-4 h-4" />
@@ -306,11 +290,6 @@ const ConfirmationCodePage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
   const navigate = useNavigate();
-  const location = useLocation();
-  const planInfo = {
-    selectedPlan: location.state?.selectedPlan,
-    isMonthly: location.state?.isMonthly,
-  };
 
   const handleSubmit = async () => {
     let hasError = false;
@@ -342,6 +321,8 @@ const ConfirmationCodePage = () => {
       }
 
       setIsVerified(true);
+      // Store verified code for use in PaymentForm
+      localStorage.setItem("billtill_verified_code", code);
     } catch (err) {
       setError(err.message || "Invalid confirmation code. Please try again.");
     } finally {
@@ -358,7 +339,7 @@ const ConfirmationCodePage = () => {
       <div className="flex flex-1 items-center justify-center bg-slate-50 px-6 py-14">
         <div className="w-full max-w-md">
           {isVerified ? (
-            <SuccessScreen code={code} planInfo={planInfo} />
+            <SuccessScreen code={code} />
           ) : (
             <motion.div
               initial={{ opacity: 0, y: 24 }}

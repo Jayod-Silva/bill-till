@@ -1,68 +1,122 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence, useSpring } from 'framer-motion';
-import { UtensilsCrossed, ShoppingCart, Shirt, Wine, Cpu, Wrench, ArrowRight, Sparkles, TrendingUp, Shield, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import React, { useRef, useEffect, useState } from "react";
+import {
+  motion,
+  useScroll,
+  useTransform,
+  AnimatePresence,
+  useSpring,
+} from "framer-motion";
+import {
+  UtensilsCrossed,
+  ShoppingCart,
+  Shirt,
+  Wine,
+  Cpu,
+  Wrench,
+  ArrowRight,
+  Sparkles,
+  TrendingUp,
+  Shield,
+  Zap,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const industries = [
   {
     icon: UtensilsCrossed,
-    name: 'Restaurants',
-    description: 'Complete POS solution for restaurants with table management, kitchen display systems, and split billing capabilities.',
-    image: '/Promo6.png',
-    features: ['Table Management', 'Kitchen Display', 'Split Billing', 'Menu Management'],
-    color: 'from-orange-400 to-red-500',
-    bgPattern: 'restaurant',
-    stats: { users: '50K+', satisfaction: '98%', growth: '+25%' }
+    name: "Restaurants",
+    description:
+      "Complete POS solution for restaurants with table management, kitchen display systems, and split billing capabilities.",
+    image: "/Promo6.png",
+    features: [
+      "Table Management",
+      "Kitchen Display",
+      "Split Billing",
+      "Menu Management",
+    ],
+    color: "from-orange-400 to-red-500",
+    bgPattern: "restaurant",
+    stats: { users: "50K+", satisfaction: "98%", growth: "+25%" },
   },
   {
     icon: ShoppingCart,
-    name: 'Supermarkets',
-    description: 'Comprehensive supermarket management with inventory tracking, barcode scanning, and customer loyalty programs.',
-    image: '/Promo5.png',
-    features: ['Inventory Tracking', 'Barcode Support', 'Loyalty Programs', 'Scale Integration'],
-    color: 'from-green-400 to-emerald-500',
-    bgPattern: 'supermarket',
-    stats: { users: '120K+', satisfaction: '96%', growth: '+32%' }
+    name: "Supermarkets",
+    description:
+      "Comprehensive supermarket management with inventory tracking, barcode scanning, and customer loyalty programs.",
+    image: "/Promo5.png",
+    features: [
+      "Inventory Tracking",
+      "Barcode Support",
+      "Loyalty Programs",
+      "Scale Integration",
+    ],
+    color: "from-green-400 to-emerald-500",
+    bgPattern: "supermarket",
+    stats: { users: "120K+", satisfaction: "96%", growth: "+32%" },
   },
   {
     icon: Shirt,
-    name: 'Clothing Shops',
-    description: 'Specialized POS for fashion retail with size tracking, seasonal inventory management, and customer preferences.',
-    image: '/Promo7.png',
-    features: ['Size & Color Tracking', 'Seasonal Inventory', 'Customer Profiles', 'Style Recommendations'],
-    color: 'from-purple-400 to-pink-500',
-    bgPattern: 'fashion',
-    stats: { users: '35K+', satisfaction: '97%', growth: '+28%' }
+    name: "Clothing Shops",
+    description:
+      "Specialized POS for fashion retail with size tracking, seasonal inventory management, and customer preferences.",
+    image: "/Promo7.png",
+    features: [
+      "Size & Color Tracking",
+      "Seasonal Inventory",
+      "Customer Profiles",
+      "Style Recommendations",
+    ],
+    color: "from-purple-400 to-pink-500",
+    bgPattern: "fashion",
+    stats: { users: "35K+", satisfaction: "97%", growth: "+28%" },
   },
   {
     icon: Wine,
-    name: 'Wine Stores',
-    description: 'Tailored solution for wine shops with vintage tracking, age verification, and tasting event management.',
-    image: '/Promo 4.png',
-    features: ['Vintage Tracking', 'Age Verification', 'Tasting Events', 'Wine Club Management'],
-    color: 'from-amber-400 to-orange-500',
-    bgPattern: 'wine',
-    stats: { users: '15K+', satisfaction: '99%', growth: '+18%' }
+    name: "Wine Stores",
+    description:
+      "Tailored solution for wine shops with vintage tracking, age verification, and tasting event management.",
+    image: "/Promo 4.png",
+    features: [
+      "Vintage Tracking",
+      "Age Verification",
+      "Tasting Events",
+      "Wine Club Management",
+    ],
+    color: "from-amber-400 to-orange-500",
+    bgPattern: "wine",
+    stats: { users: "15K+", satisfaction: "99%", growth: "+18%" },
   },
   {
     icon: Cpu,
-    name: 'Computer Shops',
-    description: 'Advanced POS for computer retailers with warranty tracking, service management, and technical support integration.',
-    image: '/Promo 3.png',
-    features: ['Warranty Tracking', 'Service Management', 'Technical Support', 'Build Configuration'],
-    color: 'from-blue-400 to-indigo-500',
-    bgPattern: 'tech',
-    stats: { users: '25K+', satisfaction: '95%', growth: '+22%' }
+    name: "Computer Shops",
+    description:
+      "Advanced POS for computer retailers with warranty tracking, service management, and technical support integration.",
+    image: "/Promo 3.png",
+    features: [
+      "Warranty Tracking",
+      "Service Management",
+      "Technical Support",
+      "Build Configuration",
+    ],
+    color: "from-blue-400 to-indigo-500",
+    bgPattern: "tech",
+    stats: { users: "25K+", satisfaction: "95%", growth: "+22%" },
   },
   {
     icon: Wrench,
-    name: 'Hardware Shops',
-    description: 'Robust POS for hardware stores with bulk pricing, project tracking, and supplier management.',
-    image: '/Promo 1.png',
-    features: ['Bulk Pricing', 'Project Tracking', 'Supplier Management', 'Tool Rental'],
-    color: 'from-gray-600 to-slate-700',
-    bgPattern: 'hardware',
-    stats: { users: '40K+', satisfaction: '94%', growth: '+20%' }
+    name: "Hardware Shops",
+    description:
+      "Robust POS for hardware stores with bulk pricing, project tracking, and supplier management.",
+    image: "/Promo 1.png",
+    features: [
+      "Bulk Pricing",
+      "Project Tracking",
+      "Supplier Management",
+      "Tool Rental",
+    ],
+    color: "from-gray-600 to-slate-700",
+    bgPattern: "hardware",
+    stats: { users: "40K+", satisfaction: "94%", growth: "+20%" },
   },
 ];
 
@@ -71,7 +125,8 @@ const GlowingOrb = ({ position, delay }) => {
     <motion.div
       className={`absolute w-32 h-32 rounded-full ${position} opacity-20`}
       style={{
-        background: 'radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, transparent 70%)',
+        background:
+          "radial-gradient(circle, rgba(59, 130, 246, 0.8) 0%, transparent 70%)",
       }}
       animate={{
         scale: [1, 1.5, 1],
@@ -114,15 +169,21 @@ export const IndustriesSection = () => {
   const [hoveredIndex, setHoveredIndex] = useState(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"]
+    offset: ["start end", "end start"],
   });
 
   const x = useTransform(scrollYProgress, [0, 1], [0, -50]);
   const rotate = useTransform(scrollYProgress, [0, 1], [0, 5]);
 
   return (
-    <section id="industries" className="py-24 lg:pt-32 lg:pb-20 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 relative overflow-hidden">
-      <div ref={containerRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+    <section
+      id="industries"
+      className="py-24 lg:pt-32 lg:pb-20 bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 relative overflow-hidden"
+    >
+      <div
+        ref={containerRef}
+        className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10"
+      >
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -139,20 +200,24 @@ export const IndustriesSection = () => {
             className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-primary/10 to-blue-500/10 border border-primary/20 mb-6"
           >
             <Sparkles className="w-4 h-4 text-primary" />
-            <span className="text-sm font-medium text-primary">Industry Solutions</span>
+            <span className="text-sm font-medium text-primary">
+              Industry Solutions
+            </span>
           </motion.div>
-          
+
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground mb-6"
+            className="text-5xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6"
           >
-            Built for every{' '}
-            <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">industry</span>
+            Built for every{" "}
+            <span className="bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+              industry
+            </span>
           </motion.h2>
-          
+
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -160,8 +225,9 @@ export const IndustriesSection = () => {
             transition={{ duration: 0.6, delay: 0.4 }}
             className="text-sm lg:text-xl text-muted-foreground max-w-3xl mx-auto"
           >
-            Tailored solutions that transform businesses across all sectors. 
-            Experience the power of specialized POS technology designed for your unique needs.
+            Tailored solutions that transform businesses across all sectors.
+            Experience the power of specialized POS technology designed for your
+            unique needs.
           </motion.p>
         </motion.div>
 
@@ -170,12 +236,16 @@ export const IndustriesSection = () => {
           {industries.map((industry, index) => (
             <motion.div
               key={industry.name}
-              initial={{ opacity: 0, y: 100 }}
+              initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: "-100px" }}
-              transition={{ duration: 0.8, delay: index * 0.1 }}
-              className={`relative flex flex-col lg:flex-row items-center gap-12 lg:gap-20 ${
-                index % 2 === 1 ? 'lg:flex-row-reverse' : ''
+              viewport={{ once: true, margin: "-50px" }}
+              transition={{ 
+                duration: 0.6, 
+                delay: index * 0.05,
+                ease: [0.25, 0.46, 0.45, 0.94]
+              }}
+              className={`relative flex flex-col lg:flex-row items-center gap-8 lg:gap-20 ${
+                index % 2 === 1 ? "lg:flex-row-reverse" : ""
               }`}
               onMouseEnter={() => setHoveredIndex(index)}
               onMouseLeave={() => setHoveredIndex(null)}
@@ -184,9 +254,9 @@ export const IndustriesSection = () => {
               <motion.div
                 className="hidden lg:block absolute top-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/20 to-transparent"
                 style={{
-                  left: index % 2 === 1 ? 'auto' : '0',
-                  right: index % 2 === 1 ? '0' : 'auto',
-                  width: '60%',
+                  left: index % 2 === 1 ? "auto" : "0",
+                  right: index % 2 === 1 ? "0" : "auto",
+                  width: "60%",
                 }}
                 initial={{ scaleX: 0 }}
                 whileInView={{ scaleX: 1 }}
@@ -198,24 +268,26 @@ export const IndustriesSection = () => {
               <motion.div
                 className="flex-1 w-full relative group"
                 whileHover={{ scale: 1.02 }}
-                transition={{ duration: 0.3 }}
+                transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
               >
                 <div className="relative rounded-3xl overflow-hidden shadow-2xl">
                   {/* Gradient Overlay */}
-                  <div className={`absolute inset-0 bg-gradient-to-br ${industry.color} opacity-20 mix-blend-multiply`} />
-                  
+                  <div
+                    className={`absolute inset-0 bg-gradient-to-br ${industry.color} opacity-20 mix-blend-multiply`}
+                  />
+
                   {/* Image */}
                   <img
                     src={industry.image}
                     alt={industry.name}
-                    className="w-full h-80 lg:h-96 object-cover group-hover:scale-105 transition-transform duration-700"
+                    className="w-full h-64 md:h-80 lg:h-96 object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                   />
-                  
+
                   {/* Floating Icon Badge */}
                   <motion.div
-                    className="absolute top-6 right-6 w-16 h-16 rounded-2xl bg-white/90 backdrop-blur-lg shadow-xl flex items-center justify-center"
+                    className="absolute top-4 right-4 w-12 h-12 md:w-16 md:h-16 rounded-2xl bg-white/90 backdrop-blur-lg shadow-xl flex items-center justify-center"
                     animate={{
-                      y: hoveredIndex === index ? [-5, 5] : 0,
+                      y: hoveredIndex === index ? [-3, 3] : 0,
                     }}
                     transition={{
                       duration: 2,
@@ -228,7 +300,9 @@ export const IndustriesSection = () => {
 
                   {/* Industry Name Overlay */}
                   <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-8">
-                    <h3 className="text-3xl font-bold text-white mb-2">{industry.name}</h3>
+                    <h3 className="text-3xl font-bold text-white mb-2">
+                      {industry.name}
+                    </h3>
                     <div className="flex gap-2">
                       {industry.features.slice(0, 2).map((feature) => (
                         <span
@@ -244,18 +318,32 @@ export const IndustriesSection = () => {
 
                 {/* Stats Cards */}
                 <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 flex gap-3">
-                  <StatCard icon={TrendingUp} value={industry.stats.growth} label="Growth" delay={0.1} />
-                  <StatCard icon={Shield} value={industry.stats.satisfaction} label="Satisfaction" delay={0.2} />
+                  <StatCard
+                    icon={TrendingUp}
+                    value={industry.stats.growth}
+                    label="Growth"
+                    delay={0.1}
+                  />
+                  <StatCard
+                    icon={Shield}
+                    value={industry.stats.satisfaction}
+                    label="Satisfaction"
+                    delay={0.2}
+                  />
                 </div>
               </motion.div>
 
               {/* Content Section */}
               <motion.div
-                className="flex-1 w-full space-y-6"
+                className="flex-1 space-y-6"
                 initial={{ opacity: 0, x: index % 2 === 1 ? 50 : -50 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: index * 0.1 + 0.3 }}
+                transition={{ 
+                  duration: 0.6, 
+                  delay: index * 0.05 + 0.1,
+                  ease: [0.25, 0.46, 0.45, 0.94]
+                }}
               >
                 <div className="space-y-4">
                   {/* Icon and Title */}
@@ -273,7 +361,9 @@ export const IndustriesSection = () => {
                       </h3>
                       <div className="flex items-center gap-2 mt-1">
                         <Zap className="w-4 h-4 text-primary" />
-                        <span className="text-sm font-medium text-primary">{industry.stats.users} Active Users</span>
+                        <span className="text-sm font-medium text-primary">
+                          {industry.stats.users} Active Users
+                        </span>
                       </div>
                     </div>
                   </div>
@@ -291,7 +381,10 @@ export const IndustriesSection = () => {
                         initial={{ opacity: 0, scale: 0.8 }}
                         whileInView={{ opacity: 1, scale: 1 }}
                         viewport={{ once: true }}
-                        transition={{ duration: 0.4, delay: index * 0.1 + featureIndex * 0.1 + 0.5 }}
+                        transition={{
+                          duration: 0.4,
+                          delay: index * 0.1 + featureIndex * 0.1 + 0.5,
+                        }}
                         className={`px-4 py-2 text-sm font-medium bg-gradient-to-r ${industry.color} text-white rounded-full shadow-lg`}
                       >
                         {feature}

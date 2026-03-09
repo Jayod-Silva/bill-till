@@ -1,38 +1,38 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { Twitter, Linkedin, Github, Mail, MapPin, Phone } from 'lucide-react';
+import React from "react";
+import { motion } from "framer-motion";
+import { Twitter, Linkedin, Github, Mail, MapPin, Phone } from "lucide-react";
 
 const footerLinks = {
   product: [
-    { name: 'Features', href: '#features' },
-    { name: 'Pricing', href: '#pricing' },
-    { name: 'Industries', href: '#industries' },
-    { name: 'Integrations', href: '#' },
+    { name: "Features", href: "#features" },
+    { name: "Pricing", href: "#pricing" },
+    { name: "Industries", href: "#industries" },
+    { name: "Integrations", href: "#" },
   ],
   company: [
-    { name: 'About Us', href: '#about' },
-    { name: 'Careers', href: '#' },
-    { name: 'Blog', href: '#' },
-    { name: 'Press', href: '#' },
+    { name: "About Us", href: "#about" },
+    { name: "Careers", href: "#" },
+    { name: "Blog", href: "#" },
+    { name: "Press", href: "#" },
   ],
   resources: [
-    { name: 'Documentation', href: '#' },
-    { name: 'Help Center', href: '#' },
-    { name: 'API Reference', href: '#' },
-    { name: 'Status', href: '#' },
+    { name: "Documentation", href: "#" },
+    { name: "Help Center", href: "#" },
+    { name: "API Reference", href: "#" },
+    { name: "Status", href: "#" },
   ],
   legal: [
-    { name: 'Privacy Policy', href: '#' },
-    { name: 'Terms of Service', href: '#' },
-    { name: 'Cookie Policy', href: '#' },
-    { name: 'GDPR', href: '#' },
+    { name: "Privacy Policy", href: "#" },
+    { name: "Terms of Service", href: "#" },
+    { name: "Cookie Policy", href: "#" },
+    { name: "GDPR", href: "#" },
   ],
 };
 
 const socialLinks = [
-  { icon: Twitter, href: '#', label: 'Twitter' },
-  { icon: Linkedin, href: '#', label: 'LinkedIn' },
-  { icon: Github, href: '#', label: 'GitHub' },
+  { icon: Twitter, href: "#", label: "Twitter" },
+  { icon: Linkedin, href: "#", label: "LinkedIn" },
+  { icon: Github, href: "#", label: "GitHub" },
 ];
 
 export const Footer = () => {
@@ -45,11 +45,16 @@ export const Footer = () => {
           <div className="col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-15 h-15 flex items-center justify-center">
-                <img src="/white-logo.png" alt="Bill Till Logo" className="w-[120px] h-full object-contain" />
+                <img
+                  src="/white-logo.png"
+                  alt="Bill Till Logo"
+                  className="w-[120px] h-full object-contain"
+                />
               </div>
             </div>
             <p className="text-white text-sm leading-relaxed mb-6 max-w-xs">
-              The modern cloud-based POS platform that helps businesses grow smarter and faster.
+              The modern cloud-based POS platform that helps businesses grow
+              smarter and faster.
             </p>
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm text-blue-200">

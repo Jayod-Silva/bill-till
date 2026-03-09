@@ -27,6 +27,8 @@ import DashboardPage from "@/pages/DashboardPage";
 import ConfirmationCodePage from "@/pages/ConfirmationCodePage";
 import TermsAndConditionsPage from "@/pages/TermsAndConditionsPage";
 import ReturnPolicyPage from "@/pages/ReturnPolicyPage";
+import ShopPage from "@/pages/ShopPage";
+import ContactPage from "@/pages/ContactPage";
 
 import { AuthProvider } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -80,6 +82,8 @@ function App() {
         <NavigationWrapper />
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/shop" element={<ShopPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/confirm-code" element={<ConfirmationCodePage />} />
           <Route path="/register" element={<RegistrationPage />} />

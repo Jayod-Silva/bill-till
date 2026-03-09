@@ -11,8 +11,7 @@ export const generateInvoice = (details, action = "download") => {
     const invoiceId =
       details.invoiceId || `INV-${Math.floor(100000 + Math.random() * 900000)}`;
     const confirmationCode =
-      details.confirmationCode ||
-      Math.random().toString(36).substring(2, 10).toUpperCase();
+      details.confirmationCode || "N/A";
 
     // ── COLORS & STYLING ──
     const primaryColor = [7, 60, 148]; // #073C94
@@ -114,14 +113,15 @@ export const generateInvoice = (details, action = "download") => {
 
     // ── ITEMS TABLE ──
     const cur = details.currency || "LKR";
+    const amountVal = parseFloat(details.amount) || 0;
     const tableData = [
       [
         "01",
         "Software Subscription",
         `${details.selectedPlan || "Dynamic"} Plan`,
         "1",
-        `${cur} ${parseFloat(details.amount).toLocaleString()}`,
-        `${cur} ${parseFloat(details.amount).toLocaleString()}`,
+        `${cur} ${amountVal.toLocaleString()}`,
+        `${cur} ${amountVal.toLocaleString()}`,
       ],
     ];
 
@@ -233,7 +233,7 @@ export const generateInvoice = (details, action = "download") => {
       formData.append("currency", details.currency || "LKR");
 
       axios
-        .post(`${import.meta.env.VITE_API_BASE_URL}/send-invoice`, formData, {
+        .post(`https://caritasconnect.ddns.net/billtill/api/send-invoice`, formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
         .then(() => console.log("Invoice email sent successfully"))

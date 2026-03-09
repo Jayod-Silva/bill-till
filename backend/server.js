@@ -8,7 +8,7 @@ require("dotenv").config();
 
 const authRoutes = require("./routes/authRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
-const { sendInvoiceEmail } = require("./services/emailService");
+const { sendInvoiceEmail, sendAdminNotificationEmail } = require("./services/emailService");
 const multer = require("multer");
 const upload = multer({ storage: multer.memoryStorage() });
 
@@ -57,6 +57,8 @@ const getCredentials = (currency) => {
 
 // In-memory map to remember which credentials were used per order
 const orderCurrencyMap = {};
+// In-memory map to store business details for the order until verification/invoice
+const orderDataMap = {};
 
 app.get('/api/test', (req, res) => {
   res.json({
@@ -72,10 +74,13 @@ app.post("/api/create-payment", async (req, res) => {
     const orderId = "ORDER_" + Date.now();
     const amount = req?.body?.amount;
     const currency = req?.body?.currency === "USD" ? "USD" : "LKR";
+    const confirmationCode = req?.body?.confirmationCode;
     const creds = getCredentials(currency);
 
     // Remember currency for this order (used during verification)
     orderCurrencyMap[orderId] = currency;
+    // Remember form data for this order
+    orderDataMap[orderId] = { ...req.body, orderId, currency, confirmationCode };
 
     const sessionResponse = await axios.post(
       `${creds.apiBaseUrl}/merchant/${creds.merchantId}/session`,
@@ -83,7 +88,7 @@ app.post("/api/create-payment", async (req, res) => {
         apiOperation: "INITIATE_CHECKOUT",
         interaction: {
           operation: "PURCHASE",
-          returnUrl: `https://caritasconnect.ddns.net/billtill/payment?payment=success&orderId=${orderId}`,
+          returnUrl: `https://billtill.co/payment?payment=success&orderId=${orderId}`,
           merchant: {
             name: "BillTill",
             address: { line1: "Sri Lanka" }
@@ -107,7 +112,9 @@ app.post("/api/create-payment", async (req, res) => {
       orderId: orderId,
       merchantId: creds.merchantId,
       currency: currency,
-      session: { id: sessionResponse.data.session.id }
+      session: { id: sessionResponse.data.session.id },
+      // Return details just in case the frontend wants them immediately
+      details: orderDataMap[orderId]
     });
   } catch (error) {
     res.status(500).json({
@@ -128,7 +135,14 @@ app.get("/api/verify-payment/:orderId", async (req, res) => {
       `${creds.apiBaseUrl}/merchant/${creds.merchantId}/order/${orderId}`,
       { auth: { username: creds.apiUsername, password: creds.apiPassword } }
     );
-    res.json(response.data);
+    
+    // Attach stored business details to the verification response
+    const verificationData = response.data;
+    if (orderDataMap[orderId]) {
+      verificationData.storedDetails = orderDataMap[orderId];
+    }
+
+    res.json(verificationData);
   } catch (error) {
     res.status(500).json({
       success: false,
@@ -150,6 +164,10 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
       return res.status(400).json({ success: false, error: "Email is required" });
     }
 
+    // 1. Get stored details for admin notification
+    const storedDetails = orderDataMap[orderId] || {};
+
+    // 2. Send Invoice to Customer
     await sendInvoiceEmail({
       to: email,
       businessName,
@@ -160,12 +178,51 @@ app.post("/api/send-invoice", upload.single("invoice"), async (req, res) => {
       confirmationCode,
       amount,
       plan,
+      currency: storedDetails.currency || "LKR"
     });
+
+    // 3. Send Admin Notification Email
+    try {
+      const billingCycle = (plan || "").toLowerCase().includes("annually") ? "Annual" : "Monthly";
+      await sendAdminNotificationEmail({
+        ...storedDetails,
+        businessName: businessName || storedDetails.businessName,
+        email: email || storedDetails.email,
+        orderId,
+        confirmationCode,
+        amount,
+        plan,
+        billingCycle,
+        currency: storedDetails.currency || "LKR",
+        invoiceId
+      });
+      console.log(`[Email] Admin notification sent for order ${orderId}`);
+    } catch (adminEmailErr) {
+      console.error("[Email] Admin notification failed:", adminEmailErr.message);
+    }
 
     res.json({ success: true, message: "Invoice sent successfully" });
   } catch (error) {
     console.error("Email send error:", error);
     res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+app.post("/api/contact", async (req, res) => {
+  try {
+    const { name, email, phone, business, message } = req.body;
+    
+    if (!name || !email || !message) {
+      return res.status(400).json({ success: false, error: "Name, email, and message are required" });
+    }
+
+    const { sendContactEmail } = require("./services/emailService");
+    await sendContactEmail({ name, email, phone, business, message });
+
+    res.json({ success: true, message: "Contact message sent successfully" });
+  } catch (error) {
+    console.error("Contact API error:", error);
+    res.status(500).json({ success: false, error: "Failed to send message" });
   }
 });
 

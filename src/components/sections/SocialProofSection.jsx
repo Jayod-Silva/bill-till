@@ -1,20 +1,25 @@
-import React, { useState, useEffect } from 'react';
-import { motion, useInView } from 'framer-motion';
+import React, { useState, useEffect } from "react";
+import { motion, useInView } from "framer-motion";
 
 const logos = [
-   { name: 'Visa', src: '/visa.png', width: 90 },
-  { name: 'Master', src: '/master.svg', width: 60 },
-  { name: 'KOKO', src: '/koko.png', width: 100 },
+  { name: "Visa", src: "/visa.png", width: 90 },
+  { name: "Master", src: "/master.svg", width: 60 },
+  { name: "KOKO", src: "/koko.png", width: 100 },
 ];
 
 const stats = [
-  { value: '1K+', label: 'Active Businesses', target: 1, suffix: 'K+' },
-  { value: '4.9★', label: 'Customer Rating', target: 4.9, suffix: ' ★' },
-  { value: '99.9%', label: 'Uptime Guarantee', target: 99.9, suffix: '%' },
-  { value: '24/7', label: 'Customer Support', target: 24, suffix: '/7' },
+  { value: "1K+", label: "Active Businesses", target: 1, suffix: "K+" },
+  { value: "4.9★", label: "Customer Rating", target: 4.9, suffix: " ★" },
+  { value: "99.9%", label: "Uptime Guarantee", target: 99.9, suffix: "%" },
+  { value: "24/7", label: "Customer Support", target: 24, suffix: "/7" },
 ];
 
-const CountingNumber = ({ target, suffix = '', prefix = '', duration = 2000 }) => {
+const CountingNumber = ({
+  target,
+  suffix = "",
+  prefix = "",
+  duration = 2000,
+}) => {
   const [count, setCount] = useState(0);
   const ref = React.useRef();
   const isInView = useInView(ref, { once: true });
@@ -27,10 +32,10 @@ const CountingNumber = ({ target, suffix = '', prefix = '', duration = 2000 }) =
       const updateCount = () => {
         const now = Date.now();
         const progress = Math.min((now - startTime) / duration, 1);
-        
+
         // Easing function for smooth animation
         const easeOutQuart = 1 - Math.pow(1 - progress, 4);
-        
+
         const currentCount = target * easeOutQuart;
         setCount(currentCount);
 
@@ -57,7 +62,9 @@ const CountingNumber = ({ target, suffix = '', prefix = '', duration = 2000 }) =
 
   return (
     <span ref={ref}>
-      {prefix}{formatNumber(count)}{suffix}
+      {prefix}
+      {formatNumber(count)}
+      {suffix}
     </span>
   );
 };
@@ -75,7 +82,8 @@ export const SocialProofSection = () => {
           className="text-center mb-12"
         >
           <p className="text-sm text-muted-foreground mb-8">
-            Trusted by leading businesses and integrated with top payment providers
+            Trusted by leading businesses and integrated with top payment
+            providers
           </p>
           <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-20">
             {logos.map((logo, index) => (
@@ -116,14 +124,16 @@ export const SocialProofSection = () => {
               className="text-center"
             >
               <div className="text-3xl lg:text-4xl font-bold text-[#0957D6] mb-1">
-                <CountingNumber 
-                  target={stat.target} 
-                  suffix={stat.suffix} 
-                  prefix={stat.prefix || ''}
+                <CountingNumber
+                  target={stat.target}
+                  suffix={stat.suffix}
+                  prefix={stat.prefix || ""}
                   duration={4000}
                 />
               </div>
-              <div className="text-xs md:text-sm text-muted-foreground">{stat.label}</div>
+              <div className="text-xs md:text-sm text-muted-foreground">
+                {stat.label}
+              </div>
             </motion.div>
           ))}
         </motion.div>

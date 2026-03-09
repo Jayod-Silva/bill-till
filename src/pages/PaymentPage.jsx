@@ -9,7 +9,7 @@ import {
   Sparkles,
   ArrowRight,
 } from "lucide-react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import PaymentForm from "@/components/sections/PaymentForm";
 import { cn } from "@/lib/utils";
 
@@ -134,7 +134,6 @@ const BrandPanel = () => (
 
 const PaymentPage = () => {
   const navigate = useNavigate();
-  const location = useLocation();
 
   // Hide the main navbar when on payment page
   useEffect(() => {
@@ -157,7 +156,7 @@ const PaymentPage = () => {
       <BrandPanel />
 
       {/* Right Panel - Form (Always visible) */}
-      <div className="flex-1 relative flex flex-col items-center justify-center px-6 py-12 lg:px-20 lg:py-24 overflow-y-auto">
+      <div className="flex-1 relative flex flex-col items-center justify-center px-3 py-12 lg:px-20 lg:py-24 overflow-y-auto">
         {/* Floating "Back to Home" button */}
         <button
           onClick={() => navigate("/")}
@@ -185,17 +184,10 @@ const PaymentPage = () => {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-2xl shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] border border-slate-100 p-6 sm:p-8"
+            className="bg-white rounded-2xl shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] border border-slate-100 p-4 md:p-8"
           >
             {/* The original PaymentForm component */}
-            <PaymentForm
-              selectedPlan={location.state?.selectedPlan || "Pro"}
-              isMonthly={
-                location.state?.isMonthly !== undefined
-                  ? location.state.isMonthly
-                  : true
-              }
-            />
+            <PaymentForm />
           </motion.div>
 
           {/* Footer note */}

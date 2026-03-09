@@ -47,15 +47,15 @@ const FloatingInput = ({
           focused
             ? "border-blue-500 shadow-[0_0_0_3px_rgba(59,130,246,0.12)]"
             : error
-            ? "border-red-400 shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
-            : "border-slate-200 hover:border-slate-300"
+              ? "border-red-400 shadow-[0_0_0_3px_rgba(239,68,68,0.08)]"
+              : "border-slate-200 hover:border-slate-300",
         )}
       >
         {Icon && (
           <div
             className={cn(
               "absolute left-3.5 transition-colors duration-200",
-              focused ? "text-blue-500" : "text-slate-400"
+              focused ? "text-blue-500" : "text-slate-400",
             )}
           >
             <Icon className="w-4 h-4" />
@@ -74,7 +74,7 @@ const FloatingInput = ({
           className={cn(
             "peer w-full bg-transparent py-3.5 text-sm text-slate-800 outline-none placeholder:text-slate-400",
             Icon ? "pl-10 pr-4" : "px-4",
-            rightElement ? "pr-12" : ""
+            rightElement ? "pr-12" : "",
           )}
           {...rest}
         />
@@ -88,15 +88,17 @@ const FloatingInput = ({
                 ? "left-10 top-1.5 text-[10px] font-medium"
                 : "left-10 top-1/2 -translate-y-1/2 text-sm"
               : lifted
-              ? "left-4 top-1.5 text-[10px] font-medium"
-              : "left-4 top-1/2 -translate-y-1/2 text-sm",
-            lifted && (focused ? "text-blue-500" : "text-slate-400")
+                ? "left-4 top-1.5 text-[10px] font-medium"
+                : "left-4 top-1/2 -translate-y-1/2 text-sm",
+            lifted && (focused ? "text-blue-500" : "text-slate-400"),
           )}
         >
           {label}
         </label>
 
-        {rightElement && <div className="absolute right-3.5">{rightElement}</div>}
+        {rightElement && (
+          <div className="absolute right-3.5">{rightElement}</div>
+        )}
       </div>
 
       <AnimatePresence>
@@ -134,11 +136,7 @@ const BrandPanel = () => (
       transition={{ duration: 0.6 }}
       className="relative z-10 flex items-center"
     >
-      <img
-        src="/white-logo.png"
-        alt="Bill Till Logo"
-        className="h-10 w-auto"
-      />
+      <img src="/white-logo.png" alt="Bill Till Logo" className="h-10 w-auto" />
     </motion.div>
 
     <div className="relative z-10">
@@ -150,7 +148,8 @@ const BrandPanel = () => (
         </span>
       </h2>
       <p className="text-slate-400 text-sm leading-relaxed max-w-xs mb-8">
-        Access your dashboard, manage your sales, and keep track of your business growth seamlessly.
+        Access your dashboard, manage your sales, and keep track of your
+        business growth seamlessly.
       </p>
 
       {/* Feature list */}
@@ -221,7 +220,8 @@ const LoginPage = () => {
       login(data.user, data.token);
       navigate(from, { replace: true });
     } catch (err) {
-      const msg = err.response?.data?.message || "Login failed. Please try again.";
+      const msg =
+        err.response?.data?.message || "Login failed. Please try again.";
       setErrors({ submit: msg });
     } finally {
       setIsSubmitting(false);
@@ -240,7 +240,9 @@ const LoginPage = () => {
               <div className="w-8 h-8 rounded-lg bg-blue-500 flex items-center justify-center">
                 <BarChart3 className="w-4 h-4 text-white" />
               </div>
-              <span className="font-bold text-slate-800 text-base">Bill Till</span>
+              <span className="font-bold text-slate-800 text-base">
+                Bill Till
+              </span>
             </div>
           </div>
 
@@ -267,83 +269,97 @@ const LoginPage = () => {
             </p>
           </div>
 
-            <form onSubmit={handleSubmit} className="bg-white rounded-2xl shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] border border-slate-100 p-6 sm:p-8 space-y-5">
-              {/* Global error alert */}
-              <AnimatePresence>
-                {errors.submit && (
-                  <motion.div
-                    initial={{ opacity: 0, y: -8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    className="flex items-center gap-2 p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm"
-                  >
-                    <AlertCircle className="w-4 h-4 flex-shrink-0" />
-                    {errors.submit}
-                  </motion.div>
-                )}
-              </AnimatePresence>
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-2xl shadow-[0_4px_24px_-4px_rgba(0,0,0,0.08)] border border-slate-100 p-6 sm:p-8 space-y-5"
+          >
+            {/* Global error alert */}
+            <AnimatePresence>
+              {errors.submit && (
+                <motion.div
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0 }}
+                  className="flex items-center gap-2 p-3 rounded-xl bg-red-50 border border-red-100 text-red-600 text-sm"
+                >
+                  <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                  {errors.submit}
+                </motion.div>
+              )}
+            </AnimatePresence>
 
+            <FloatingInput
+              id="email"
+              name="email"
+              type="email"
+              label="Email Address"
+              placeholder="name@company.com"
+              value={formData.email}
+              onChange={handleInputChange}
+              error={errors.email}
+              icon={Mail}
+            />
+
+            <div className="space-y-1">
               <FloatingInput
-                id="email"
-                name="email"
-                type="email"
-                label="Email Address"
-                placeholder="name@company.com"
-                value={formData.email}
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                label="Password"
+                placeholder="Enter password"
+                value={formData.password}
                 onChange={handleInputChange}
-                error={errors.email}
-                icon={Mail}
+                error={errors.password}
+                icon={Lock}
+                rightElement={
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((v) => !v)}
+                    className="text-slate-400 hover:text-slate-600"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                }
               />
-
-              <div className="space-y-1">
-                <FloatingInput
-                  id="password"
-                  name="password"
-                  type={showPassword ? "text" : "password"}
-                  label="Password"
-                  placeholder="Enter password"
-                  value={formData.password}
-                  onChange={handleInputChange}
-                  error={errors.password}
-                  icon={Lock}
-                  rightElement={
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((v) => !v)}
-                      className="text-slate-400 hover:text-slate-600"
-                    >
-                      {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  }
-                />
-                <div className="flex justify-end">
-                  <a href="#" className="text-xs font-medium text-blue-500 hover:text-blue-600">
-                    Forgot password?
-                  </a>
-                </div>
+              <div className="flex justify-end">
+                <a
+                  href="#"
+                  className="text-xs font-medium text-blue-500 hover:text-blue-600"
+                >
+                  Forgot password?
+                </a>
               </div>
+            </div>
 
-              <button
-                disabled={isSubmitting}
-                type="submit"
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-md shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200"
-              >
-                {isSubmitting ? (
-                  <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                      className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
-                    />
-                    Signing in...
-                  </>
-                ) : (
-                  <>
-                    Sign In <ArrowRight className="w-4 h-4" />
-                  </>
-                )}
-              </button>
-            </form>
+            <button
+              disabled={isSubmitting}
+              type="submit"
+              className="w-full flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-md shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200"
+            >
+              {isSubmitting ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{
+                      duration: 1,
+                      repeat: Infinity,
+                      ease: "linear",
+                    }}
+                    className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full"
+                  />
+                  Signing in...
+                </>
+              ) : (
+                <>
+                  Sign In <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </button>
+          </form>
         </div>
       </div>
     </div>

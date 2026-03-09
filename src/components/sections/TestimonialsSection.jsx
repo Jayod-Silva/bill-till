@@ -1,32 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useMotionValue, useSpring, useTransform } from 'framer-motion';
-import { Quote, ChevronLeft, ChevronRight, Star } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import React, { useState, useEffect } from "react";
+import {
+  motion,
+  AnimatePresence,
+  useMotionValue,
+  useSpring,
+  useTransform,
+} from "framer-motion";
+import { Quote, ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const testimonials = [
   {
     id: 1,
-    quote: "Bill Till has completely transformed how we handle our daily operations. The interface is intuitive, the features are comprehensive, and the support team is exceptional.",
-    author: 'Corey Philips',
-    role: 'CEO, TechStore Solutions',
-    avatar: '/testimonial-avatar.jpg',
+    quote:
+      "Bill Till has completely transformed how we handle our daily operations. The interface is intuitive, the features are comprehensive, and the support team is exceptional.",
+    author: "Corey Philips",
+    role: "CEO, TechStore Solutions",
+    avatar: "/testimonial-avatar.jpg",
     rating: 5,
   },
   {
     id: 2,
-    quote: "We've tried multiple POS systems before, but Bill Till stands out. The analytics and reporting features have helped us make better business decisions.",
-    author: 'Jessica Martinez',
-    role: 'Owner, Fashion Forward',
-    avatar: '/testimonial-avatar.jpg',
+    quote:
+      "We've tried multiple POS systems before, but Bill Till stands out. The analytics and reporting features have helped us make better business decisions.",
+    author: "Jessica Martinez",
+    role: "Owner, Fashion Forward",
+    avatar: "/testimonial-avatar.jpg",
     rating: 5,
   },
   {
     id: 3,
-    quote: "The mobile app is a game-changer for our restaurant. Staff can take orders tableside and everything syncs perfectly with the kitchen display.",
-    author: 'Robert Chen',
-    role: 'Manager, The Garden Bistro',
-    avatar: '/testimonial-avatar.jpg',
+    quote:
+      "The mobile app is a game-changer for our restaurant. Staff can take orders tableside and everything syncs perfectly with the kitchen display.",
+    author: "Robert Chen",
+    role: "Manager, The Garden Bistro",
+    avatar: "/testimonial-avatar.jpg",
     rating: 5,
   },
 ];
@@ -39,11 +48,11 @@ export const TestimonialsSection = () => {
   const x = useMotionValue(0);
   const rotate = useSpring(
     useTransform(x, [-100, 100], [-45, 45]),
-    springConfig
+    springConfig,
   );
   const translateX = useSpring(
     useTransform(x, [-100, 100], [-50, 50]),
-    springConfig
+    springConfig,
   );
 
   const handleMouseMove = (event) => {
@@ -56,7 +65,9 @@ export const TestimonialsSection = () => {
   };
 
   const prevTestimonial = () => {
-    setCurrentIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
+    setCurrentIndex(
+      (prev) => (prev - 1 + testimonials.length) % testimonials.length,
+    );
   };
 
   // Auto-scroll every 4 seconds
@@ -79,8 +90,9 @@ export const TestimonialsSection = () => {
           transition={{ duration: 0.6 }}
           className="text-center "
         >
-          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight font-poppins text-left text-foreground mb-4">
-            What Our Users<br/> Are <span className="text-primary">Saying</span>
+          <h2 className="text-5xl md:text-5xl lg:text-6xl font-bold tracking-tight font-poppins text-left text-foreground mb-4">
+            What Our Users
+            <br /> Are <span className="text-primary">Saying</span>
           </h2>
         </motion.div>
 
@@ -94,36 +106,41 @@ export const TestimonialsSection = () => {
             transition={{ duration: 0.8 }}
             className="relative"
           >
-            <div className='flex flex-col lg:flex-row items-center justify-center bg-blue-100 rounded-2xl h-[400px] gap-6 mb-12 mt-12 shadow-2xl'>
+            <div className="flex flex-col lg:flex-row items-center justify-center bg-blue-100 rounded-2xl h-[400px] gap-6 mb-12 mt-12 shadow-2xl">
               {/* Main Image */}
-            <div className="relative">
-              <img
-                src="/test.png"
-                alt="Happy customer"
-                className="w-[350px] h-auto rounded-2x1 object-cover"
-                onError={(e) => {
-                  e.target.src = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3e%3crect width='600' height='400' fill='%23f8fafc'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='20' fill='%2364748b'%3eCustomer Testimonial Image%3c/text%3e%3c/svg%3e";
-                }}
-              />
-              
-              {/* Satisfaction Card Overlay */}
-              <motion.div
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="absolute -bottom-6 md:-right-24 -right-10  bg-white rounded-2xl shadow-2xl p-6 border border-gray-100"
-              >
-                <div className="text-center">
-                  <div className="text-4xl font-bold text-primary mb-2">99%</div>
-                  <div className="text-sm font-medium text-gray-600 mb-1">Customer satisfaction</div>
-                  <div className="text-xs text-green-600 font-medium">- and growing!</div>
-                </div>
-              </motion.div>
-            </div>
+              <div className="relative">
+                <img
+                  src="/test.png"
+                  alt="Happy customer"
+                  className="w-[350px] h-auto rounded-2x1 object-cover"
+                  onError={(e) => {
+                    e.target.src =
+                      "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='600' height='400' viewBox='0 0 600 400'%3e%3crect width='600' height='400' fill='%23f8fafc'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='20' fill='%2364748b'%3eCustomer Testimonial Image%3c/text%3e%3c/svg%3e";
+                  }}
+                />
 
+                {/* Satisfaction Card Overlay */}
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                  className="absolute -bottom-6 md:-right-24 -right-10  bg-white rounded-2xl shadow-2xl p-6 border border-gray-100"
+                >
+                  <div className="text-center">
+                    <div className="text-4xl font-bold text-primary mb-2">
+                      99%
+                    </div>
+                    <div className="text-sm font-medium text-gray-600 mb-1">
+                      Customer satisfaction
+                    </div>
+                    <div className="text-xs text-green-600 font-medium">
+                      - and growing!
+                    </div>
+                  </div>
+                </motion.div>
+              </div>
             </div>
-            
 
             {/* Statistics */}
             <div className="grid grid-cols-2 gap-6 mt-16">
@@ -134,8 +151,12 @@ export const TestimonialsSection = () => {
                 transition={{ duration: 0.6, delay: 0.3 }}
                 className="text-center"
               >
-                <div className="text-6xl font-bold text-foreground mb-2">99K</div>
-                <div className="text-sm text-muted-foreground">Customers worldwide</div>
+                <div className="text-6xl font-bold text-foreground mb-2">
+                  99K
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Customers worldwide
+                </div>
               </motion.div>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
@@ -144,8 +165,12 @@ export const TestimonialsSection = () => {
                 transition={{ duration: 0.6, delay: 0.4 }}
                 className="text-center"
               >
-                <div className="text-4xl md:text-5xl font-bold text-foreground mt-5 mb-2">#2</div>
-                <div className="text-sm text-muted-foreground">Banking apps in Europe</div>
+                <div className="text-4xl md:text-5xl font-bold text-foreground mt-5 mb-2">
+                  #2
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  Banking apps in Europe
+                </div>
               </motion.div>
             </div>
           </motion.div>
@@ -211,7 +236,10 @@ export const TestimonialsSection = () => {
                       alt={testimonial.author}
                       className="w-full h-full rounded-full object-cover"
                       onError={(e) => {
-                        const initials = testimonial.author.split(' ').map(n => n[0]).join('');
+                        const initials = testimonial.author
+                          .split(" ")
+                          .map((n) => n[0])
+                          .join("");
                         e.target.src = `data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56' viewBox='0 0 56 56'%3e%3crect width='56' height='56' fill='%23e2e8f0'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='16' fill='%2364748b'%3e${initials}%3c/text%3e%3c/svg%3e`;
                       }}
                     />
@@ -220,7 +248,11 @@ export const TestimonialsSection = () => {
                         layoutId="activeAvatar"
                         className="absolute inset-0 rounded-full bg-primary/20"
                         initial={false}
-                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 300,
+                          damping: 30,
+                        }}
                       />
                     )}
                   </button>
@@ -246,7 +278,10 @@ export const TestimonialsSection = () => {
                 {/* Rating */}
                 <div className="flex gap-1 mb-6">
                   {[...Array(testimonials[currentIndex].rating)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                    <Star
+                      key={i}
+                      className="w-5 h-5 fill-yellow-400 text-yellow-400"
+                    />
                   ))}
                 </div>
 
@@ -262,7 +297,8 @@ export const TestimonialsSection = () => {
                     alt={testimonials[currentIndex].author}
                     className="w-12 h-12 rounded-full object-cover"
                     onError={(e) => {
-                      e.target.src = "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3e%3crect width='48' height='48' fill='%23e2e8f0'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='14' fill='%2364748b'%3eCP%3c/text%3e%3c/svg%3e";
+                      e.target.src =
+                        "data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 48 48'%3e%3crect width='48' height='48' fill='%23e2e8f0'/%3e%3ctext x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-family='system-ui' font-size='14' fill='%2364748b'%3eCP%3c/text%3e%3c/svg%3e";
                     }}
                   />
                   <div>
@@ -285,8 +321,8 @@ export const TestimonialsSection = () => {
                   onClick={() => setCurrentIndex(index)}
                   className={`w-2 h-2 rounded-full transition-all ${
                     index === currentIndex
-                      ? 'w-8 bg-primary'
-                      : 'bg-gray-300 hover:bg-gray-400'
+                      ? "w-8 bg-primary"
+                      : "bg-gray-300 hover:bg-gray-400"
                   }`}
                 />
               ))}

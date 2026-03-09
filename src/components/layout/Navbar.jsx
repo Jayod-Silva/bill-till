@@ -60,14 +60,16 @@ export default function Navbar() {
       ? [
           { id: "shop", label: "Shop", href: "#shop" },
           { id: "pricing", label: "Pricng", href: "#pricing" },
-          { id: "stories", label: "Our Solutions", href: "#section-4" },
+          { id: "stories", label: "Products", href: "#section-4" },
+          { id: "company", label: "Company", href: "#company" },
           { id: "contact", label: "Contact", href: "#contact" },
           { id: "pay", label: "Pay Online", href: "#pay" },
         ]
       : [
           { id: "shop", label: "වෙළඳසැල", href: "#shop" },
           { id: "pricing", label: "මිල ගණන්", href: "#pricing" },
-          { id: "stories", label: "අපේ විසඳුම්", href: "#section-4" },
+          { id: "stories", label: "නිෂුර්පන්", href: "#section-4" },
+          { id: "company", label: "සම්මාප", href: "#company" },
           { id: "contact", label: "සම්බන්ධ වන්න", href: "#contact" },
           { id: "pay", label: "මාර්ගගත ගෙවීම", href: "#pay" },
         ];
@@ -80,15 +82,14 @@ export default function Navbar() {
 
     // Special handling for shop link
     if (item.id === "shop") {
-      // Navigate to tech store
-      window.history.pushState({}, "", "/shop");
-      // Trigger a custom event to notify App component
-      window.dispatchEvent(
-        new CustomEvent("navigate", { detail: { path: "/shop" } }),
-      );
+      // Navigate to shop page
+      navigate("/shop");
     } else if (item.id === "pay") {
       // Navigate to confirmation code page
       navigate("/confirm-code");
+    } else if (item.id === "contact") {
+      // Navigate to contact page
+      navigate("/contact");
     } else {
       document.querySelector(item.href)?.scrollIntoView({
         behavior: "smooth",
@@ -120,7 +121,10 @@ export default function Navbar() {
           <div className="flex items-center justify-between">
             {/* LOGO */}
             <button
-              onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+              onClick={() => {
+                setMenuOpen(false);
+                navigate("/");
+              }}
               className="cursor-pointer hover:scale-110 active:scale-95 transition-all duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]"
               aria-label="Go to home"
             >
