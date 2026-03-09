@@ -112,6 +112,7 @@ const FloatingField = ({
   onChange,
   error,
   inputMode,
+  disable,
 }) => {
   const [focused, setFocused] = useState(false);
   const lifted = focused || (value && value.length > 0);
@@ -138,7 +139,7 @@ const FloatingField = ({
         id={id}
         name={name}
         type={type}
-        value={value}
+        value={value.toFixed ? value.toFixed(2) : value}
         inputMode={inputMode}
         onChange={onChange}
         onFocus={() => setFocused(true)}
@@ -146,6 +147,7 @@ const FloatingField = ({
         placeholder={lifted ? "" : ""}
         style={computedStyle}
         autoComplete="off"
+        disabled={disable}
       />
 
       {/* Floating label */}
@@ -790,9 +792,9 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       formData.append(
         "billingCycle",
         details.billingCycle ||
-          ((details.selectedPlan || "").toLowerCase().includes("annually")
-            ? "Annual"
-            : "Monthly"),
+        ((details.selectedPlan || "").toLowerCase().includes("annually")
+          ? "Annual"
+          : "Monthly"),
       );
       formData.append("currency", details.currency || "LKR");
 
@@ -955,7 +957,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       const response = await axios.post(
         "https://caritasconnect.ddns.net/billtill/api/create-payment",
-        { ...form, currency, confirmationCode: verifiedCode, billingCycle },
+        { ...form, currency, confirmationCode: verifiedCode, billingCycle, state: user.business?.province, city: user.business?.city },
       );
 
       const sessionId = response.data.sessionId || response.data.session?.id;
@@ -982,7 +984,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
         sessionStorage.removeItem("billtill_payment_form");
         try {
           localStorage.removeItem("billtill_payment_form_backup");
-        } catch (e) {}
+        } catch (e) { }
         setLoading(false);
       };
 
@@ -1022,11 +1024,10 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
               key={cur}
               type="button"
               onClick={() => setCurrency(cur)}
-              className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 ${
-                currency === cur
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                  : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
-              }`}
+              className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 ${currency === cur
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                }`}
             >
               {cur === "LKR" ? "🇱🇰 LKR" : "🇺🇸 USD"}
             </button>
@@ -1059,11 +1060,10 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
                     key={plan.name}
                     type="button"
                     onClick={() => handlePlanChange(plan.name)}
-                    className={`w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center justify-between ${
-                      selectedPlan === plan.name
-                        ? "bg-blue-50 text-blue-600 font-semibold"
-                        : "text-slate-600"
-                    }`}
+                    className={`w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center justify-between ${selectedPlan === plan.name
+                      ? "bg-blue-50 text-blue-600 font-semibold"
+                      : "text-slate-600"
+                      }`}
                   >
                     <span className="text-sm">{plan.name}</span>
                     <span className="text-xs font-bold text-blue-600 bg-blue-100/50 px-2 py-0.5 rounded-full">
@@ -1086,11 +1086,10 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
               key={cycle}
               type="button"
               onClick={() => setBillingCycle(cycle)}
-              className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-200 ${
-                billingCycle === cycle
-                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                  : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
-              }`}
+              className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-200 ${billingCycle === cycle
+                ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+                }`}
             >
               {cycle === "Monthly" ? "Month" : "Annual"}
             </button>
@@ -1180,16 +1179,16 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
             icon={
               currency === "LKR"
                 ? (props) => (
-                    <span
-                      {...props}
-                      className={
-                        props.className +
-                        " font-bold text-[13px] flex items-center justify-center -ml-0.1"
-                      }
-                    >
-                      LKR
-                    </span>
-                  )
+                  <span
+                    {...props}
+                    className={
+                      props.className +
+                      " font-bold text-[13px] flex items-center justify-center -ml-0.1"
+                    }
+                  >
+                    LKR
+                  </span>
+                )
                 : DollarSign
             }
             type="number"
@@ -1198,6 +1197,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
             onChange={handleChange}
             error={errors.amount}
             readOnly
+            disable={false}
             className="bg-gray-50"
           />
         </div>
