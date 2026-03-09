@@ -53,6 +53,7 @@ export const ValuePropositionSection = () => {
 
   return (
     <section
+      id="company"
       ref={sectionRef}
       className="py-16 md:py-24 lg:pt-32 lg:pb-10 overflow-hidden"
     >

@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -30,6 +30,7 @@ export default function Navbar() {
   const { language, toggleLanguage } = useLanguage();
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -58,21 +59,21 @@ export default function Navbar() {
   const navItems =
     language === "en"
       ? [
-          { id: "shop", label: "Shop", href: "#shop" },
-          { id: "pricing", label: "Pricng", href: "#pricing" },
-          { id: "stories", label: "Products", href: "#section-4" },
-          { id: "company", label: "Company", href: "#company" },
-          { id: "contact", label: "Contact", href: "#contact" },
-          { id: "pay", label: "Pay Online", href: "#pay" },
-        ]
+        { id: "stories", label: "Who we serve", href: "/#industries" },
+        { id: "pricing", label: "Pricing", href: "/#pricing" },
+        { id: "company", label: "Company", href: "/company" },
+        { id: "contact", label: "Contact", href: "/contact" },
+        { id: "pay", label: "Pay Online", href: "/confirm-code" },
+        { id: "shop", label: "Shop", href: "/shop" },
+      ]
       : [
-          { id: "shop", label: "වෙළඳසැල", href: "#shop" },
-          { id: "pricing", label: "මිල ගණන්", href: "#pricing" },
-          { id: "stories", label: "නිෂුර්පන්", href: "#section-4" },
-          { id: "company", label: "සම්මාප", href: "#company" },
-          { id: "contact", label: "සම්බන්ධ වන්න", href: "#contact" },
-          { id: "pay", label: "මාර්ගගත ගෙවීම", href: "#pay" },
-        ];
+        { id: "stories", label: "අප සේවය කරන්නේ කාටද", href: "/#industries" },
+        { id: "pricing", label: "මිල ගණන්", href: "/#pricing" },
+        { id: "company", label: "සමාගම", href: "/company" },
+        { id: "contact", label: "සම්බන්ධ වන්න", href: "/contact" },
+        { id: "pay", label: "මාර්ගගත ගෙවීම", href: "/confirm-code" },
+        { id: "shop", label: "වෙලඳසැල", href: "/shop" },
+      ];
 
   const buyText = language === "en" ? "Sign In" : "ඇසුම්ම කරන්න";
 
@@ -80,22 +81,34 @@ export default function Navbar() {
     setActiveLink(item.id);
     setMenuOpen(false);
 
-    // Special handling for shop link
-    if (item.id === "shop") {
-      // Navigate to shop page
-      navigate("/shop");
-    } else if (item.id === "pay") {
-      // Navigate to confirmation code page
-      navigate("/confirm-code");
-    } else if (item.id === "contact") {
-      // Navigate to contact page
-      navigate("/contact");
+    if (item.href.startsWith("#")) {
+      if (location.pathname === "/") {
+        // We are on home page, just scroll
+        const element = document.querySelector(item.href);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      } else {
+        // We are on another page, navigate to home with hash
+        navigate(`/${item.href}`);
+      }
     } else {
-      document.querySelector(item.href)?.scrollIntoView({
-        behavior: "smooth",
-      });
+      // Normal route navigation
+      navigate(item.href);
     }
   };
+
+  // Handle scrolling when arriving at home page with a hash
+  useEffect(() => {
+    if (location.pathname === "/" && location.hash) {
+      setTimeout(() => {
+        const element = document.querySelector(location.hash);
+        if (element) {
+          element.scrollIntoView({ behavior: "smooth" });
+        }
+      }, 100);
+    }
+  }, [location]);
 
   const handleBuyClick = () => {
     setMenuOpen(false);
@@ -105,18 +118,16 @@ export default function Navbar() {
   return (
     <>
       <nav
-        className={`fixed top-6 left-1/2 -translate-x-1/2 w-full mx-auto transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] z-[100] ${
-          scrolled
-            ? "max-w-[1500px] md:max-w-[1500px]"
-            : "max-w-md -mt-2 md:-mt-8 md:max-w-[1500px]"
-        }`}
+        className={`fixed top-6 left-1/2 -translate-x-1/2 w-full mx-auto transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] z-[100] ${scrolled
+          ? "max-w-[1500px] md:max-w-[1500px]"
+          : "max-w-md -mt-2 md:-mt-8 md:max-w-[1500px]"
+          }`}
       >
         <div
-          className={`px-8 py-3 md:py-4 transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] ${
-            scrolled
-              ? "bg-white  shadow-lg -mt-6 md:-mt-7 rounded-b-3xl md:scale-[1.02]"
-              : "-mt-2 md:mt-2 scale-[1]"
-          }`}
+          className={`px-8 py-3 md:py-4 transition-all duration-500 ease-[cubic-bezier(0.25, 0.46, 0.45, 0.94)] ${scrolled
+            ? "bg-white  shadow-lg -mt-6 md:-mt-7 rounded-b-3xl md:scale-[1.02]"
+            : "-mt-2 md:mt-2 scale-[1]"
+            }`}
         >
           <div className="flex items-center justify-between">
             {/* LOGO */}
@@ -142,11 +153,10 @@ export default function Navbar() {
                   key={item.id}
                   onClick={() => handleClick(item)}
                   className={`relative group text-[14px] font-medium font-poppins transition-all duration-300 ease-[cubic-bezier(0.34, 1.56, 0.64, 1)]
-                  ${
-                    activeLink === item.id
+                  ${activeLink === item.id
                       ? "text-blue-600 scale-105"
                       : "text-gray-600 hover:text-gray-900 hover:scale-105"
-                  }`}
+                    }`}
                 >
                   {item.label}
 
@@ -299,11 +309,10 @@ export default function Navbar() {
                         damping: 30,
                       }}
                       onClick={() => handleClick(item)}
-                      className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${
-                        activeLink === item.id
-                          ? "bg-blue-50 text-blue-600"
-                          : "text-gray-700 hover:bg-gray-50"
-                      }`}
+                      className={`w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-colors ${activeLink === item.id
+                        ? "bg-blue-50 text-blue-600"
+                        : "text-gray-700 hover:bg-gray-50"
+                        }`}
                     >
                       {item.label}
                     </motion.button>

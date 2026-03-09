@@ -29,6 +29,8 @@ import TermsAndConditionsPage from "@/pages/TermsAndConditionsPage";
 import ReturnPolicyPage from "@/pages/ReturnPolicyPage";
 import ShopPage from "@/pages/ShopPage";
 import ContactPage from "@/pages/ContactPage";
+import CompanyPage from "@/pages/CompanyPage";
+import PricingPage from "@/pages/PricingPage";
 
 import { AuthProvider } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/auth/ProtectedRoute";
@@ -83,7 +85,9 @@ function App() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/shop" element={<ShopPage />} />
+          <Route path="/pricing" element={<PricingPage />} />
           <Route path="/contact" element={<ContactPage />} />
+          <Route path="/company" element={<CompanyPage />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/confirm-code" element={<ConfirmationCodePage />} />
           <Route path="/register" element={<RegistrationPage />} />

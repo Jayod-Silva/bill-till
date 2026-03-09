@@ -56,7 +56,7 @@ export default function ContactPage() {
     } catch (error) {
       console.error("Contact form error:", error);
       alert(
-        "Failed to send message. Please try again or email us directly at info@billtill.com",
+        "Failed to send message. Please try again or email us directly at info@billtill.co",
       );
     } finally {
       setIsSubmitting(false);
@@ -126,11 +126,14 @@ export default function ContactPage() {
                         Our support team response time is within 24 hours.
                       </p>
                       <a
-                        href="mailto:info@billtill.com"
+                        href="mailto:info@billtill.co"
                         className="text-[#0957D6] font-medium hover:underline flex items-center gap-1 text-sm sm:text-base break-all"
                       >
-                        info@billtill.com <ExternalLink className="w-3 h-3 shrink-0" />
+                        info@billtill.co <ExternalLink className="w-3 h-3 shrink-0" />
                       </a>
+                      <div className="mt-2 text-xs text-slate-400">
+                        Website: <a href="https://www.billtill.co" target="_blank" rel="noopener noreferrer" className="hover:underline">www.billtill.co</a>
+                      </div>
                     </div>
                   </div>
 
@@ -144,12 +147,20 @@ export default function ContactPage() {
                       <p className="text-slate-500 mb-2 text-sm sm:text-base">
                         Mon-Fri from 9am to 6pm (IST).
                       </p>
-                      <a
-                        href="tel:+94701234567"
-                        className="text-[#0957D6] font-medium hover:underline flex items-center gap-1 text-sm sm:text-base"
-                      >
-                        +94 70 123 4567 <ExternalLink className="w-3 h-3 shrink-0" />
-                      </a>
+                      <div className="flex flex-col gap-1">
+                        <a
+                          href="tel:+94114758900"
+                          className="text-[#0957D6] font-medium hover:underline flex items-center gap-1 text-sm sm:text-base"
+                        >
+                          +94 11 475 8900 <ExternalLink className="w-3 h-3 shrink-0" />
+                        </a>
+                        <a
+                          href="tel:+94777236130"
+                          className="text-[#0957D6] font-medium hover:underline flex items-center gap-1 text-sm sm:text-base"
+                        >
+                          +94 77 723 6130 (24/7) <ExternalLink className="w-3 h-3 shrink-0" />
+                        </a>
+                      </div>
                     </div>
                   </div>
 
@@ -160,11 +171,10 @@ export default function ContactPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-semibold text-base sm:text-lg mb-1">Visit Us</h3>
-                      <p className="text-slate-500 mb-2 text-sm sm:text-base">
-                        Our headquarters are located in the heart of Colombo.
-                      </p>
-                      <p className="text-slate-900 font-medium text-sm sm:text-base">
-                        World Trade Center, Colombo 01, Sri Lanka
+                      <p className="text-slate-900 font-medium text-sm sm:text-base leading-relaxed">
+                        Ceylon Innovation Services (PVT) LTD<br />
+                        680A Colombo Road, Kattuwa,<br />
+                        Negombo, Sri Lanka
                       </p>
                     </div>
                   </div>
@@ -200,7 +210,7 @@ export default function ContactPage() {
                         value={formData.name}
                         onChange={handleChange}
                         required
-                        placeholder="John Doe"
+                        placeholder="Bill Till"
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#0957D6]/20 focus:border-[#0957D6] transition-all"
                       />
                     </div>
@@ -214,7 +224,7 @@ export default function ContactPage() {
                         value={formData.email}
                         onChange={handleChange}
                         required
-                        placeholder="john@example.com"
+                        placeholder="info@billtill.co"
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#0957D6]/20 focus:border-[#0957D6] transition-all"
                       />
                     </div>
@@ -230,7 +240,7 @@ export default function ContactPage() {
                         name="phone"
                         value={formData.phone}
                         onChange={handleChange}
-                        placeholder="+94 70 123 4567"
+                        placeholder="+94 11 475 8900"
                         className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-[#0957D6]/20 focus:border-[#0957D6] transition-all"
                       />
                     </div>
@@ -322,7 +332,7 @@ export default function ContactPage() {
           </motion.div>
         </div>
       </section>
-      
+
       <Footer />
     </div>
   );

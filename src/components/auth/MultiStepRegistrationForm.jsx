@@ -659,7 +659,7 @@ const MultiStepRegistrationForm = () => {
               name="email"
               type="email"
               label="Email Address"
-              placeholder="john@example.com"
+              placeholder="info@billtill.co"
               value={formData.email}
               onChange={handleInputChange}
               error={errors.email}

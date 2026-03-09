@@ -3,14 +3,14 @@ import { motion } from "framer-motion";
 import { Twitter, Linkedin, Github, Mail, MapPin, Phone } from "lucide-react";
 
 const footerLinks = {
-  product: [
-    { name: "Features", href: "#features" },
-    { name: "Pricing", href: "#pricing" },
-    { name: "Industries", href: "#industries" },
+  whoWeServe: [
+    { name: "Industries", href: "/#industries" },
+    { name: "Features", href: "/#features" },
+    { name: "Pricing", href: "/#pricing" },
     { name: "Integrations", href: "#" },
   ],
   company: [
-    { name: "About Us", href: "#about" },
+    { name: "About Us", href: "/company" },
     { name: "Careers", href: "#" },
     { name: "Blog", href: "#" },
     { name: "Press", href: "#" },
@@ -59,7 +59,7 @@ export const Footer = () => {
             <div className="space-y-3">
               <div className="flex items-center gap-2 text-sm text-blue-200">
                 <Mail className="w-4 h-4" />
-                <span>hello@billtill.com</span>
+                <span>info@billtill.co</span>
               </div>
               <div className="flex items-center gap-2 text-sm text-blue-200">
                 <Phone className="w-4 h-4" />
@@ -78,9 +78,9 @@ export const Footer = () => {
 
           {/* Links Columns */}
           <div>
-            <h3 className="font-semibold text-white mb-4">Product</h3>
+            <h3 className="font-semibold text-white mb-4">Who we serve</h3>
             <ul className="space-y-3">
-              {footerLinks.product.map((link) => (
+              {footerLinks.whoWeServe.map((link) => (
                 <li key={link.name}>
                   <a
                     href={link.href}
