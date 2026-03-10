@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   KeyRound,
   AlertCircle,
@@ -66,7 +66,11 @@ const BrandPanel = () => (
       transition={{ duration: 0.6 }}
       className="relative z-10 flex items-center"
     >
-      <img src="/white-logo.webp" alt="Bill Till Logo" className="h-10 w-auto" />
+      <img
+        src="/white-logo.webp"
+        alt="Bill Till Logo"
+        className="h-10 w-auto"
+      />
     </motion.div>
 
     {/* Main copy */}
@@ -212,6 +216,7 @@ const CodeInput = ({ value, onChange, error }) => {
 ───────────────────────────────────────────── */
 const SuccessScreen = ({ code }) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const particles = Array.from({ length: 18 });
   return (
     <div className="relative flex flex-col items-center justify-center min-h-[420px] text-center overflow-hidden">
@@ -268,7 +273,9 @@ const SuccessScreen = ({ code }) => {
         </p>
         <button
           onClick={() =>
-            navigate("/payment", { state: { confirmationCode: code } })
+            navigate("/payment", {
+              state: { ...location.state, confirmationCode: code },
+            })
           }
           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white text-sm font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 hover:-translate-y-0.5 transition-all duration-200"
         >
@@ -292,10 +299,8 @@ const ConfirmationCodePage = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-
     setCode(localStorage.getItem("billtill_verified_code") || "");
-
-  }, [])
+  }, []);
 
   const handleSubmit = async () => {
     let hasError = false;
@@ -311,7 +316,7 @@ const ConfirmationCodePage = () => {
       "#BT456789",
       "#BT012345",
       "#BT678901",
-      "#BT111111"
+      "#BT111111",
     ];
 
     if (!code || code.trim() === "") {

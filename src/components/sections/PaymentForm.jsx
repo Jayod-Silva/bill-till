@@ -412,7 +412,16 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     }
   }, [selectedPlan, billingCycle]);
 
-  const { showSuccess, setShowSuccess, paymentResult, setPaymentResult, paymentFailed, setPaymentFailed, failureMessage, setFailureMessage } = usePaymentStore();
+  const {
+    showSuccess,
+    setShowSuccess,
+    paymentResult,
+    setPaymentResult,
+    paymentFailed,
+    setPaymentFailed,
+    failureMessage,
+    setFailureMessage,
+  } = usePaymentStore();
   const { user } = useAuth();
 
   // Handle plan selection change
@@ -448,6 +457,31 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       }));
     }
   }, [user]);
+
+  // Prevent undo (back button) from showing loading state
+  useEffect(() => {
+    const handlePopState = () => {
+      setLoading(false); // Stop loading if user hits back
+      if (showSuccess) {
+        window.location.reload();
+      }
+    };
+
+    const handlePageShow = (event) => {
+      // If page is restored from BFCache (back button), reload to ensure fresh state
+      if (event.persisted) {
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, [showSuccess]);
 
   // Detect return from payment gateway redirect
   useEffect(() => {
@@ -548,7 +582,9 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       // Clean up URL
       window.history.replaceState({}, document.title, window.location.pathname);
       setPaymentFailed(true);
-      setFailureMessage("Your payment was cancelled or failed. Please try again.");
+      setFailureMessage(
+        "Your payment was cancelled or failed. Please try again.",
+      );
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -800,9 +836,9 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       formData.append(
         "billingCycle",
         details.billingCycle ||
-        ((details.selectedPlan || "").toLowerCase().includes("annually")
-          ? "Annual"
-          : "Monthly"),
+          ((details.selectedPlan || "").toLowerCase().includes("annually")
+            ? "Annual"
+            : "Monthly"),
       );
       formData.append("currency", details.currency || "LKR");
 
@@ -828,7 +864,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     const handleClose = () => {
       onClose();
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = "/";
       }, 300);
     };
 
@@ -941,7 +977,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       const timer = setTimeout(() => {
         onClose();
         setTimeout(() => {
-          window.location.href = '/';
+          window.location.href = "/";
         }, 300);
       }, 5000);
       return () => clearTimeout(timer);
@@ -950,7 +986,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     const handleClose = () => {
       onClose();
       setTimeout(() => {
-        window.location.href = '/';
+        window.location.href = "/";
       }, 300);
     };
 
@@ -982,7 +1018,8 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
               Payment Failed
             </h2>
             <p className="text-slate-600 mb-8 font-medium">
-              {message || "Your payment could not be processed. Please try again."}
+              {message ||
+                "Your payment could not be processed. Please try again."}
             </p>
 
             <button
@@ -1050,7 +1087,19 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       const response = await axios.post(
         "https://caritasconnect.ddns.net/billtill/api/create-payment",
+<<<<<<< Updated upstream
         cleanFormData,
+=======
+        {
+          ...form,
+          currency,
+          confirmationCode: verifiedCode,
+          billingCycle,
+          selectedPlan,
+          state: user.business?.province,
+          city: user.business?.city,
+        },
+>>>>>>> Stashed changes
       );
 
       const sessionId = response.data.sessionId || response.data.session?.id;
@@ -1077,7 +1126,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
         sessionStorage.removeItem("billtill_payment_form");
         try {
           localStorage.removeItem("billtill_payment_form_backup");
-        } catch (e) { }
+        } catch (e) {}
         setLoading(false);
       };
 
@@ -1173,10 +1222,11 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
               key={cur}
               type="button"
               onClick={() => setCurrency(cur)}
-              className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 ${currency === cur
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
-                }`}
+              className={`px-4 py-1.5 rounded-md text-sm font-bold transition-all duration-200 ${
+                currency === cur
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                  : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+              }`}
             >
               {cur === "LKR" ? "🇱🇰 LKR" : "🇺🇸 USD"}
             </button>
@@ -1209,10 +1259,11 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
                     key={plan.name}
                     type="button"
                     onClick={() => handlePlanChange(plan.name)}
-                    className={`w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center justify-between ${selectedPlan === plan.name
-                      ? "bg-blue-50 text-blue-600 font-semibold"
-                      : "text-slate-600"
-                      }`}
+                    className={`w-full text-left px-4 py-2.5 hover:bg-blue-50 transition-colors flex items-center justify-between ${
+                      selectedPlan === plan.name
+                        ? "bg-blue-50 text-blue-600 font-semibold"
+                        : "text-slate-600"
+                    }`}
                   >
                     <span className="text-sm">{plan.name}</span>
                     <span className="text-xs font-bold text-blue-600 bg-blue-100/50 px-2 py-0.5 rounded-full">
@@ -1235,10 +1286,11 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
               key={cycle}
               type="button"
               onClick={() => setBillingCycle(cycle)}
-              className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-200 ${billingCycle === cycle
-                ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
-                : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
-                }`}
+              className={`px-3 py-1.5 rounded-md text-[11px] font-bold uppercase tracking-wider transition-all duration-200 ${
+                billingCycle === cycle
+                  ? "bg-blue-600 text-white shadow-md shadow-blue-500/25"
+                  : "text-slate-500 hover:text-blue-600 hover:bg-blue-50"
+              }`}
             >
               {cycle === "Monthly" ? "Month" : "Annual"}
             </button>
@@ -1342,16 +1394,16 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
             icon={
               currency === "LKR"
                 ? (props) => (
-                  <span
-                    {...props}
-                    className={
-                      props.className +
-                      " font-bold text-[13px] flex items-center justify-center -ml-0.1"
-                    }
-                  >
-                    LKR
-                  </span>
-                )
+                    <span
+                      {...props}
+                      className={
+                        props.className +
+                        " font-bold text-[13px] flex items-center justify-center -ml-0.1"
+                      }
+                    >
+                      LKR
+                    </span>
+                  )
                 : DollarSign
             }
             type="number"

@@ -104,36 +104,6 @@ export default function CompanyPage() {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-16 bg-white/50 backdrop-blur-sm">
-        <div className="container-custom px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              { icon: Users, label: "Years of Experience", value: "7+" },
-              { icon: Award, label: "Projects Delivered", value: "50+" },
-              { icon: Globe, label: "Happy Clients", value: "100+" },
-              { icon: Target, label: "Team Members", value: "15+" },
-            ].map((stat, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, delay: i * 0.1 }}
-                className="text-center"
-              >
-                <div className="w-16 h-16 bg-[#0957D6]/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <stat.icon className="w-8 h-8 text-[#0957D6]" />
-                </div>
-                <div className="text-3xl font-bold text-slate-900 mb-1">
-                  {stat.value}
-                </div>
-                <div className="text-sm text-slate-600">{stat.label}</div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* Our Vision Section */}
       <section className="py-24 bg-slate-50 relative overflow-hidden">

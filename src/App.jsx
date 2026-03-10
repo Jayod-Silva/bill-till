@@ -277,9 +277,13 @@ const HomePage = () => {
         formData.append("billingCycle", detailsData.billingCycle);
         formData.append("currency", detailsData.currency || "LKR");
 
+<<<<<<< Updated upstream
         axios.post("https://caritasconnect.ddns.net/billtill/api/send-invoice", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         })
+=======
+        axios
+>>>>>>> Stashed changes
           .post(
             "https://caritasconnect.ddns.net/billtill/api/send-invoice",
             formData,
@@ -529,6 +533,29 @@ const HomePage = () => {
       );
     }
   }, [setShowSuccess, setPaymentResult, setPaymentFailed, setFailureMessage]);
+
+  // Prevent undo (back button) from showing loading state
+  useEffect(() => {
+    const handlePopState = () => {
+      if (showSuccess) {
+        window.location.reload();
+      }
+    };
+
+    const handlePageShow = (event) => {
+      if (event.persisted) {
+        window.location.reload();
+      }
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    window.addEventListener("pageshow", handlePageShow);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+      window.removeEventListener("pageshow", handlePageShow);
+    };
+  }, [showSuccess]);
 
   return (
     <div className="min-h-screen bg-background">

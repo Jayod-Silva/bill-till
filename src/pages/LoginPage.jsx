@@ -136,7 +136,11 @@ const BrandPanel = () => (
       transition={{ duration: 0.6 }}
       className="relative z-10 flex items-center"
     >
-      <img src="/white-logo.webp" alt="Bill Till Logo" className="h-10 w-auto" />
+      <img
+        src="/white-logo.webp"
+        alt="Bill Till Logo"
+        className="h-10 w-auto"
+      />
     </motion.div>
 
     <div className="relative z-10">
@@ -220,8 +224,24 @@ const LoginPage = () => {
       login(data.user, data.token);
       navigate(from, { replace: true });
     } catch (err) {
-      const msg =
-        err.response?.data?.message || "Login failed. Please try again.";
+      console.error("Login Error:", err);
+      let msg = "Something went wrong. Please try again.";
+
+      if (err.response) {
+        // Server responded with an error status code
+        msg =
+          err.response.data?.message ||
+          err.response.data?.error ||
+          `Error: ${err.response.statusText}`;
+      } else if (err.request) {
+        // Request was made but no response received
+        msg =
+          "Unable to connect to the server. Please check your internet connection.";
+      } else {
+        // Something else happened while setting up the request
+        msg = err.message || "An unexpected error occurred.";
+      }
+
       setErrors({ submit: msg });
     } finally {
       setIsSubmitting(false);

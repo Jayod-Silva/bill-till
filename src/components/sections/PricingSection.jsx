@@ -129,7 +129,7 @@ export const PricingSection = () => {
       plan.i18nName === "price_plan1_name" ||
       plan.i18nName === "price_plan2_name"
     ) {
-      navigate("/payment", {
+      navigate("/confirm-code", {
         state: {
           planName: plan.i18nName === "price_plan1_name" ? "Dynamic" : "Pro",
           isAnnual: !isMonthly,
