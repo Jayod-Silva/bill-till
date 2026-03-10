@@ -277,10 +277,16 @@ const HomePage = () => {
         formData.append("billingCycle", detailsData.billingCycle);
         formData.append("currency", detailsData.currency || "LKR");
 
-        axios
-          .post("https://caritasconnect.ddns.net/billtill/api/send-invoice", formData, {
-            headers: { "Content-Type": "multipart/form-data" },
-          })
+        axios.post("https://caritasconnect.ddns.net/billtill/api/send-invoice", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+          .post(
+            "https://caritasconnect.ddns.net/billtill/api/send-invoice",
+            formData,
+            {
+              headers: { "Content-Type": "multipart/form-data" },
+            },
+          )
           .then(() => console.log("✅ Invoice email sent successfully"))
           .catch((err) =>
             console.error(

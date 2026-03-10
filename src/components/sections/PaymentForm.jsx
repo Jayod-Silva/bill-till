@@ -1019,8 +1019,8 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
       e.email = "Enter a valid email";
     if (!String(form.amount).trim()) e.amount = "Amount is required";
-    else if (isNaN(Number(form.amount)) || Number(form.amount) <= 0)
-      e.amount = "Enter a valid amount";
+    else if (isNaN(Number(form.amount)) || Number(form.amount) < 1)
+      e.amount = currency === "LKR" ? "Minimum amount is 1 LKR" : "Minimum amount is $1 USD";
     if (!form.address.trim()) e.address = "Business address is required";
     setErrors(e);
     return Object.keys(e).length === 0;
@@ -1035,9 +1035,22 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       const verifiedCode = localStorage.getItem("billtill_verified_code") || "";
 
+      // Clean form data - only include defined values
+      const cleanFormData = {
+        ...form,
+        currency,
+        confirmationCode: verifiedCode,
+        billingCycle,
+        selectedPlan,
+      };
+
+      // Add optional user properties only if user is logged in
+      if (user?.business?.province) cleanFormData.state = user.business.province;
+      if (user?.business?.city) cleanFormData.city = user.business.city;
+
       const response = await axios.post(
         "https://caritasconnect.ddns.net/billtill/api/create-payment",
-        { ...form, currency, confirmationCode: verifiedCode, billingCycle, selectedPlan, state: user.business?.province, city: user.business?.city },
+        cleanFormData,
       );
 
       const sessionId = response.data.sessionId || response.data.session?.id;
@@ -1082,9 +1095,23 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       document.body.appendChild(script);
     } catch (err) {
-      console.error(err);
+      console.error("❌ Payment Error:", err);
+
+      // Generate helpful error message based on error type
+      let errorMessage = "Payment failed. Please check your details and try again.";
+
+      if (err.response?.status === 400) {
+        errorMessage = "Invalid payment details. Please check all fields are filled correctly.";
+      } else if (err.response?.status === 500) {
+        errorMessage = "Gateway error. Please try again or contact support.";
+      } else if (err.message?.includes("Network")) {
+        errorMessage = "Network error. Please check your connection and try again.";
+      } else if (err.response?.data?.error?.message) {
+        errorMessage = `Payment Error: ${err.response.data.error.message}`;
+      }
+
       setErrors({
-        submit: "Payment failed. Please check your details and try again.",
+        submit: errorMessage,
       });
       setLoading(false);
     }
@@ -1092,6 +1119,48 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
   return (
     <div className="space-y-7 mt-2 md:mt-0">
+      {/* Login Status Banner */}
+      {/* <motion.div
+        initial={{ opacity: 0, y: -8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className={`flex items-center justify-between px-4 py-3.5 rounded-xl border-2 ${user
+            ? "bg-gradient-to-r from-emerald-50 to-green-50 border-emerald-200"
+            : "bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200"
+          }`}
+      >
+        <div className="flex items-center gap-3">
+          <div
+            className={`w-8 h-8 rounded-full flex items-center justify-center ${user ? "bg-emerald-200 text-emerald-700" : "bg-blue-200 text-blue-700"
+              }`}
+          >
+            {user ? <CheckCircle2 className="w-4 h-4" /> : <User className="w-4 h-4" />}
+          </div>
+          <div>
+            {user ? (
+              <p className="text-sm font-bold text-slate-900">
+                ✓ Logged in as <span className="text-emerald-600">{user.first_name} {user.last_name}</span>
+              </p>
+            ) : (
+              <p className="text-sm font-bold text-slate-900">
+                Proceeding as <span className="text-blue-600">Guest</span>
+              </p>
+            )}
+            <p className="text-xs text-slate-500 mt-0.5">
+              {user ? "Your business details will be auto-filled" : "Please fill in all required details"}
+            </p>
+          </div>
+        </div>
+        {!user && (
+          <a
+            href="/login"
+            className="text-xs font-bold text-blue-600 hover:text-blue-700 hover:underline transition-colors whitespace-nowrap ml-4"
+          >
+            Login to Auto-fill →
+          </a>
+        )}
+      </motion.div> */}
+
       {/* Currency Toggle */}
       <div className="flex items-center justify-between px-4 py-3 rounded-xl bg-gradient-to-r from-slate-50 to-blue-50 border border-blue-100">
         <div className="flex items-center gap-2">
@@ -1179,7 +1248,14 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       {/* ── Business Info ── */}
       <div className="space-y-4">
-        <SectionLabel>Business Information</SectionLabel>
+        <div className="flex items-center justify-between">
+          <SectionLabel>Business Information</SectionLabel>
+          {user && (
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
+              ✓ Auto-filled
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FloatingField
             id="businessName"
@@ -1239,7 +1315,14 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
 
       {/* ── Contact & Payment ── */}
       <div className="space-y-4">
-        <SectionLabel>Contact &amp; Payment Details</SectionLabel>
+        <div className="flex items-center justify-between">
+          <SectionLabel>Contact &amp; Payment Details</SectionLabel>
+          {user && (
+            <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-widest">
+              ✓ Auto-filled
+            </span>
+          )}
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <FloatingField
             id="phone"
@@ -1276,7 +1359,6 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
             value={form.amount}
             onChange={handleChange}
             error={errors.amount}
-            readOnly
             disable={false}
             className="bg-gray-50"
           />
@@ -1293,6 +1375,22 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
           error={errors.email}
         />
       </div>
+
+      {/* Guest User Info Banner */}
+      {/* {!user && (
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="flex items-start gap-3 px-4 py-3.5 rounded-xl bg-blue-50 border border-blue-200"
+        >
+          <User className="w-4 h-4 shrink-0 mt-0.5 text-blue-600" />
+          <div className="text-xs text-slate-600 leading-relaxed">
+            <p className="font-bold text-slate-700 mb-1">Proceeding as Guest</p>
+            <p>Please ensure all fields are correctly filled before proceeding to payment. <a href="/login" className="font-semibold text-blue-600 hover:underline">Login here</a> to auto-fill your details.</p>
+          </div>
+        </motion.div>
+      )} */}
 
       {/* Submit error */}
       <AnimatePresence>
