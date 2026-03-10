@@ -136,7 +136,7 @@ const BrandPanel = () => (
       transition={{ duration: 0.6 }}
       className="relative z-10 flex items-center"
     >
-      <img src="/white-logo.png" alt="Bill Till Logo" className="h-10 w-auto" />
+      <img src="/white-logo.webp" alt="Bill Till Logo" className="h-10 w-auto" />
     </motion.div>
 
     <div className="relative z-10">
@@ -325,14 +325,6 @@ const LoginPage = () => {
                   </button>
                 }
               />
-              <div className="flex justify-end">
-                <a
-                  href="#"
-                  className="text-xs font-medium text-blue-500 hover:text-blue-600"
-                >
-                  Forgot password?
-                </a>
-              </div>
             </div>
 
             <button

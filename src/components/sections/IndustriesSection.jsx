@@ -84,7 +84,7 @@ export const IndustriesSection = () => {
       description: t("ind_restaurant_desc"),
       i18nName: "ind_restaurant",
       i18nDesc: "ind_restaurant_desc",
-      image: "/Promo6.png",
+      image: "/Promo6.webp",
       features: [
         { label: t("ind_restaurant_f1"), i18n: "ind_restaurant_f1" },
         { label: t("ind_restaurant_f2"), i18n: "ind_restaurant_f2" },
@@ -101,7 +101,7 @@ export const IndustriesSection = () => {
       description: t("ind_supermarket_desc"),
       i18nName: "ind_supermarket",
       i18nDesc: "ind_supermarket_desc",
-      image: "/Promo5.png",
+      image: "/Promo5.webp",
       features: [
         { label: t("ind_supermarket_f1"), i18n: "ind_supermarket_f1" },
         { label: t("ind_supermarket_f2"), i18n: "ind_supermarket_f2" },
@@ -118,7 +118,7 @@ export const IndustriesSection = () => {
       description: t("ind_clothing_desc"),
       i18nName: "ind_clothing",
       i18nDesc: "ind_clothing_desc",
-      image: "/Promo7.png",
+      image: "/Promo7.webp",
       features: [
         { label: t("ind_clothing_f1"), i18n: "ind_clothing_f1" },
         { label: t("ind_clothing_f2"), i18n: "ind_clothing_f2" },
@@ -135,7 +135,7 @@ export const IndustriesSection = () => {
       description: t("ind_wine_desc"),
       i18nName: "ind_wine",
       i18nDesc: "ind_wine_desc",
-      image: "/Promo 4.png",
+      image: "/Promo4.webp",
       features: [
         { label: t("ind_wine_f1"), i18n: "ind_wine_f1" },
         { label: t("ind_wine_f2"), i18n: "ind_wine_f2" },
@@ -152,7 +152,7 @@ export const IndustriesSection = () => {
       description: t("ind_computer_desc"),
       i18nName: "ind_computer",
       i18nDesc: "ind_computer_desc",
-      image: "/Promo 3.png",
+      image: "/Promo3.webp",
       features: [
         { label: t("ind_computer_f1"), i18n: "ind_computer_f1" },
         { label: t("ind_computer_f2"), i18n: "ind_computer_f2" },
@@ -169,7 +169,7 @@ export const IndustriesSection = () => {
       description: t("ind_hardware_desc"),
       i18nName: "ind_hardware",
       i18nDesc: "ind_hardware_desc",
-      image: "/Promo 1.png",
+      image: "/Promo1.webp",
       features: [
         { label: t("ind_hardware_f1"), i18n: "ind_hardware_f1" },
         { label: t("ind_hardware_f2"), i18n: "ind_hardware_f2" },

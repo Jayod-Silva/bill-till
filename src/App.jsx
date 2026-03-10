@@ -34,6 +34,7 @@ import DashboardPage from "@/pages/DashboardPage";
 import ConfirmationCodePage from "@/pages/ConfirmationCodePage";
 import TermsAndConditionsPage from "@/pages/TermsAndConditionsPage";
 import ReturnPolicyPage from "@/pages/ReturnPolicyPage";
+import PrivacyPolicyPage from "@/pages/PrivacyPolicy";
 import ShopPage from "@/pages/ShopPage";
 import ContactPage from "@/pages/ContactPage";
 import CompanyPage from "@/pages/CompanyPage";
@@ -277,7 +278,7 @@ const HomePage = () => {
         formData.append("currency", detailsData.currency || "LKR");
 
         axios
-          .post("http://localhost:7075/api/send-invoice", formData, {
+          .post("https://caritasconnect.ddns.net/billtill/api/send-invoice", formData, {
             headers: { "Content-Type": "multipart/form-data" },
           })
           .then(() => console.log("✅ Invoice email sent successfully"))
@@ -484,7 +485,7 @@ const HomePage = () => {
     if (payment === "success" && orderId) {
       window.history.replaceState({}, document.title, window.location.pathname);
 
-      const apiUrl = `http://localhost:7075/api/verify-payment/${orderId}`;
+      const apiUrl = `https://caritasconnect.ddns.net/billtill/api/verify-payment/${orderId}`;
       console.log("📡 Verifying payment with:", apiUrl);
 
       axios
@@ -602,6 +603,7 @@ function App() {
               element={<TermsAndConditionsPage />}
             />
             <Route path="/return-policy" element={<ReturnPolicyPage />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
             <Route
               path="/dashboard"
               element={

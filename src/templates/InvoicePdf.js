@@ -69,10 +69,15 @@ export const generateInvoice = (details, action = "download") => {
     doc.text(details.businessName || "Valued Customer", 14, 72);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
+    // Calculate address lines and adjust positions
+    const addressText = details.address || "N/A";
+    const addressLines = doc.splitTextToSize(addressText, 80);
+    const addressHeight = addressLines.length * 5; // Approximate height per line
+    
     doc.text(`Name: ${details.ownerName}`, 14, 77);
-    doc.text(`Address: ${details.address || "N/A"}`, 14, 82, { maxWidth: 80 });
-    doc.text(`Phone: ${details.phone}`, 14, 87);
-    doc.text(`Email: ${details.email}`, 14, 92);
+    doc.text(`Address: ${addressText}`, 14, 82, { maxWidth: 80 });
+    doc.text(`Phone: ${details.phone}`, 14, 82 + addressHeight + 5);
+    doc.text(`Email: ${details.email}`, 14, 87 + addressHeight + 5);
 
     // To (Beneficiary) - Bill-Till
     doc.setFontSize(10);

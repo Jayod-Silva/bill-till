@@ -120,7 +120,7 @@ export const TestimonialsSection = () => {
               {/* Main Image */}
               <div className="relative">
                 <img
-                  src="/test.png"
+                  src="/test.webp"
                   alt="Happy customer"
                   className="w-[350px] h-auto rounded-2x1 object-cover"
                   onError={(e) => {

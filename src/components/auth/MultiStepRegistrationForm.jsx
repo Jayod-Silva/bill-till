@@ -183,7 +183,7 @@ const FloatingSelect = ({
           className={cn(
             "w-full bg-transparent py-3.5 text-sm text-slate-800 outline-none appearance-none",
             Icon ? "pl-10 pr-8" : "px-4 pr-8",
-            !value && "text-transparent",
+            !value && "text-slate-400",
           )}
         >
           {children}
@@ -282,7 +282,7 @@ const BrandPanel = () => (
       transition={{ duration: 0.6 }}
       className="relative z-10 flex items-center"
     >
-      <img src="/white-logo.png" alt="Bill Till Logo" className="h-10 w-auto" />
+      <img src="/white-logo.webp" alt="Bill Till Logo" className="h-10 w-auto" />
     </motion.div>
 
     {/* Main copy */}
@@ -492,6 +492,7 @@ const MultiStepRegistrationForm = () => {
     city: "",
     province: "",
     zip_code: "",
+    privacy_agreement: false,
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -549,14 +550,19 @@ const MultiStepRegistrationForm = () => {
       if (!formData.city.trim()) e.city = "City is required";
       if (!formData.province.trim()) e.province = "Province is required";
       if (!formData.zip_code.trim()) e.zip_code = "Zip code is required";
+      if (!formData.privacy_agreement)
+        e.privacy_agreement = "You must agree to the privacy policy";
     }
     setErrors(e);
     return Object.keys(e).length === 0;
   };
 
   const handleInputChange = (ev) => {
-    const { name, value } = ev.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
+    const { name, value, type, checked } = ev.target;
+    setFormData((prev) => ({ 
+      ...prev, 
+      [name]: type === 'checkbox' ? checked : value 
+    }));
     if (errors[name]) setErrors((prev) => ({ ...prev, [name]: "" }));
   };
 
@@ -631,7 +637,7 @@ const MultiStepRegistrationForm = () => {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <FloatingInput
                 id="first_name"
                 name="first_name"
@@ -751,9 +757,14 @@ const MultiStepRegistrationForm = () => {
               icon={Briefcase}
             >
               <option value="" disabled />
-              <option value="retail">Retail</option>
-              <option value="restaurant">Restaurant</option>
-              <option value="service">Service</option>
+              <option value="restaurants_cafes">Restaurants & Cafés</option>
+              <option value="pastry_shops_bakeries">Pastry Shops & Bakeries</option>
+              <option value="shopping_malls">Shopping Malls</option>
+              <option value="supermarkets">Supermarkets</option>
+              <option value="hardware_stores">Hardware Stores</option>
+              <option value="vehicle_parts_shops">Vehicle Parts Shops</option>
+              <option value="retail_businesses">Retail Businesses</option>
+              <option value="service_businesses">Service Businesses</option>
               <option value="manufacturing">Manufacturing</option>
               <option value="technology">Technology</option>
               <option value="healthcare">Healthcare</option>
@@ -812,6 +823,30 @@ const MultiStepRegistrationForm = () => {
                 error={errors.zip_code}
                 icon={Hash}
               />
+            </div>
+
+            <div className="mt-4">
+              <label className="flex items-start gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  name="privacy_agreement"
+                  checked={formData.privacy_agreement}
+                  onChange={handleInputChange}
+                  className="mt-0.5 w-4 h-4 text-blue-500 border-slate-300 rounded focus:ring-blue-500/20 focus:border-blue-500"
+                />
+                <span className="text-sm text-slate-600 leading-relaxed">
+                  By clicking this you're agreed to our{' '}
+                  <a href="/privacy-policy" className="text-blue-500 hover:text-blue-600 font-medium underline">
+                    Privacy Policy
+                  </a>
+                </span>
+              </label>
+              {errors.privacy_agreement && (
+                <p className="mt-1.5 flex items-center gap-1 text-xs text-red-500">
+                  <AlertCircle className="w-3 h-3 flex-shrink-0" />
+                  {errors.privacy_agreement}
+                </p>
+              )}
             </div>
           </motion.div>
         );
@@ -961,23 +996,7 @@ const MultiStepRegistrationForm = () => {
             </div>
           </div>
 
-          {/* Footer note */}
-          <p className="mt-5 text-center text-xs text-slate-400">
-            By registering you agree to our{" "}
-            <a
-              href="/terms"
-              className="text-slate-500 hover:text-slate-700 underline underline-offset-2"
-            >
-              Terms of Service
-            </a>{" "}
-            and{" "}
-            <a
-              href="/privacy"
-              className="text-slate-500 hover:text-slate-700 underline underline-offset-2"
-            >
-              Privacy Policy
-            </a>
-          </p>
+          
         </div>
       </div>
     </div>

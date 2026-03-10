@@ -42,7 +42,7 @@ export default function CompanyPage() {
             >
               <div className="aspect-[4/3] rounded-[2.5rem] overflow-hidden bg-slate-100 shadow-2xl">
                 <img
-                  src="/Promo6.png"
+                  src="/ci-logo.jpeg"
                   alt="Team Collaboration"
                   className="w-full h-full object-cover"
                 />
@@ -248,7 +248,7 @@ export default function CompanyPage() {
             >
               <div className="relative">
                 <img
-                  src="/device2.png"
+                  src="/device2.webp"
                   alt="Bill Till ERP Dashboard"
                   className="w-full h-auto scale-[130%] md:scale-[160%] -translate-x-[40%] md:-translate-x-[50%] origin-left"
                 />
@@ -317,7 +317,7 @@ export default function CompanyPage() {
             <div className="p-8 bg-white rounded-3xl border border-slate-100 shadow-xl shadow-slate-200/50 flex flex-col md:flex-row items-center gap-8 md:gap-12 group hover:shadow-2xl transition-all duration-500">
               <div className="relative">
                 <img
-                  src="/CI-logo.png"
+                  src="/CI-logo.webp"
                   alt="Ceylon Innovation Services"
                   className="h-20 w-auto group-hover:scale-110 transition-transform duration-500"
                 />

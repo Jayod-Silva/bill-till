@@ -104,18 +104,7 @@ export const HowItWorksSection = () => {
         >
           <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-foreground mb-6">
             <span data-i18n="how_title">
-              {t("how_title").split("4 simple steps")[0]}
-            </span>
-            <span className="text-primary" data-i18n="how_title">
-              {t("how_title").includes("4 simple steps")
-                ? "4 simple steps"
-                : ""}
-            </span>
-            <span data-i18n="how_title">
-              {t("how_title").split("4 simple steps")[1] ||
-                (t("how_title").includes("4 simple steps")
-                  ? ""
-                  : t("how_title"))}
+              {t("how_title")}
             </span>
           </h2>
           <p

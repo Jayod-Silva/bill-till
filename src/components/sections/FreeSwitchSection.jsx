@@ -10,7 +10,7 @@ export const FreeSwitchSection = () => {
     <section
       id="free-switch"
       className="min-h-screen bg-cover bg-center bg-no-repeat relative overflow-hidden"
-      style={{ backgroundImage: "url('/freebg.png')" }}
+      style={{ backgroundImage: "url('/freebg.webp')" }}
     >
       <div className="">
         <motion.div
@@ -142,7 +142,7 @@ export const FreeSwitchSection = () => {
           className="text-center"
         >
           <img
-            src="/POS.png"
+            src="/POS.webp"
             alt="POS Device"
             className="max-w-full h-auto max-h-[400px] lg:max-h-[500px] object-contain mx-auto scale-150 lg:scale-150 -mb-5"
           />

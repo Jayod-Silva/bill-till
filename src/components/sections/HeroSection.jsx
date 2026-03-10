@@ -31,7 +31,7 @@ export const HeroSection = () => {
         <div
           className="absolute inset-0 bg-cover bg-center rounded-2xl bg-no-repeat md:hidden"
           style={{
-            backgroundImage: `url("/background.png")`,
+            backgroundImage: `url("/background.webp")`,
             top: "8px",
             left: "8px",
             right: "8px",
@@ -42,7 +42,7 @@ export const HeroSection = () => {
         <div
           className="absolute inset-0 bg-cover bg-center rounded-2xl bg-no-repeat hidden md:block"
           style={{
-            backgroundImage: `url("/background.png")`,
+            backgroundImage: `url("/background.webp")`,
             top: "15px",
             left: "15px",
             right: "15px",
@@ -131,7 +131,7 @@ export const HeroSection = () => {
           className="relative z-5 overflow-hidden max-w-7xl mx-auto -mt-[45px] md:-mt-6 lg:w-[150%] md:w-[120%]  w-[100%]"
         >
           <img
-            src="/device1.png"
+            src="/device1.webp"
             alt="Bill Till Dashboard"
             className="w-full h-full block object-contain"
             loading="eager"

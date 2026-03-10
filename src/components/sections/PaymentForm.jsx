@@ -64,7 +64,13 @@ const businessTypes = [
   "Supermarkets",
   "Hardware Stores",
   "Vehicle Parts Shops",
-  "Any Retail Business",
+  "Retail Businesses",
+  "Service Businesses",
+  "Manufacturing",
+  "Technology",
+  "Healthcare",
+  "Education",
+  "Other",
 ];
 
 /* ── Inline-style helpers (bypass global * { border-color }) ── */
@@ -1030,7 +1036,7 @@ export default function PaymentForm({ selectedPlan: initialPlan = "Dynamic" }) {
       const verifiedCode = localStorage.getItem("billtill_verified_code") || "";
 
       const response = await axios.post(
-        "http://localhost:7075/api/create-payment",
+        "https://caritasconnect.ddns.net/billtill/api/create-payment",
         { ...form, currency, confirmationCode: verifiedCode, billingCycle, selectedPlan, state: user.business?.province, city: user.business?.city },
       );
 

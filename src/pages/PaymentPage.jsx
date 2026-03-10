@@ -65,7 +65,7 @@ const BrandPanel = () => (
       transition={{ duration: 0.6 }}
       className="relative z-10 flex items-center"
     >
-      <img src="/white-logo.png" alt="Bill Till Logo" className="h-10 w-auto" />
+      <img src="/white-logo.webp" alt="Bill Till Logo" className="h-10 w-auto" />
     </motion.div>
 
     {/* Main copy */}

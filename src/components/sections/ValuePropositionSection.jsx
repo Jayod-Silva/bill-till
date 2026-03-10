@@ -85,11 +85,7 @@ export const ValuePropositionSection = () => {
         >
           <h2 className="text-5xl md:text-4xl lg:text-5xl font-bold text-foreground mb-3 md:mb-6">
             <span data-i18n="value_title">
-              {t("value_title").split("Bill Till")[0]}
-            </span>
-            <span className="text-primary">Bill Till</span>
-            <span data-i18n="value_title">
-              {t("value_title").split("Bill Till")[1]}
+              {t("value_title")}
             </span>
           </h2>
           <p

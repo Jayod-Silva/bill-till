@@ -66,7 +66,7 @@ const BrandPanel = () => (
       transition={{ duration: 0.6 }}
       className="relative z-10 flex items-center"
     >
-      <img src="/white-logo.png" alt="Bill Till Logo" className="h-10 w-auto" />
+      <img src="/white-logo.webp" alt="Bill Till Logo" className="h-10 w-auto" />
     </motion.div>
 
     {/* Main copy */}
@@ -369,10 +369,10 @@ const ConfirmationCodePage = () => {
                 {/* Back Button */}
                 <button
                   onClick={() => navigate("/")}
-                  className="flex items-center gap-2 text-slate-600 hover:text-slate-800 transition-colors mb-4 group"
+                  className="flex items-center gap-3 px-6 py-3 text-slate-600 hover:text-slate-800 hover:bg-slate-50 rounded-xl transition-all duration-200 mb-4 group font-medium"
                 >
-                  <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-                  <span className="text-sm font-medium">Back to Home</span>
+                  <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1" />
+                  <span className="text-base">Back to Home</span>
                 </button>
 
                 <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-blue-50 mb-5">

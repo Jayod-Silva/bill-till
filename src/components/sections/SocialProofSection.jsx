@@ -3,9 +3,9 @@ import { motion, useInView } from "framer-motion";
 import { useLanguage } from "../../translations/LanguageContext";
 
 const logos = [
-  { name: "Visa", src: "/visa.png", width: 90 },
-  { name: "Master", src: "/master.svg", width: 60 },
-  { name: "KOKO", src: "/koko.png", width: 100 },
+  { name: "Visa", src: "/visa.webp", width: 90 },
+  { name: "Master", src: "/master.webp", width: 60 },
+  { name: "KOKO", src: "/koko.webp", width: 100 },
 ];
 
 const CountingNumber = ({

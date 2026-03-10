@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { Twitter, Linkedin, Github, Mail, MapPin, Phone } from "lucide-react";
+import { Facebook, Linkedin, Instagram, Mail, MapPin, Phone } from "lucide-react";
 import { useLanguage } from "../../translations/LanguageContext";
 
 export const Footer = () => {
@@ -50,12 +50,7 @@ export const Footer = () => {
         href: "#",
         i18nKey: "footer_help_center",
       },
-      {
-        name: t("footer_api_reference"),
-        href: "#",
-        i18nKey: "footer_api_reference",
-      },
-      { name: t("footer_status"), href: "#", i18nKey: "footer_status" },
+      
     ],
     legal: [
       {
@@ -68,19 +63,13 @@ export const Footer = () => {
         href: "#",
         i18nKey: "footer_terms_of_service",
       },
-      {
-        name: t("footer_cookie_policy"),
-        href: "#",
-        i18nKey: "footer_cookie_policy",
-      },
-      { name: t("footer_gdpr"), href: "#", i18nKey: "footer_gdpr" },
     ],
   };
 
   const socialLinks = [
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Github, href: "#", label: "GitHub" },
+    { icon: Facebook, href: "https://www.facebook.com/share/1GudZtSsHb/", label: "Facebook" },
+    { icon: Linkedin, href: "https://www.linkedin.com/company/ceylon-innovation/", label: "LinkedIn" },
+    { icon: Instagram, href: "https://www.instagram.com/ceylon_innovation?igsh=MWJybXowemoyOTd5dw==", label: "Instagram" },
   ];
 
   return (
@@ -93,7 +82,7 @@ export const Footer = () => {
             <div className="flex items-center gap-2 mb-4">
               <div className="w-15 h-15 flex items-center justify-center">
                 <img
-                  src="/white-logo.png"
+                  src="/white-logo.webp"
                   alt="Bill Till Logo"
                   className="w-[120px] h-full object-contain"
                 />
@@ -106,22 +95,36 @@ export const Footer = () => {
               {t("footer_tagline")}
             </p>
             <div className="space-y-3">
-              <div className="flex items-center gap-2 text-sm text-blue-200">
+              <a 
+                href="mailto:info@billtill.co" 
+                className="flex items-center gap-2 text-sm text-blue-200 hover:text-white transition-colors"
+              >
                 <Mail className="w-4 h-4" />
                 <span>info@billtill.co</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-blue-200">
+              </a>
+              <a 
+                href="tel:0114758900" 
+                className="flex items-center gap-2 text-sm text-blue-200 hover:text-white transition-colors"
+              >
                 <Phone className="w-4 h-4" />
                 <span>0114 758 900</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-blue-200">
+              </a>
+              <a 
+                href="tel:0777236130" 
+                className="flex items-center gap-2 text-sm text-blue-200 hover:text-white transition-colors"
+              >
                 <Phone className="w-4 h-4" />
                 <span>077 723 6130 (24/7)</span>
-              </div>
-              <div className="flex items-center gap-2 text-sm text-blue-200">
+              </a>
+              <a 
+                href="https://maps.app.goo.gl/TsX626aq6fYgfWSB6" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-sm text-blue-200 hover:text-white transition-colors"
+              >
                 <MapPin className="w-4 h-4" />
                 <span>680A Colombo Road, Kattuwa, Negombo, Sri Lanka</span>
-              </div>
+              </a>
             </div>
           </div>
 
